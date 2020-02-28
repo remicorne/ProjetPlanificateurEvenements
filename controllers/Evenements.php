@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-  
-=======
 <?php
 class Evenements extends Controller {
   public function index() {
@@ -20,4 +17,3 @@ class Evenements extends Controller {
     return false;
   }
 }
->>>>>>> 907f33cfe9d872a4d0cdd5dd81e05f015b5b0e04
