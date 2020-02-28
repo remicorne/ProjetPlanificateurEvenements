@@ -1,0 +1,26 @@
+html {
+
+}
+
+body{
+	margin: 0;
+	padding: 0;
+}
+
+#titre{
+	text-align: center;
+}
+
+#container{
+	height: 100%;
+	width: 100%;
+}
+
+#menu{
+	float:left;
+	position: absolute;
+	top: 0;
+	min-height: 100vh;
+	min-width: 15%;
+	border: solid;
+}
