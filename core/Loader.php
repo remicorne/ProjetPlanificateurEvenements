@@ -13,6 +13,7 @@ class Loader {
     $this->define_helper();
     $data = $this->inject_model_data($data);
     $this->view('header', $data);
+    $this->view('menu', $data);
     if ($view!==null) { $this->view($view, $data); }
     $this->view('footer', $data);
   }

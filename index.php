@@ -5,7 +5,7 @@ $config = [
     'default_controller' => 'Evenements',
     'default_method' => 'index',
     'core_classes'=> ['Controller', 'Loader', 'Model'],
-    'models'=>['Evenements_model','Sessions_model','Users_model']
+    'models'=>['Evenements','Sessions','Users']
 ];
 
 foreach ($config['core_classes'] as $classname) require "core/$classname.php";

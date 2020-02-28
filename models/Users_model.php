@@ -1,59 +1,75 @@
 <?php
 class User {
-  public $id;
-  public $username;
-  private $password;
+  public $numUser;
+  public $nom;
+  public $prenom;
+  public $email;
+  private $motDePasse;
   
-  public function __construct($id, $username, $password) {
-    $this->id = $id;
-    $this->username = $username;
-    $this->password = $password;
+  public function __construct($numUser, $nom, $prenom, $email, $motDePasse) {
+    $this->numUser = $numUser;
+    $this->nom = $nom;
+    $this->prenom = $prenom;
+    $this->email = $email;
+    $this->motDePasse = $motDePasse;
   }
   
   public static function from_array($array) {
-    return new User($array['id'], $array['username'], $array['password']);
+    return new User($array['numUser'], $array['nom'],$array['prenom'],$array['email'],$array['motDePasse']);
   }
   
-  public function password_is_valid($password) {
-    return password_verify($password, $this->password);
+  public function password_is_valid($motDePasse) {
+    return password_verify($motDePasse, $this->motDePasse);
   }
 }
 
 class Users_model extends Model {
-  const str_error_username_format = 'Le nom d\'utilisateur doit contenir entre 2 et 10  lettres et chiffres.';
-  const str_error_password_format = 'Le mot de passe doit contenir entre 5 et 30 caractères non blancs';
+  const str_error_nom_format = 'Le nom d\'utilisateur doit contenir entre 2 et 10  lettres et chiffres.';
+  const str_error_prenom_format = 'Le prenom d\'utilisateur doit contenir entre 2 et 10  lettres et chiffres.';
+  const str_error_email_format = 'Email invalide.';
+  const str_error_motDePasse_format = 'Le mot de passe doit contenir entre 5 et 30 caractères non blancs';
   
- // $statement = $this->db->prepare("insert into albums(album_name) values (:album_name)"); 
-  //$statement->execute(['album_name' => $album_name]); 
-  public function create_user($username, $password) {
+  public function create_user($nom, $prenom, $email, $motDePasse) {
     try {
-      $this->check_username($username);
-      $this->check_password($password);
-      $hash = password_hash($password, PASSWORD_DEFAULT);
-      $statement = $this->db->prepare("INSERT INTO users(username, password) VALUES(?, ?)");
-      $statement->execute([$username, $hash]);
+      $this->check_nom($nom);
+      $this->check_prenom($prenom);
+      $this->check_email($email);
+      $this->check_motDePasse($motDePasse);
+      $hash = motDePasse_hash($motDePasse, motDePasse_DEFAULT);
+      $statement = $this->db->prepare("INSERT INTO Utilisateurs(nom,prenom,email,motDePasse) VALUES(?, ?, ?, ?)");
+      $statement->execute([$nom,$prenom, $email, $hash]);
       $id = $this->db->lastInsertId();
-      return new User($id, $username, $hash);
+      return new User($id, $nom, $prenom, $email, $hash);
     } catch (PDOException $e) {
       throw new Exception('Impossible d\'inscrire l\'utilisateur.');
     }
   }
   
   public function user_from_id($id) {
-    return $this->user_from_query('SELECT * FROM users WHERE id = ?', [$id]);
+    return $this->user_from_query('SELECT * FROM Utilisateurs WHERE id = ?', [$id]);
   }
   
-  public function user_from_username($username) {
-    $this->check_username($username);
-    return $this->user_from_query('SELECT * FROM users WHERE username = ?', [$username]);
+  public function user_from_email($email) {
+    var_dump($email); echo "<br>";
+    $this->check_email($email);
+    var_dump($email); echo "<br>";
+    return $this->user_from_query('SELECT * FROM Utilisateurs WHERE email = ?', [$email]);
   }
 
-  private function check_username($username) {
-    $this->check_format_with_regex($username, '/^[0-9a-zA-Z]{2,10}$/', self::str_error_username_format);
+  private function check_nom($nom) {
+    $this->check_format_with_regex($nom, '/^[0-9a-zA-Z]{2,10}$/', self::str_error_nom_format);
   }
-  
-  private function check_password($password) {
-    $this->check_format_with_regex($password, '/^[^\s]{5,10}$/', self::str_error_password_format);
+
+  private function check_prenom($prenom) {
+    $this->check_format_with_regex($prenom, '/^[0-9a-zA-Z]{2,10}$/', self::str_error_prenom_format);
+  }
+
+  private function check_email($email) {
+    $this->check_format_with_regex($email, '/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/', self::str_error_prenom_format);
+  }
+
+  private function check_motDePasse($motDePasse) {
+    $this->check_format_with_regex($motDePasse, '/^[^\s]{5,10}$/', self::str_error_motDePasse_format);
   }
   
   private function user_from_query($query, $array) {
