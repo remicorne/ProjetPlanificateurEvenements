@@ -35,7 +35,7 @@ class Users_model extends Model {
       $this->check_prenom($prenom);
       $this->check_email($email);
       $this->check_motDePasse($motDePasse);
-      $hash = motDePasse_hash($motDePasse, motDePasse_DEFAULT);
+      $hash = password_hash($motDePasse, PASSWORD_DEFAULT);
       $statement = $this->db->prepare("INSERT INTO Utilisateurs(nom,prenom,email,motDePasse) VALUES(?, ?, ?, ?)");
       $statement->execute([$nom,$prenom, $email, $hash]);
       $id = $this->db->lastInsertId();
