@@ -6,6 +6,7 @@ class Users extends Controller {
   }
   
   public function users_new() {
+    $this->sessions->logout();
     $this->loader->load('users_new', ['title'=>'S\'inscrire']);
   }
   
