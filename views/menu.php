@@ -4,10 +4,8 @@
 			<img src="" alt="photo de profil">
 		</div>
 		<div class="info_compte">
-
-			<p>  <p>
-			<p>  <p>
-
+			<p>prenom : <?= $logged_user->prenom ?>  <p>
+			<p>nom : <?= $logged_user->nom ?>  <p>
 			<ul class="info_compte">
 				<li><a href="/index.php/evenements/monCompte">mon compte</a></li>
 				<li><a href="/index.php/sessions/sessions_destroy">se déconnecter</a></li>

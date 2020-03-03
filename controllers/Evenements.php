@@ -3,11 +3,13 @@ class Evenements extends Controller {
   public function index() {
     $this->tableau_de_bord();
   }
+
   
   public function tableau_de_bord() {
     if ($this->redirect_unlogged_user()) return;
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
   }
+
 
   private function redirect_unlogged_user() {
     if (!$this->sessions->user_is_logged()) {
@@ -16,14 +18,14 @@ class Evenements extends Controller {
     }
     return false;
   }
+
+
   public function sondages_new(){
 
     if ($this->redirect_unlogged_user()) return;
-   
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
-
-
   }
+
 
   public function sondages_add(){
 
@@ -47,12 +49,5 @@ class Evenements extends Controller {
     } catch (Exception $e) {
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
     }
-
-
-
-
   }
-
-
-
 }
