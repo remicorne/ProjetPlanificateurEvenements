@@ -11,9 +11,9 @@ body{
 	text-align: center;
 }
 
-#container{
-	height: 100%;
-	width: 100%;
+.container{
+	position:absolute;
+	left: 45%;
 }
 
 #menu{

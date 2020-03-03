@@ -33,3 +33,4 @@
 		</div>
 	</div>          
 <?php } ?>
+<div class="container">

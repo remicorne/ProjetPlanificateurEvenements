@@ -10,6 +10,21 @@ class Evenements extends Controller {
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
   }
 
+  public function monCompte() {
+    if ($this->redirect_unlogged_user()) return;
+    $photo = $this->users->get_photo($this->sessions->logged_user()->numUser);
+    $this->loader->load('monCompte', ['title'=>'mon compte', 'photo'=>$photo]);
+  }
+
+  public function photos_get($numUser) {
+    try {
+        $numUser = filter_var($numUser);
+        if (isset($_GET['thumbnail'])) { /*$data = $this->gallery->thumbnail($photo_id);*/ }
+        else { $data =  $this->users->get_photo($this->sessions->logged_user()->numUser); }
+        header("Content-Type: image/jpeg"); // modification du header pour changer le format des données retourné au client
+        echo $data;                          // écriture du binaire de l'image vers le client
+      } catch (Exception $e) {}
+  }
 
   private function redirect_unlogged_user() {
     if (!$this->sessions->user_is_logged()) {

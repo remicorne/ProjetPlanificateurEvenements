@@ -25,4 +25,18 @@ class Users extends Controller {
       $this->loader->load('users_new', $data );
     }
   }
+
+  public function photos_add() {
+    try {
+      if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK)
+        throw new Exception('Vous devez choisir une photo.');
+      
+      $tmp_file = $_FILES['photo']['tmp_name'];
+      $this->users->add_photo($tmp_file, $this->sessions->logged_user()->numUser);
+      header("Location: /index.php/evenements/monCompte");
+    } catch (Exception $e) {
+      $this->loader->load('monCompte',['title'=>"mon compte", 
+                          'error_message' => $e->getMessage()]);
+    }
+  }
 }

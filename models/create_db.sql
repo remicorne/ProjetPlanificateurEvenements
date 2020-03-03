@@ -5,6 +5,7 @@ CREATE TABLE Utilisateurs (
   nom TEXT NOT NULL,
   prenom TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
+  photo BLOB TEXT,
   motDePasse TEXT NOT NULL UNIQUE
 );
 

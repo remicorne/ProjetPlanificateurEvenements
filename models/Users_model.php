@@ -14,10 +14,6 @@ class User {
     $this->motDePasse = $motDePasse;
   }
   
-  public function getNom(){
-    return $nom;
-  }
-
   public static function from_array($array) {
     return new User($array['numUser'], $array['nom'],$array['prenom'],$array['email'],$array['motDePasse']);
   }
@@ -32,6 +28,7 @@ class Users_model extends Model {
   const str_error_prenom_format = 'Le prenom d\'utilisateur doit contenir entre 2 et 10  lettres et chiffres.';
   const str_error_email_format = 'Email invalide.';
   const str_error_motDePasse_format = 'Le mot de passe doit contenir entre 5 et 30 caractères non blancs';
+  const str_error_photo_does_not_exist = 'La photo n\'existe pas.';
   
   public function create_user($nom, $prenom, $email, $motDePasse) {
     try {
@@ -50,7 +47,7 @@ class Users_model extends Model {
     }
   }
   
-  public function user_from_id($id) {
+  public function user_from_id($numUser) {
     return $this->user_from_query('SELECT * FROM Utilisateurs WHERE numUser = ?', [$id]);
   }
   
@@ -95,6 +92,66 @@ class Users_model extends Model {
     ) );
     if ($result === false || $result === null) {
       throw new Exception ( $error_message );
+    }
+  }
+
+  public function delete_photo($numUser) {
+    try {
+      $statement = $this->db->prepare("delete from Utilisateurs where numUser = :numUser");
+      $statement->execute(['numUser' => $numUser]);
+    } catch (PDOException $e) {
+      exit;
+      throw new Exception(self::str_error_database);
+    }
+  }
+
+  public function get_photo($numUser) {
+    try {
+      $statement = $this->db->prepare("select photo from Utilisateurs where numUser = :numUser");
+      $statement->execute(['numUser' => $numUser]);
+      $result = $statement->fetchAll();
+      if (count($result) == 0) return null;
+      return $result[0]['photo'];
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database);
+    }
+  }  
+
+
+  public function add_photo($tmp_file, $numUser) {
+    try {
+      $statement = $this->db->prepare("UPDATE Utilisateurs 
+                                        SET photo = :photo
+                                        WHERE numUser= :numUser");
+      $statement->execute(["photo"=>$this->create_photo($tmp_file), 
+                           "numUser"=>$numUser]);
+      return $this->db->lastInsertId();
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database);
+    } catch ( ImagickException $e ) {
+      throw new Exception ( self::str_error_photo_format );
+    }
+  }
+
+  private function create_photo($tmp_file) {
+    $image = new Imagick ( $tmp_file );
+    try {
+      $image->setImageFormat("jpeg");
+      $this->resize_photo ( $image );
+      return $image->getimageBlob();
+    }catch(Exception $e){
+      echo $e->getMessage();
+    } finally {
+      $image->destroy ();
+    }
+  }
+  
+  private function resize_photo($image) {
+    $geometry = $image->getImageGeometry ();
+    if ($geometry ['width'] > $geometry ['height']) {
+      $image->thumbnailImage ( 150, 0 );
+    } else {
+      $image->thumbnailImage ( 0, 150 );
     }
   }
 }

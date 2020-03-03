@@ -8,5 +8,4 @@
      </head>
      <body>
       <h1 id="titre"> <?=$title ?> </h1>
-      <div class="container">
 
