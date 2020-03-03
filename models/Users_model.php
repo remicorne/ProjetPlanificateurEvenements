@@ -14,6 +14,10 @@ class User {
     $this->motDePasse = $motDePasse;
   }
   
+  public function getNom(){
+    return $nom;
+  }
+
   public static function from_array($array) {
     return new User($array['numUser'], $array['nom'],$array['prenom'],$array['email'],$array['motDePasse']);
   }
@@ -39,6 +43,7 @@ class Users_model extends Model {
       $statement = $this->db->prepare("INSERT INTO Utilisateurs(nom,prenom,email,motDePasse) VALUES(?, ?, ?, ?)");
       $statement->execute([$nom,$prenom, $email, $hash]);
       $id = $this->db->lastInsertId();
+      var_dump($id);
       return new User($id, $nom, $prenom, $email, $hash);
     } catch (PDOException $e) {
       throw new Exception('Impossible d\'inscrire l\'utilisateur.');
@@ -46,13 +51,11 @@ class Users_model extends Model {
   }
   
   public function user_from_id($id) {
-    return $this->user_from_query('SELECT * FROM Utilisateurs WHERE id = ?', [$id]);
+    return $this->user_from_query('SELECT * FROM Utilisateurs WHERE numUser = ?', [$id]);
   }
   
   public function user_from_email($email) {
-    var_dump($email); echo "<br>";
     $this->check_email($email);
-    var_dump($email); echo "<br>";
     return $this->user_from_query('SELECT * FROM Utilisateurs WHERE email = ?', [$email]);
   }
 
