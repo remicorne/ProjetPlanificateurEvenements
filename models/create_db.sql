@@ -6,6 +6,7 @@ CREATE TABLE Utilisateurs (
   prenom TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   photo BLOB TEXT,
+  thumbnail BLOB TEXT,
   motDePasse TEXT NOT NULL UNIQUE
 );
 

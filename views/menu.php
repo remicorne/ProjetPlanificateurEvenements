@@ -1,8 +1,10 @@
 <?php if ($user_is_logged){ ?>
 	<div id="menu">
+		<?php if($user_has_photo){ ?>
 		<div id="photo_profil">
-			<img src="" alt="photo de profil">
+			<img src="/index.php/evenements/photos_get/<?=$logged_user->numUser?>?thumbnail" alt="photo de profil">
 		</div>
+		<?php } ?>
 		<div class="info_compte">
 			<p>prenom : <?= $logged_user->prenom ?>  <p>
 			<p>nom : <?= $logged_user->nom ?>  <p>

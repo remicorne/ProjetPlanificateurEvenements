@@ -19,7 +19,7 @@ class Evenements extends Controller {
   public function photos_get($numUser) {
     try {
         $numUser = filter_var($numUser);
-        if (isset($_GET['thumbnail'])) { /*$data = $this->gallery->thumbnail($photo_id);*/ }
+        if (isset($_GET['thumbnail'])) { $data = $this->users->get_thumbnail($this->sessions->logged_user()->numUser); }
         else { $data =  $this->users->get_photo($this->sessions->logged_user()->numUser); }
         header("Content-Type: image/jpeg"); // modification du header pour changer le format des données retourné au client
         echo $data;                          // écriture du binaire de l'image vers le client

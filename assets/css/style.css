@@ -7,13 +7,13 @@ body{
 	padding: 0;
 }
 
-#titre{
-	text-align: center;
-}
-
 .container{
 	position:absolute;
-	left: 45%;
+	left: 20%;
+}
+
+#titre{
+	text-align: center;
 }
 
 #menu{

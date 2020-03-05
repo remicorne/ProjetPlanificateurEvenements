@@ -21,7 +21,7 @@
 		</div>
 	    <div>
 		   <div>
-			   <input type="date" id="date3" name="date3" value=<?= date('Y-m-d')?> min=<?= date('Y-m-d')?>  max="2050-12-31"> &nbsp;&nbsp;&nbsp;
+			   <input type="date" id="date3" name="date3" value=<?= date('Y-m-d')?> min=<?= date('Y-m-d')?>  max="2050-12-31">&nbsp;&nbsp;&nbsp;
 			   <input type="time" id="horaireD3" name="horaireD3" min="09:00" max="18:00" required> &nbsp;&nbsp;&nbsp;
 			   <input type="time" id="horaireF3" name="horaireF3" min="09:00" max="18:00" required>
 		   </div>
