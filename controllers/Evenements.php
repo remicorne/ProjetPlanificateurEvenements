@@ -3,10 +3,27 @@ class Evenements extends Controller {
   public function index() {
     $this->tableau_de_bord();
   }
+
   
   public function tableau_de_bord() {
     if ($this->redirect_unlogged_user()) return;
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
+  }
+
+  public function monCompte() {
+    if ($this->redirect_unlogged_user()) return;
+    $photo = $this->users->get_photo($this->sessions->logged_user()->numUser);
+    $this->loader->load('monCompte', ['title'=>'mon compte', 'photo'=>$photo]);
+  }
+
+  public function photos_get($numUser) {
+    try {
+        $numUser = filter_var($numUser);
+        if (isset($_GET['thumbnail'])) { $data = $this->users->get_thumbnail($this->sessions->logged_user()->numUser); }
+        else { $data =  $this->users->get_photo($this->sessions->logged_user()->numUser); }
+        header("Content-Type: image/jpeg"); // modification du header pour changer le format des données retourné au client
+        echo $data;                          // écriture du binaire de l'image vers le client
+      } catch (Exception $e) {}
   }
 
   private function redirect_unlogged_user() {
@@ -16,14 +33,14 @@ class Evenements extends Controller {
     }
     return false;
   }
+
+
   public function sondages_new(){
 
     if ($this->redirect_unlogged_user()) return;
-   
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
-
-
   }
+
 
   public function sondages_add(){
 
@@ -47,12 +64,5 @@ class Evenements extends Controller {
     } catch (Exception $e) {
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
     }
-
-
-
-
   }
-
-
-
 }

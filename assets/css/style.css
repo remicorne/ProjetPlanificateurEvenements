@@ -7,13 +7,13 @@ body{
 	padding: 0;
 }
 
-#titre{
-	text-align: center;
+.container{
+	position:absolute;
+	left: 20%;
 }
 
-#container{
-	height: 100%;
-	width: 100%;
+#titre{
+	text-align: center;
 }
 
 #menu{
@@ -28,10 +28,4 @@ body{
 #sondage_new{
 	position:absolute;
     left: 40%;
-    
- 
-
-
-
-
 }
