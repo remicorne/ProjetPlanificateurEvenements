@@ -31,7 +31,9 @@ DROP TABLE IF EXISTS Evenements ;
 CREATE TABLE Evenements(
 	numEvent INTEGER PRIMARY KEY AUTOINCREMENT,
 	numDate INTEGER,
-	com TEXT
+	titre TEXT,
+	lieu TEXT,
+	descri TEXT
 );
 
 DROP TABLE IF EXISTS Documents ;
@@ -46,8 +48,9 @@ DROP TABLE IF EXISTS Dates ;
 
 CREATE TABLE Dates(
 	numDate INTEGER PRIMARY KEY AUTOINCREMENT,
-	dateDebut DATE,
-	dateFin DATE CHECK(dateFin > dateDebut)
+	date_reunion DATE,
+	heureD TIME,
+	heureF TIME
 );
 
 DROP TABLE IF EXISTS DocEven ;
