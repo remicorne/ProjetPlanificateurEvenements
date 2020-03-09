@@ -1,13 +1,13 @@
 <?php if ($user_is_logged){ ?>
 	<div id="menu">
+		<?php if($user_has_photo){ ?>
 		<div id="photo_profil">
-			<img src="" alt="photo de profil">
+			<img src="/index.php/evenements/photos_get/<?=$logged_user->numUser?>?thumbnail" alt="photo de profil">
 		</div>
+		<?php } ?>
 		<div class="info_compte">
-
-			<p>  <p>
-			<p>  <p>
-
+			<p>prenom : <?= $logged_user->prenom ?>  <p>
+			<p>nom : <?= $logged_user->nom ?>  <p>
 			<ul class="info_compte">
 				<li><a href="/index.php/evenements/monCompte">mon compte</a></li>
 				<li><a href="/index.php/sessions/sessions_destroy">se déconnecter</a></li>
@@ -35,3 +35,4 @@
 		</div>
 	</div>          
 <?php } ?>
+<div class="container">
