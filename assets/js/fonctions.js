@@ -169,7 +169,7 @@ function ajouterGroupeBd(form){
 	return true;
 }
 
-// renvoie un tableau avec les emails des personnes ajoutés au groupe.
+// renvoie un tableau avec les numUser des personnes ajoutés au groupe.
 function tabPersonneAjoutes(){
 	var tab_persons_ajoutes = document.getElementById("tab_persons_ajoutes");
 	var tab = [];
