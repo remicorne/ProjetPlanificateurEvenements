@@ -86,25 +86,51 @@ class Evenements extends Controller {
 
   public function sondages_add(){
 
+    var_dump($_POST['horaireF'][0]);
+    var_dump($_POST['horaireD'][0]);
+
+    var_dump($_POST['titre']);
+
+     
     if ($this->redirect_unlogged_user()) return;
     try {
-      $titre = filter_input(INPUT_POST, 'titre');
-      $lieu = filter_input(INPUT_POST, 'lieu');
-      $message= filter_input(INPUT_POST, 'message');
-      $date1= filter_input(INPUT_POST, 'date1');
-      $date2= filter_input(INPUT_POST, 'date2');
-      $date3= filter_input(INPUT_POST, 'date3');
-      $horaireD1= filter_input(INPUT_POST, 'horaireD1');
-      $horaireD2= filter_input(INPUT_POST, 'horaireD2');
-      $horaireD3= filter_input(INPUT_POST, 'horaireD3');
-      $horaireF1= filter_input(INPUT_POST, 'horaireF1');
-      $horaireF2= filter_input(INPUT_POST, 'horaireF2');
-      $horaireF3= filter_input(INPUT_POST, 'horaireF3');
+      
 
-      $this->evenements->create_sondage($titre,$lieu,$message,$date1,$date2,$date3,$horaireD1,$horaireD2,$horaireD3,$horaireF1,$horaireF2,$horaireF3);
-      header('Location: /index.php'); 
+      if(isset($_POST['date']) &&  isset($_POST['horaireD']) && isset($_POST['horaireF']))  {
+
+        $date=$_POST['date'];
+        $horaireD=$_POST['horaireD'];
+        $horaireF=$_POST['horaireF'];
+
+        $titre = filter_input(INPUT_POST, 'titre');
+        $lieu = filter_input(INPUT_POST, 'lieu');
+        $message= filter_input(INPUT_POST, 'message');
+
+        var_dump($titre);
+       
+
+     
+
+       $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
+       header('Location: /index.php'); 
+     }
     } catch (Exception $e) {
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
+
+      
     }
   }
-}
+
+
+
+    
+  
+} 
+  
+     
+
+
+
+
+    
+  
