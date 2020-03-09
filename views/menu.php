@@ -29,7 +29,7 @@
 		<div id="menu_groupe">
 			<p> Groupes <p>
 			<ul id="navigation">
-			  <li><a href="#">Créer un groupe</a></li>
+			  <li><a href="/index.php/evenements/creer_un_groupe">Créer un groupe</a></li>
 			  <li><a href="#">Voir les groupes</a></li>
 			</ul>
 		</div>

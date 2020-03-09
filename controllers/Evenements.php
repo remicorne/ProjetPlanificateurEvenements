@@ -16,15 +16,57 @@ class Evenements extends Controller {
     $this->loader->load('monCompte', ['title'=>'mon compte', 'photo'=>$photo]);
   }
 
+  public function creer_un_groupe(){
+    $this->loader->load('creer_un_groupe',['title'=>'Creer un groupe']);
+  }
+
+  public function getNomsGroupes(){
+    try{
+      echo json_encode($this->evenements->getNomsGroupes());
+    }catch(Exception $e){}
+  }
+
+
+  public function users_from_nom_js($nom){
+    $nom = filter_var($nom);
+    try{
+      $res = $this->users->users_from_nom_all_row($nom);
+      echo json_encode($res);
+      //echo $res;
+    }catch(Exception $e){
+      echo "erreur requete";
+    }
+  }
+
   public function photos_get($numUser) {
     try {
         $numUser = filter_var($numUser);
-        if (isset($_GET['thumbnail'])) { $data = $this->users->get_thumbnail($this->sessions->logged_user()->numUser); }
-        else { $data =  $this->users->get_photo($this->sessions->logged_user()->numUser); }
+        if (isset($_GET['thumbnail'])) { $data = $this->users->get_thumbnail($numUser); }
+        else { $data =  $this->users->get_photo($numUser); }
         header("Content-Type: image/jpeg"); // modification du header pour changer le format des données retourné au client
         echo $data;                          // écriture du binaire de l'image vers le client
       } catch (Exception $e) {}
   }
+
+  public function ajout_groupe_bd(){
+    try{
+      $utilisateurs = filter_input(INPUT_POST, 'utilisateurs');
+      $utilisateurs = json_decode($utilisateurs); 
+      $prop = filter_input(INPUT_POST, 'proprietaire');
+      $nomGroupe = filter_input(INPUT_POST, 'nom_groupe'); 
+      //var_dump($nomGroupe);echo "<br>";
+      //var_dump($utilisateurs);echo "<br>";
+      //var_dump($prop);echo "<br>";
+      $numGroupe = $this->evenements->ajout_groupe_bd($nomGroupe);
+      $this->evenements->ajout_personnes_groupe($numGroupe, $utilisateurs, 0);
+      $this->evenements->ajout_personnes_groupe($numGroupe, [$prop], 1);
+      header('Location: /index.php');
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'creer_un_groupe'];
+      $this->loader->load('creer_un_groupe', $data );
+    }
+  }
+
 
   private function redirect_unlogged_user() {
     if (!$this->sessions->user_is_logged()) {
