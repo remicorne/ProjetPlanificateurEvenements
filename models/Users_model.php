@@ -29,6 +29,7 @@ class Users_model extends Model {
   const str_error_email_format = 'Email invalide.';
   const str_error_motDePasse_format = 'Le mot de passe doit contenir entre 5 et 30 caractères non blancs';
   const str_error_photo_does_not_exist = 'La photo n\'existe pas.';
+  const str_error_database = 'problem avec la bd.';
   
   public function create_user($nom, $prenom, $email, $motDePasse) {
     $this->check_nom($nom);
@@ -48,12 +49,25 @@ class Users_model extends Model {
   }
   
   public function user_from_numUser($numUser) {
-    return $this->user_from_query('SELECT * FROM Utilisateurs WHERE numUser = ?', [$numUser]);
+    return $this->user_from_query('SELECT numUser, nom, prenom, email, motDePasse FROM Utilisateurs WHERE numUser = ?', [$numUser]);
   }
   
   public function user_from_email($email) {
     $this->check_email($email);
-    return $this->user_from_query('SELECT * FROM Utilisateurs WHERE email = ?', [$email]);
+    return $this->user_from_query('SELECT numUser, nom, prenom, email, motDePasse FROM Utilisateurs WHERE email = ?', [$email]);
+  }
+
+  public function users_from_nom_all_row($nom) {
+    $this->check_nom($nom);
+    try {
+      $statement = $this->db->prepare('SELECT numUser, nom, prenom, email
+                                        FROM Utilisateurs 
+                                        WHERE nom LIKE :nom');
+      $statement->execute(["nom"=>$nom."%"]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception('Impossible d\'effectuer la demande.');
+    }
   }
 
   private function check_nom($nom) {
