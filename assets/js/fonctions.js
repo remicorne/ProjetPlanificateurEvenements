@@ -1,10 +1,12 @@
-var nomDesGroupes;
-
 function init(){
 	informerPassUpdate();
-	getNomsDesGroupes();
 }
-
+/**
+*Fonction qui informe l'utilisateur que le mot de passe à été mis à jour via une alert.
+*pour cela la fonction va lire le cookie de nom updatePass.
+*si celui-ci est différent de null c'est que le mot de passe à été changé.
+*une fois lue le cookie est effacé. 
+*/
 function informerPassUpdate(){
 	if(readCookie('updatePass')!==null)
 	{
@@ -12,7 +14,9 @@ function informerPassUpdate(){
 		document.cookie = "updatePass=; expires=Mon, 02 Oct 2000 01:00:00 GMT; path=/";
 	}
 }
-
+/**
+*Fonction pour lire un cookie de nom donné en paramètre .
+*/
 function readCookie(name) {
 	var nameEQ = name + "=";
 	var ca = document.cookie.split(';');
@@ -23,11 +27,16 @@ function readCookie(name) {
 	}
 	return null;
 }
-
+/**
+*
+*/
 function valider_modif_nom_prenom(form){
 	return confirm("Etes-vous sur de vouloir modifier votre nom et votre prenom par : "+form.elements['nom'].value+" "+form.elements['prenom'].value);
 }
-
+/**
+*Fonction qui vérifie que les deux mots de passe sont identiques quand on le modifie.
+*Cette fonction est utilisé sur la page monCompte.
+*/
 function verifier_les_mots_de_passe(form){
 	if(form.elements['motDePasse1'].value !== form.elements['motDePasse2'].value){
 		alert("Attention les mots de passe sont différents.");
@@ -40,6 +49,10 @@ function verifier_les_mots_de_passe(form){
 	return true;
 }
 
+/**
+*Fonction qui vérifie que les deux emails sont identiques quand on le modifie.
+*Cette fonction est utilisé sur la page monCompte.
+*/
 function verifier_les_emails(form){
 	if(form.elements['email1'].value !== form.elements['email2'].value){
 		alert("Attention les emails sont différents.");
@@ -48,7 +61,10 @@ function verifier_les_emails(form){
 	return confirm("Confirmer la modification de l'email.");
 }
 
-
+/**
+*Fonction pour créer une connexion asynchrone.
+*voir utilisation dans fonction findPerson.
+*/
 function xhrGET(url, typeRep){
 	var xhr = new XMLHttpRequest();
 	//ouvrir la connexion et choisir type d'envoie 
@@ -61,6 +77,10 @@ function xhrGET(url, typeRep){
 	return xhr;
 }
 
+/**
+*Fonction qui recherche les utilisateurs dont les premières lettre du nom correspondent à la chaine
+*entrée dans l'input 'input_personne' de la page creer_un_groupe.
+*/
 function findPerson(input, prop){
 	var nom = input.value;
 	if(nom.length>1){
@@ -80,7 +100,9 @@ function findPerson(input, prop){
 		});
 	}	
 }
-
+/**
+*Fontion qui ajoute les propositions de personnes sous l'input 'input_personne' de la page creer_un_groupe.
+*/
 function addPersonsDataList(idList, personnes){
 	var datalist = document.getElementById(idList);
 	var options = '';
@@ -91,18 +113,24 @@ function addPersonsDataList(idList, personnes){
 	datalist.innerHTML = options;
 }
 
+/**
+*Fonction pour ajouter une colonne à un tableau.
+*/
 function addColumn(tdOrTh, contenu){
 	var col = document.createElement(tdOrTh);
 	col.innerHTML=contenu;
 	return col ;
 }
 
+/**
+*Fonction qui ajoute les utilisateurs au tableau 'tab_persons' de la page creer_un_groupe.
+*les utilisateurs sont ajoutés au tableau en fonction de ce qu'y est tapé dans l'input 'input_personne'.
+*/
 function fillTabPersons(idTab, personnes, prop){
 	var tab = document.getElementById(idTab);
 	tab.innerHTML="";
 	if(personnes==null) return;
 	personnes.forEach(function(personne){
-		//document.getElementById('iframe_persons').src='/index.php/evenements/test_iframe/'+personne['numUser'];
 		var newRow = document.createElement("tr");
 		var numUser = personne['numUser'];
 		var src = "/index.php/evenements/photos_get/"+numUser+"?thumbnail";
@@ -121,6 +149,9 @@ function fillTabPersons(idTab, personnes, prop){
 	});
 }
 
+/**
+*Fonction qui ajoute les utlisateurs au tableau 'tab_persons_ajoutes' de la page creer_un_groupe.
+*/
 function fillTabPersonsAjoutes(row){
 	var rowTabAjout = row.cloneNode(true);
 	var tab = document.getElementById("tab_persons_ajoutes");
@@ -134,33 +165,8 @@ function supprimerPersonne(row){
 	row.remove();
 }
 
-function getNomsDesGroupes(){
-	var requete = xhrGET('http://localhost:8080/index.php/evenements/getNomsGroupes', 'json');
-	requete.addEventListener('readystatechange',function(){
-		if (requete.readyState === XMLHttpRequest.DONE && requete.status==200){ // La constante DONE appartient à l'objet XMLHttpRequest, elle n'est pas globale
-			nomDesGroupes = requete.response;
-		}
-	});
-}
-
-function verif_nom_groupe(form){
-	var nomValide = true;
-	var nom_groupe = form.elements['nom_groupe'].value;
-	console.log(nomDesGroupes);
-	nomDesGroupes.forEach(function(nomGroupe){
-		if(nomGroupe['nom']==nom_groupe){
-			nomValide = false;
-		}
-	});
-	return nomValide;
-}
-
 function ajouterGroupeBd(form){
 
-	if(!verif_nom_groupe(form)){
-		alert("Ce nom est déjà utilisé");
-		return false;
-	} 
 	var input = document.createElement("input");
 	input.type = "hidden";
 	input.name = "utilisateurs";
@@ -185,6 +191,9 @@ function tabPersonneAjoutes(){
     return tab ; 
 }
 
+/**
+*Verify si les personnes sont déjà ajoutés à la table 'tab_persons_ajoutes'.
+*/
 function verify_personne_deja_ajoute(personne){
 	var tab = tabPersonneAjoutes();
 	var isAdd = false;

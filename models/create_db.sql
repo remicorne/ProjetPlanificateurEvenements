@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS Groupes ;
 
 CREATE TABLE Groupes(
 	numGroupe INTEGER PRIMARY KEY AUTOINCREMENT,
-	nom TEXT NOT NULL 
+	nom TEXT NOT NULL
 );
 
 DROP TABLE IF EXISTS Appartenir ;
@@ -77,5 +77,6 @@ CREATE TABLE Sondages(
 	numEvent INTEGER REFERENCES Evenements(numEvent) ON DELETE CASCADE,
 	numUser INTEGER REFERENCES Utilisateurs(numUser) ON DELETE CASCADE,
 	numDate INTEGER REFERENCES Dates(numDate) ON DELETE CASCADE,
-	reponse BOOLEAN  
+	reponse BOOLEAN,
+	PRIMARY KEY(numEvent,numUser,numDate)
 );
