@@ -26,7 +26,7 @@ class Emails extends Controller // j'ai crée un nouveau controller mais je suis
     {
         try {
             $mailer->addAddress($email, $name);
-            $mailer->msgHTML(file_get_contents('password_reset.html'), __DIR__);
+            $mailer->msgHTML(file_get_contents('assets/PHPMailer/emailHTML/password_reset.html'), __DIR__);
             $mailer->Subject = "Réinitialisation mot de passe";
             $mailer->AltBody = "Je sais pas a quoi sert ce champ mais dans le tuto il y était";
         } catch (Exception $e) {
