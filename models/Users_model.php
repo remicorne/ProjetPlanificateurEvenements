@@ -41,7 +41,7 @@ class Users_model extends Model {
       $statement = $this->db->prepare("INSERT INTO Utilisateurs(nom,prenom,email,motDePasse) VALUES(?, ?, ?, ?)");
       $statement->execute([$nom,$prenom, $email, $hash]);
       $id = $this->db->lastInsertId();
-      var_dump($id);
+      //var_dump($id);
       return new User($id, $nom, $prenom, $email, $hash);
     } catch (PDOException $e) {
       throw new Exception('Impossible d\'inscrire l\'utilisateur.');

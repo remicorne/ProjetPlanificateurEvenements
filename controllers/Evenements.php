@@ -88,14 +88,9 @@ class Evenements extends Controller {
 
     var_dump($_POST['horaireF'][0]);
     var_dump($_POST['horaireD'][0]);
-
     var_dump($_POST['titre']);
-
-     
     if ($this->redirect_unlogged_user()) return;
     try {
-      
-
       if(isset($_POST['date']) &&  isset($_POST['horaireD']) && isset($_POST['horaireF']))  {
 
         $date=$_POST['date'];
@@ -105,26 +100,14 @@ class Evenements extends Controller {
         $titre = filter_input(INPUT_POST, 'titre');
         $lieu = filter_input(INPUT_POST, 'lieu');
         $message= filter_input(INPUT_POST, 'message');
-
         var_dump($titre);
-       
-
-     
-
        $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
        header('Location: /index.php'); 
      }
     } catch (Exception $e) {
-      $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
-
-      
+      $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);     
     }
-  }
-
-
-
-    
-  
+  } 
 } 
   
      

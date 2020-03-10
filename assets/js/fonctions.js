@@ -100,6 +100,7 @@ function findPerson(input, prop){
 		});
 	}	
 }
+
 /**
 *Fontion qui ajoute les propositions de personnes sous l'input 'input_personne' de la page creer_un_groupe.
 */
@@ -161,10 +162,19 @@ function fillTabPersonsAjoutes(row){
 	tab.appendChild(rowTabAjout);
 }
 
+/**
+*Fonction qui supprime une personnes du tableau 'tab_persons_ajoutes'.
+*/
 function supprimerPersonne(row){
 	row.remove();
 }
 
+/**
+*Fonction qui ajoute un input au formulaire de la page creer_un_groupe.
+*cette fonction utilise la fonction 'tabPersonneAjoutes()' pour recupèrer un tableau avec les numUser 
+*des personnes ajoutés au groupe (celles qui se trouvent dans le tableau 'tab_persons_ajoutes').
+*un objet json contenant ce tableau est créé est placé dans l'input.
+*/
 function ajouterGroupeBd(form){
 
 	var input = document.createElement("input");

@@ -21,7 +21,6 @@ class Users extends Controller {
       header("Location: /index.php");
     } catch (Exception $e) {
       $data = ['error' => $e->getMessage(), 'title'=>'S\'inscrire'];
-      echo 'users_create out try';
       $this->loader->load('users_new', $data );
     }
   }
