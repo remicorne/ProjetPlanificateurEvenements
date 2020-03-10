@@ -37,9 +37,9 @@ class Users extends Controller {
       
       $tmp_file = $_FILES['photo']['tmp_name'];
       $this->users->set_photo($tmp_file, $this->sessions->logged_user()->numUser);
-      header("Location: /index.php/evenements/monCompte");
+      header("Location: /index.php/evenements/mon_compte");
     } catch (Exception $e) {
-      $this->loader->load('monCompte',['title'=>"mon compte", 
+      $this->loader->load('mon_compte',['title'=>"mon compte", 
                           'error_message' => $e->getMessage()]);
     }
   }
@@ -51,7 +51,7 @@ class Users extends Controller {
       $this->users->set_nom_prenom($nom, $prenom, $this->sessions->logged_user()->numUser);
       header('Location: /index.php/sessions/sessions_modify');
     } catch (Exception $e){
-      $this->loader->load('monCompte',['title'=>"mon compte", 
+      $this->loader->load('mon_compte',['title'=>"mon compte", 
                           'error_message' => $e->getMessage()]);
     }
   }
@@ -64,7 +64,7 @@ class Users extends Controller {
       $this->users->set_email($email1, $this->sessions->logged_user()->numUser);
       header('Location: /index.php/sessions/sessions_modify');
     } catch (Exception $e){
-      $this->loader->load('monCompte',['title'=>"mon compte", 
+      $this->loader->load('mon_compte',['title'=>"mon compte", 
                           'error_message' => $e->getMessage()]);
     }
   }
@@ -77,7 +77,7 @@ class Users extends Controller {
       $this->users->motDePasse_set($motDePasse1, $this->sessions->logged_user()->numUser);
       header('Location: /index.php/sessions/sessions_modify');
     } catch (Exception $e){
-      $this->loader->load('monCompte',['title'=>"mon compte", 
+      $this->loader->load('mon_compte',['title'=>"mon compte", 
                           'error_message' => $e->getMessage()]);
     }
   }
@@ -85,9 +85,9 @@ class Users extends Controller {
   public function delete_photo() {
     try {
      $this->users->delete_photo($this->sessions->logged_user()->numUser);
-     header('Location: /index.php/evenements/monCompte');
+     header('Location: /index.php/evenements/mon_compte');
     } catch (PDOException $e) {
-      $this->loader->load('monCompte',['title'=>"mon compte", 
+      $this->loader->load('mon_compte',['title'=>"mon compte", 
                           'error_message' => $e->getMessage()]);
     } 
   }

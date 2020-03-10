@@ -21,5 +21,5 @@ $mailer->Port = 587;
 $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mailer->SMTPAuth = true;
 $mailer->Username = 'projetevenementsCCI@gmail.com';
-$mailer->Password = 'projetevenements.2020';
+$mailer->Password = 'ProjetEvenements.2020';
 $mailer->setFrom('projetevenementsCCI@gmail.com', 'First Last');

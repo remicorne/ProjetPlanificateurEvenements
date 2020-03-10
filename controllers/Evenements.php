@@ -10,10 +10,10 @@ class Evenements extends Controller {
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
   }
 
-  public function monCompte() {
+  public function mon_compte() {
     if ($this->redirect_unlogged_user()) return;
     $photo = $this->users->get_photo($this->sessions->logged_user()->numUser);
-    $this->loader->load('monCompte', ['title'=>'mon compte', 'photo'=>$photo]);
+    $this->loader->load('mon_compte', ['title'=>'mon compte', 'photo'=>$photo]);
   }
 
   public function creer_un_groupe(){
@@ -54,9 +54,6 @@ class Evenements extends Controller {
       $utilisateurs = json_decode($utilisateurs); 
       $prop = filter_input(INPUT_POST, 'proprietaire');
       $nomGroupe = filter_input(INPUT_POST, 'nom_groupe'); 
-      //var_dump($nomGroupe);echo "<br>";
-      //var_dump($utilisateurs);echo "<br>";
-      //var_dump($prop);echo "<br>";
       $numGroupe = $this->evenements->ajout_groupe_bd($nomGroupe);
       $this->evenements->ajout_personnes_groupe($numGroupe, $utilisateurs, 0);
       $this->evenements->ajout_personnes_groupe($numGroupe, [$prop], 1);
