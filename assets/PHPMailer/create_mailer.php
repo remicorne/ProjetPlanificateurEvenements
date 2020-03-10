@@ -10,7 +10,8 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
-require 'assets/composer/vendor/autoload.php';
+require 'assets/PHPMailer/vendor/autoload.php';
+require 'assets/PHPMailer/identifiants_messagerie.json';
 
 $mailer = new PHPMailer;
 $mailer->isSMTP();
@@ -21,5 +22,5 @@ $mailer->Port = 587;
 $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mailer->SMTPAuth = true;
 $mailer->Username = 'projetevenementsCCI@gmail.com';
-$mailer->Password = 'projetevenements.2020';
-$mailer->setFrom('projetevenementsCCI@gmail.com', 'First Last');
+$mailer->Password = 'ProjetEvenements.2020';
+$mailer->setFrom('projetevenementsCCI@gmail.com', 'Planificateur de réunions');

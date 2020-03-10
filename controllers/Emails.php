@@ -7,7 +7,7 @@ class Emails extends Controller // j'ai crée un nouveau controller mais je suis
     public function send_password_reset()
     { 
         try {
-            require "assets/composer/create_mailer.php"; //construit un objet de type mailer dans $mailer selon le process indiqué dans la doc
+            require "assets/PHPMailer/create_mailer.php"; //construit un objet de type mailer dans $mailer selon le process indiqué dans la doc
             $email = filter_input(INPUT_POST, 'email');
             $user = $this->users->user_from_email($email); //trouve le user 
             if ($user == null) throw new Exception ('Pas de compte associé à cet e-mail');
@@ -36,10 +36,10 @@ class Emails extends Controller // j'ai crée un nouveau controller mais je suis
 
     public function send_email($mailer)
     {
-        try {
+        // try {
             if (!$mailer->send()) throw new exception ('Echec de l\'envoi'); 
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
-        }
+        // } catch (Exception $e) {
+        //     throw new Exception($e->getMessage());
+        // }
     }
 }
