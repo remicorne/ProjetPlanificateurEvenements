@@ -8,6 +8,9 @@ $config = [
     'models'=>['Evenements','Users','Sessions']
 ];
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+
 foreach ($config['core_classes'] as $classname) require "core/$classname.php";
 
 function generate_error_404($exception = null) {
@@ -53,17 +56,17 @@ function get_method_name($path_elements) {
 function create_controller($controller_name) {
   $controller_classname = ucfirst(strtolower($controller_name));
   $controller_filename = 'controllers/'.$controller_classname.'.php';
-  if (!file_exists($controller_filename)) {  throw new Exception('problem controller_filename'); }
+  if (!file_exists($controller_filename)) {  throw new Exception('controller file not found'); }
   include $controller_filename;
-  if (!class_exists($controller_classname)) {  throw new Exception('problem controller_classname'); }
+  if (!class_exists($controller_classname)) {  throw new Exception('controller class does not exist'); }
   return new $controller_classname();
 }
 
 function call_controller_method($controller, $method_name, $parameters) {
  $reflectionObject = new ReflectionObject($controller);
-  if (! $reflectionObject->hasMethod($method_name)) {  throw new Exception('problem_reflectionObject'); }
+  if (! $reflectionObject->hasMethod($method_name)) {  throw new Exception('method does not exist'); }
   $reflectionMethod = $reflectionObject->getMethod($method_name);
-  if ($reflectionMethod->getNumberOfParameters()!=count($parameters)){  throw new Exception("index_call_controller"); }
+  if ($reflectionMethod->getNumberOfParameters()!=count($parameters)){  throw new Exception("invalid number of arguments"); }
   $reflectionMethod->invokeArgs($controller, $parameters);
 }
 

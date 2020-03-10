@@ -5,10 +5,10 @@
   <?php } ?>
   <form role="form" action="/index.php/sessions/sessions_create" method="post">
     <fieldset>
-      <input class="form-control" placeholder="Email" name="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required/><br>
+      <input class="form-control" placeholder="Email" name="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required value="<?=set_value('email');?>"/><br>
       <input class="form-control" placeholder="Mot de passe" name="password" type="password" value=""><br>
       <input type="submit" class="btn btn-lg btn-primary btn-block" value="Se connecter">
     </fieldset>
   </form>
-  <a href="/index.php/users/users_new">S'inscrire</a>
+  <a href="/index.php/users/users_new">S'inscrire</a>  <a href="/index.php/users/password_forgotten/<?=set_value('email');?>">Mot de passe oublié?</a>
 </div>
