@@ -2,6 +2,7 @@
 class Sessions extends Controller {
 
   public function sessions_new() {
+
     $this->sessions->logout();
     $this->loader->load('sessions_new', ['title'=>'Connexion']);
   }

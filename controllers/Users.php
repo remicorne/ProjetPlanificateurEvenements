@@ -5,6 +5,11 @@ class Users extends Controller {
     $this->loader->load();
   }
   
+  public function password_forgotten($email = ""){
+    $this->loader->load('password_forgotten', ['title'=>'Entrez votre adresse email de récupération',
+                                               'email'=>$email]);
+  }
+
   public function users_new() {
     $this->sessions->logout();
     $this->loader->load('users_new', ['title'=>'S\'inscrire']);

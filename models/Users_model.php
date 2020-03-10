@@ -41,10 +41,14 @@ class Users_model extends Model {
       $statement = $this->db->prepare("INSERT INTO Utilisateurs(nom,prenom,email,motDePasse) VALUES(?, ?, ?, ?)");
       $statement->execute([$nom,$prenom, $email, $hash]);
       $id = $this->db->lastInsertId();
+<<<<<<< HEAD
       //var_dump($id);
+=======
+>>>>>>> 33e7bbdc308199876030f32582f6e53c8c1a1be4
       return new User($id, $nom, $prenom, $email, $hash);
     } catch (PDOException $e) {
-      throw new Exception('Impossible d\'inscrire l\'utilisateur.');
+      if ($e->getCode() == "23000") throw new Exception('Compte déjà existant');
+      else throw new Exception('Impossible d\'inscrire l\'utilisateur.');
     }
   }
   
