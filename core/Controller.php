@@ -1,6 +1,7 @@
 <?php
 class Controller{
 	protected $loader;
+	protected $mailer;
 
 	public function __construct(){
 		$this->loader = new Loader();
