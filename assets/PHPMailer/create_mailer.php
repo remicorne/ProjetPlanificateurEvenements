@@ -10,16 +10,18 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
-require 'assets/composer/vendor/autoload.php';
+require 'assets/PHPMailer/autoload.php';
 
 $mailer = new PHPMailer;
 $mailer->isSMTP();
-$mailer->SMTPDebug = SMTP::DEBUG_SERVER; //utiliser celle ci pour avoir le debug
-// $mailer->SMTPDebug = 0; //utiliser celle la pour que ca soit silencieux
+// $mailer->SMTPDebug = SMTP::DEBUG_SERVER; //utiliser celle ci pour avoir le debug
+$mailer->SMTPDebug = 0; //utiliser celle la pour que ca soit silencieux
 $mailer->Host = 'smtp.gmail.com';
 $mailer->Port = 587;
 $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mailer->SMTPAuth = true;
-$mailer->Username = 'projetevenementsCCI@gmail.com';
-$mailer->Password = 'projetevenements.2020';
+$json = file_get_contents("assets/PHPMailer/identifiants_messagerie.json");
+$identifiants = json_decode($json, true);
+$mailer->Username = $identifiants["identifiant"];
+$mailer->Password = $identifiants["password"];
 $mailer->setFrom('projetevenementsCCI@gmail.com', 'First Last');

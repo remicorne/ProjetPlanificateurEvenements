@@ -12,3 +12,6 @@
 
 # shell files #
 *.sh
+
+# identifiants messagerie du projet #
+identifiants_messagerie.json
