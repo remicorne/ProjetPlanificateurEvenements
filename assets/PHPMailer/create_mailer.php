@@ -24,4 +24,4 @@ $json = file_get_contents("assets/PHPMailer/identifiants_messagerie.json");
 $identifiants = json_decode($json, true);
 $mailer->Username = $identifiants["identifiant"];
 $mailer->Password = $identifiants["password"];
-$mailer->setFrom('projetevenementsCCI@gmail.com', 'First Last');
+$mailer->setFrom('projetevenementsCCI@gmail.com', 'Planificateur d\'evenements');
