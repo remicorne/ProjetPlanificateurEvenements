@@ -1,3 +1,5 @@
+<script type="text/javascript" src="/assets/js/script_gestion_des_groupes.js"></script>
+
 <div class="container">
 
 	<?php if (isset($error)) { ?>
@@ -7,7 +9,7 @@
 	<div>
 		<fieldset>
 			<p>Ajouter des personnes : </p>
-			<input id="input_personne" name="personne" type="text" onkeydown="findPerson(this, <?= $logged_user->numUser ?>)" list="list_personnes"/>  
+			<input id="input_personne" name="personne" type="text" onkeydown="chercherDesPersonnes(this, <?= $logged_user->numUser ?>)" list="list_personnes"/>  
 		</fieldset>
 		<!-- remplis avec fonction js -->
 		<datalist id="list_personnes"></datalist>
@@ -17,9 +19,10 @@
 		<table id="tab_persons" name="tab_persons"></table> 
 	</div>
 
+	<!-- un input avec les membres du groupe est rajouté avec fonction js -->
 	<div id="div_creer_groupe">
 		<fieldset>
-			<form method="post" action="/index.php/evenements/ajout_groupe_bd" onsubmit="return ajouterGroupeBd(this)">
+			<form method="post" action="/index.php/evenements/ajout_groupe_bd" onsubmit="return ajouterGroupeALaBd(this)">
 				<p>Entrer le nom du groupe : </p>
 				<input id="nom_groupe" name="nom_groupe" type="text" required>  
 				<input type="hidden" name="proprietaire" value="<?=$logged_user->numUser ?>">

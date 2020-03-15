@@ -28,7 +28,7 @@ class Sessions extends Controller {
       $user = $this->users->user_from_numUser($this->sessions->logged_user()->numUser);
       if ($user===null) throw new Exception("Ce compte n'existe pas.");
       $this->sessions->login($user);
-      header("Location: /index.php/evenements/monCompte");
+      header("Location: /index.php/evenements/mon_compte");
     } catch (Exception $e) {
       $data = ['error' => $e->getMessage(), 'title'=>'Se connecter'];
       $this->loader->load('sessions_new', $data );

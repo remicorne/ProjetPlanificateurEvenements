@@ -8,6 +8,18 @@ body{
 	min-width: 90%;
 }
 
+table {
+ border-width:1px; 
+ border-style:solid; 
+ border-color:black;
+ }
+ 
+td { 
+ border-width:1px;
+ border-style:solid; 
+ border-color:black;
+ }
+
 .container{
 	position:absolute;
 	left: 20vh;

@@ -47,7 +47,6 @@ class Evenements_model extends Model{
   }
 
     public function create_sondage($titre,$lieu,$message,$dates,$horaireD,$horaireF){
-
         try {
 
             $count=0;
@@ -64,18 +63,10 @@ class Evenements_model extends Model{
                                 $count++;
 
             }
-           
         
             return $this->db->lastInsertId();
           } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
-
-
-
-
-
-
-
     }
-}
+  }
 }
