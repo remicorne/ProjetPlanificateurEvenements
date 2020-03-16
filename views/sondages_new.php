@@ -1,47 +1,47 @@
-
 <div id="sondage_new">
 	<form role="form" action="/index.php/evenements/sondages_add" method="post" enctype="multipart/form-data">
 		<p>Titre :</p>
 		<input class="form-control"  name="titre" type="text"  required/>
 		<p>Lieu :</p>
-		<input class="form-control"  name="lieu" type="text">
+		<input class="form-control"  name="lieu" type="text" required>
 		<p>Ajouter une description : </p>
-		<textarea name="message" rows="8" cols="45">  Description (facultative)</textarea><br>
+		<textarea name="message" rows="8" cols="45" placeholder=" Description (facultatif)"></textarea><br>
 		<div>
 		  <p>Dates et horaires de la réunion :</p><br>
-		  <button type="button" name="add" id="add" class="btn btn-success btn-xs">Add</button><br>
+		  <button type="button" name="add" id="add" class="btn btn-success btn-xs" >Add</button><br>
 		</div>
 	    <div>
 			<table class="table table-striped table-bordered" id="user_data">
 			<tr>
 			<th>Date</th>
-			<th>heure début</th>
-			<th>heure fin</th>
+			<th>Heure début</th>
+			<th>Heure fin</th>
 			<th>Details</th>
 			<th>Remove</th>
 			</tr>
 			</table>
 	 	</div>
 
-		<input type="submit" class="btn btn-lg btn-primary btn-block" id="Terminer" value="Terminer">
+     
+		<input type="submit" class="btn btn-lg btn-primary btn-block" id="Terminer" value="Suivant">
 	
     </form>
 
 	<br />
-<div id="user_dialog" title="Add Data">
+<div id="user_dialog" title="Ajouter une date">
    <div class="form-group">
-    <label>Enter date</label>
-    <input type="date" id="date" name="date" value= "<?=date('Y-m-d')?>" min= "<?=date('Y-m-d')?>" max="2050-12-31" class="form-control" required >
+    <label>Date </label>&nbsp;&nbsp;
+    <input type="date" id="date" name="date" value=<?=date('Y-m-d')?> min=<?=date('Y-m-d')?> max="2050-12-31"  required >
     <span id="error_date" class="text-danger"></span>
    </div>
    <div class="form-group">
-    <label>Enter heure debut</label>
-	<input type="time" id="horaireD" name="horaireD" min="09:00" max="18:00" required> 
+    <label>Heure début</label>&nbsp;&nbsp;
+	<input type="time" id="horaireD" name="horaireD" required> 
     <span id="error_horaireD" class="text-danger"></span>
    </div>
    <div class="form-group">
-    <label>Enter heure fin</label>
-    <input type="time" id="horaireF" name="horaireF" min="09:00" max="18:00" required> 
+    <label>Heure fin</label>&nbsp;&nbsp;
+    <input type="time" id="horaireF" name="horaireF"  required> 
     <span id="error_horaireF" class="text-danger"></span>
    </div>
    <div>
@@ -61,11 +61,11 @@ $(document).ready(function(){
 
  $('#user_dialog').dialog({
   autoOpen:false,
-  width:400
+  width:350
  });
 
  $('#add').click(function(){
-  $('#user_dialog').dialog('option', 'title', 'Add Data');
+  $('#user_dialog').dialog('option', 'title', 'Ajouter une date');
   $('#date').val('');
   $('#horaireD').val('');
   $('#horaireF').val('');
@@ -88,7 +88,7 @@ $(document).ready(function(){
   var horaireF = '';
   if($('#date').val() == '')
   {
-   error_date = 'date is required';
+   error_date = 'Date is required';
    $('#error_date').text(error_date);
    $('#date').css('border-color', '#cc0000');
    date = '';
@@ -102,7 +102,7 @@ $(document).ready(function(){
   } 
   if($('#horaireD').val() == '')
   {
-   error_horaireD = 'Horaire début is required';
+   error_horaireD = 'Heure début is required';
    $('#error_horaireD').text(error_horaireD);
    $('#horaireD').css('border-color', '#cc0000');
    horaireD = '';
@@ -117,7 +117,7 @@ $(document).ready(function(){
 
   if($('#horaireF').val() == '')
   {
-   error_horaireF = 'Horaire début is required';
+   error_horaireF = 'Heure fin is required';
    $('#error_horaireF').text(error_horaireF);
    $('#horaireF').css('border-color', '#cc0000');
    horaireF = '';
