@@ -84,12 +84,6 @@ class Evenements extends Controller {
 
   public function sondages_add(){
 
-    var_dump($_POST['horaireF'][0]);
-    var_dump($_POST['horaireD'][0]);
-
-    var_dump($_POST['titre']);
-
-     
     if ($this->redirect_unlogged_user()) return;
     try {
         if(isset($_POST['date']) &&  isset($_POST['horaireD']) && isset($_POST['horaireF']))  {
@@ -102,7 +96,8 @@ class Evenements extends Controller {
           $message= filter_input(INPUT_POST, 'message');
           $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
           header("Location: /index.php/evenements/ajouter_participants"); 
-     }
+     } else $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 
+
       } catch (Exception $e) {
         $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 
     }

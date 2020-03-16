@@ -8,7 +8,7 @@
 		<textarea name="message" rows="8" cols="45" placeholder=" Description (facultatif)"></textarea><br>
 		<div>
 		  <p>Dates et horaires de la réunion :</p><br>
-		  <button type="button" name="add" id="add" class="btn btn-success btn-xs">Add</button><br>
+		  <button type="button" name="add" id="add" class="btn btn-success btn-xs" >Add</button><br>
 		</div>
 	    <div>
 			<table class="table table-striped table-bordered" id="user_data">
