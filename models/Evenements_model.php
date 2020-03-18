@@ -46,36 +46,51 @@ class Evenements_model extends Model{
     }
   }
 
-    public function create_sondage($titre,$lieu,$message,$dates,$horaireD,$horaireF){
+  public function create_sondage($titre,$lieu,$message,$dates,$horaireD,$horaireF){
 
-        try {
+    try {
 
-            $count=0;
-            foreach($dates as $date){
+        $count=0;
+        foreach($dates as $date){
 
-             $statement = $this->db->prepare("insert into Dates(date_reunion, heureD, heureF) VALUES (:date_reunion, :heureD, :heureF)");
+         $statement = $this->db->prepare("insert into Dates(date_reunion, heureD, heureF) VALUES (:date_reunion, :heureD, :heureF)");
+         $statement->execute(['date_reunion'=> $date, 
+                            'heureD'=>$horaireD[$count],
+                            'heureF'=>$horaireF[$count]]);
+                            $count++;
+          $statement = $this->db->prepare("insert into Evenements(titre, lieu, descri) VALUES (:titre, :lieu, :descri)");
+          $statement->execute(['titre'=> $titre, 
+                              'lieu'=>$lieu,
+                              'descri'=>$message]);
+        }
+        return $this->db->lastInsertId();
+      } catch (PDOException $e) {
+        throw new Exception(self::str_error_database);
 
-             var_dump($date);
-
-             $statement->execute(['date_reunion'=> $date, 
-                                'heureD'=>$horaireD[$count],
-                                'heureF'=>$horaireF[$count]]);
-                                
-                                $count++;
-
-            }
-           
-        
-            return $this->db->lastInsertId();
-          } catch (PDOException $e) {
-            throw new Exception(self::str_error_database);
-
-
+}
+}
 
 
+public function users_information() {
+try {
+$statement = $this->db->query("select numUser,nom,prenom,email from utilisateurs");
+$result = $statement->fetchAll();
+return $result;
+} catch (PDOException $e) {
+throw new Exception(self::str_error_database);
+}
+}
 
 
+public function ajouter_participants($participants){
+try {
 
-    }
+foreach($participants as $participant){
+  $statement = $this->db->prepare("insert into Participants(numUser) VALUES (:numUser)");
+  $statement->execute(['numUser'=> $participant]); 
+} 
+} catch (PDOException $e) {
+throw new Exception(self::str_error_database);
+}
 }
 }

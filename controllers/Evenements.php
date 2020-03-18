@@ -10,10 +10,10 @@ class Evenements extends Controller {
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
   }
 
-  public function monCompte() {
+  public function mon_compte() {
     if ($this->redirect_unlogged_user()) return;
     $photo = $this->users->get_photo($this->sessions->logged_user()->numUser);
-    $this->loader->load('monCompte', ['title'=>'mon compte', 'photo'=>$photo]);
+    $this->loader->load('mon_compte', ['title'=>'mon compte', 'photo'=>$photo]);
   }
 
   public function creer_un_groupe(){
@@ -54,9 +54,6 @@ class Evenements extends Controller {
       $utilisateurs = json_decode($utilisateurs); 
       $prop = filter_input(INPUT_POST, 'proprietaire');
       $nomGroupe = filter_input(INPUT_POST, 'nom_groupe'); 
-      //var_dump($nomGroupe);echo "<br>";
-      //var_dump($utilisateurs);echo "<br>";
-      //var_dump($prop);echo "<br>";
       $numGroupe = $this->evenements->ajout_groupe_bd($nomGroupe);
       $this->evenements->ajout_personnes_groupe($numGroupe, $utilisateurs, 0);
       $this->evenements->ajout_personnes_groupe($numGroupe, [$prop], 1);
@@ -80,52 +77,49 @@ class Evenements extends Controller {
   public function sondages_new(){
 
     if ($this->redirect_unlogged_user()) return;
+
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
   }
 
 
   public function sondages_add(){
 
-    var_dump($_POST['horaireF'][0]);
-    var_dump($_POST['horaireD'][0]);
-
-    var_dump($_POST['titre']);
-
-     
     if ($this->redirect_unlogged_user()) return;
     try {
-      
+        if(isset($_POST['date']) &&  isset($_POST['horaireD']) && isset($_POST['horaireF']))  {
 
-      if(isset($_POST['date']) &&  isset($_POST['horaireD']) && isset($_POST['horaireF']))  {
+          $date=$_POST['date'];
+          $horaireD=$_POST['horaireD'];
+          $horaireF=$_POST['horaireF'];
+          $titre = filter_input(INPUT_POST, 'titre');
+          $lieu = filter_input(INPUT_POST, 'lieu');
+          $message= filter_input(INPUT_POST, 'message');
+          $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
+          header("Location: /index.php/evenements/ajouter_participants"); 
+     } else $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 
 
-        $date=$_POST['date'];
-        $horaireD=$_POST['horaireD'];
-        $horaireF=$_POST['horaireF'];
-
-        $titre = filter_input(INPUT_POST, 'titre');
-        $lieu = filter_input(INPUT_POST, 'lieu');
-        $message= filter_input(INPUT_POST, 'message');
-
-        var_dump($titre);
-       
-
-     
-
-       $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
-       header('Location: /index.php'); 
-     }
-    } catch (Exception $e) {
-      $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
-
-      
+      } catch (Exception $e) {
+        $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 
     }
   }
 
 
 
-    
-  
-} 
+  public function ajouter_participants(){
+    if ($this->redirect_unlogged_user()) return;
+      $users_informations= $this->evenements->users_information();
+      $this->loader->load('ajouter_participants', ['users_informations'=>$users_informations ,'title'=>'L Ajout des participants']);
+  }
+
+
+  public function participants_add(){
+
+    $participants=$_POST["participants"];
+    if(isset($participants))
+      $this->evenements->ajouter_participants($participants);
+    header('Location: /index.php');
+  }
+  }
   
      
 

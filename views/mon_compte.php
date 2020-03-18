@@ -1,3 +1,5 @@
+<script type="text/javascript" src="/assets/js/scrpit_de_la_page_mon_compte.js"></script>
+
 <div class="container">
   <div>
 
@@ -23,7 +25,7 @@
       </form>
     </fieldset>
     
-    <form method="post" action="/index.php/users/set_nom_prenom" onsubmit="return valider_modif_nom_prenom(this)">
+    <form method="post" action="/index.php/users/set_nom_prenom" onsubmit="return validerModifNomPrenom(this)">
       <fieldset>
         <p>Nom : </p>
         <input value="<?=$logged_user->nom?>" class="nom" name="nom" type="text" required>  
@@ -33,7 +35,7 @@
       </fieldset>
     </form>
 
-    <form method="post" action="/index.php/users/set_email" onsubmit="return verifier_les_emails(this)">
+    <form method="post" action="/index.php/users/set_email" onsubmit="return verifierLesEmails(this)">
       <fieldset>
         <p>modifier l'email : </p>
         <input value="<?=$logged_user->email?>" class="email" name="email1" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
@@ -43,7 +45,7 @@
       </fieldset>
     </form>
 
-    <form method="post" action="/index.php/users/motDepasse_set" onsubmit="return verifier_les_mots_de_passe(this)">
+    <form method="post" action="/index.php/users/motDepasse_set" onsubmit="return verifierLesMotsDePasse(this)">
       <fieldset>
         <p>modifier mot de passe : </p>
         <input class="mot_de_passe" name="motDePasse1" type="password" required>
