@@ -17,7 +17,7 @@ function generate_error_404($exception = null) {
   header("HTTP/1.0 404 Not Found index"); 
   $errorLoader = new Loader();
   if(isset($exception))
-    $errorLoader->load('error', ['title'=>'page erreur', 'exception'=>$exception->getMessage()]);
+    $errorLoader->load('error', ['title'=>'page erreur', 'exception'=>$exception]);
   else  
     $errorLoader->load('error', ['title'=>'page erreur', 'exception'=>'pas de messages index']); 
 }

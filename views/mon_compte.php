@@ -16,7 +16,7 @@
       </div>
       <?php } ?>
     
-      <form enctype="multipart/form-data" method="post" action="/index.php/users/photos_set?>">
+      <form enctype="multipart/form-data" method="post" action="/index.php/users/photos_set">
         <p>modifier la photo de profil</p>
         <div class="form-group">
           <input type="file" id="photo" name="photo" required>
