@@ -18,8 +18,8 @@ class Users extends Controller {
           $user = $this->users->user_from_email($email); //trouve le user 
           if ($user == null) throw new Exception ('Pas de compte associé à cet e-mail');
           $name = "$user->prenom .$user->nom"; //construit le nom du user
-          $this->users->build_password_reset_email($mailer, $email, $name); //construit l'email à envoyer
-          $this->users->send_email($mailer);
+          $this->mailer->build_password_reset_email($mailer, $email, $name); //construit l'email à envoyer
+          $this->mailer->send_email($mailer);
           header('Location: /index.php/sessions/sessions_new');
       } catch (Exception $e) {
           var_dump($e->getMessage());

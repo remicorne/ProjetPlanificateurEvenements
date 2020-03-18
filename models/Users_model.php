@@ -263,25 +263,5 @@ class Users_model extends Model {
     return $data;
   }
 
-  public function build_password_reset_email($mailer, $email, $name) //utilise des fonction de l'outil PHPmailer
-  {
-      try {
-          $mailer->addAddress($email, $name);
-          $mailer->msgHTML(file_get_contents('assets/PHPMailer/emailHTML/password_reset.html'), __DIR__);
-          $mailer->Subject = "Réinitialisation mot de passe";
-          $mailer->AltBody = "Je sais pas a quoi sert ce champ mais dans le tuto il y était";
-      } catch (Exception $e) {
-          throw new Exception('Impossible de construire l\'email');
-      }
-  }
-
-  public function send_email($mailer)
-  {
-      try {
-          if (!$mailer->send()) throw new exception ('Echec de l\'envoi'); 
-      } catch (Exception $e) {
-          throw new Exception($e->getMessage());
-      }
-  }
 
 }
