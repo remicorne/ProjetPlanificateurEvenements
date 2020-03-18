@@ -10,15 +10,14 @@
     <fieldset>
       <?php if($photo!==null){ ?>
       <div>
-        <a class="close" href="/index.php/users/delete_photo">×</a><br>
-        <img src="/index.php/evenements/photos_get/<?=$logged_user->numUser?>"
-          alt="photo">
+        <a href="/index.php/users/delete_photo">×</a><br>
+        <img src="/index.php/evenements/photos_get/<?=$logged_user->numUser?>" alt="photo">
       </div>
       <?php } ?>
     
-      <form enctype="multipart/form-data" method="post" action="/index.php/users/photos_set?>">
+      <form enctype="multipart/form-data" method="post" action="/index.php/users/photos_set">
         <p>modifier la photo de profil</p>
-        <div class="form-group">
+        <div >
           <input type="file" id="photo" name="photo" required>
         </div>
         <button type="submit">Modifier</button>
@@ -28,9 +27,9 @@
     <form method="post" action="/index.php/users/set_nom_prenom" onsubmit="return validerModifNomPrenom(this)">
       <fieldset>
         <p>Nom : </p>
-        <input value="<?=$logged_user->nom?>" class="nom" name="nom" type="text" required>  
+        <input value="<?=$logged_user->nom?>" name="nom" type="text" required>  
         <p>Prenom : </p>
-        <input value="<?=$logged_user->prenom?>" class="prenom" name="prenom" type="text" required>
+        <input value="<?=$logged_user->prenom?>" name="prenom" type="text" required>
         <button type="submit">Modifier</button>
       </fieldset>
     </form>
@@ -38,9 +37,9 @@
     <form method="post" action="/index.php/users/set_email" onsubmit="return verifierLesEmails(this)">
       <fieldset>
         <p>modifier l'email : </p>
-        <input value="<?=$logged_user->email?>" class="email" name="email1" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
+        <input value="<?=$logged_user->email?>" name="email1" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
         <p>confirmer l'email : </p>
-        <input value="<?=$logged_user->email?>" class="email" name="email2" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
+        <input value="<?=$logged_user->email?>" name="email2" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
         <button type="submit">modifier</button>
       </fieldset>
     </form>
@@ -48,9 +47,9 @@
     <form method="post" action="/index.php/users/motDepasse_set" onsubmit="return verifierLesMotsDePasse(this)">
       <fieldset>
         <p>modifier mot de passe : </p>
-        <input class="mot_de_passe" name="motDePasse1" type="password" required>
+        <input name="motDePasse1" type="password" required>
         <p>confirmer le mot de passe : </p>
-        <input class="mot_de_passe" name="motDePasse2" type="password" required>
+        <input name="motDePasse2" type="password" required>
         <button type="submit">Modifier</button>
       </fieldset>
     </form>
