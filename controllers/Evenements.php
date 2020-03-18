@@ -64,7 +64,7 @@ class Evenements extends Controller {
     if ($this->redirect_unlogged_user()) return;
     $nom = filter_var($nom);
     try{
-      $res = $this->users->users_from_nom_all_row($nom);
+      $res = $this->users->users_from_nom($nom);
       echo json_encode($res);
       //echo $res;
     }catch(Exception $e){
