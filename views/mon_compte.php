@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/assets/js/scrpit_de_la_page_mon_compte.js"></script>
+<script type="text/javascript" src="/assets/js/script_de_la_page_mon_compte.js"></script>
 
 <div class="container">
   <div>

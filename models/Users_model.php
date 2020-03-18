@@ -57,7 +57,7 @@ class Users_model extends Model {
     return $this->user_from_query('SELECT numUser, nom, prenom, email, motDePasse FROM Utilisateurs WHERE email = ?', [$email]);
   }
 
-  public function users_from_nom_all_row($nom) {
+  public function users_from_nom($nom) {
     $this->check_nom($nom);
     try {
       $statement = $this->db->prepare('SELECT numUser, nom, prenom, email
