@@ -140,6 +140,16 @@ class Users_model extends Model {
     }
   }
 
+  public function reset_password($numUser){ //génération MDP sécurisé aléatoire a partir de bytes random
+    try {
+        $bytes = openssl_random_pseudo_bytes(5, $cstrong);
+        $password = bin2hex($bytes);
+        if ($cstrong == null) throw new Exception("Password generation failed");
+        $this->motDePasse_set($password, $numUser);
+        return $password;
+    } catch (Exception $e) { throw new Exception($e->getMessage());}
+  }
+  
   public function motDePasse_set($motDePasse, $numUser){
     $this->check_motDePasse($motDePasse);
     try {
