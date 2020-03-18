@@ -3,7 +3,7 @@
   <?php if (isset($error)) { ?>
     <div class="alert alert-warning" role="alert"><?= $error ?></div>
   <?php } ?>
-  <form role="form" action="/index.php/users/send_password_reset" method="post">
+  <form role="form" action="/index.php/users/send_reset_password" method="post">
     <fieldset>
       <input class="form-control" placeholder="Email" name="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required value="<?=$email?>"/><br>
       <input type="submit" class="btn btn-lg btn-primary btn-block" value="Envoyer un e-mail de récupération">

@@ -1,16 +1,15 @@
 <?php
 
-class Mailer_model extends Model{// j'ai crée un nouveau controller mais je suis pas sur de
-                                // l'architecture que j'ai utilisé, ca me parait pas propre
+class Mailer_model extends Model{
                                 // l'envoie d'email se sert de phpMailer, une libraitrie qui sert à ca
                                 // pour installer cette librairie il faut composer, un outil qui sert à installer des librairies
                                 // TODO : send code, goto enter code page, if code right, change password page
 
-    public function build_password_reset_email($mailer, $email, $name, $password) //IMPROVE mettre ca dans les models
+    public function build_password_reset_email($mailer, $email, $name, $password) 
     {
         try {
             $mailer->addAddress($email, $name);
-            $content = file_get_contents('assets/PHPMailer/emailHTML/password_reset.php');
+            $content = file_get_contents('assets/PHPMailer/emailHTML/password_reset.html');
             $mailer->msgHTML("$content $password");
             $mailer->Subject = "Réinitialisation mot de passe";
             return $password;
