@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css" />
+
 <div id="sondage_new">
 	<form role="form" action="/index.php/evenements/sondages_add" method="post" enctype="multipart/form-data">
 		<p>Titre :</p>
