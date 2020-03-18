@@ -25,7 +25,7 @@ exit $RESULT
 - ./composer.phar require phpmailer/phpmailer
 
 Ceci crée un dossier vendor contenant les fichiers necessaires au fonctionnement de PHPMailer
-Dans le dossier phpMailer/phpMailer/examples se trouvent les infos necessaires pour une authentification et un envoi de mail via gmail.
+!! Dans le dossier phpMailer/phpMailer/examples se trouvent les infos necessaires pour une authentification et un envoi de mail via gmail !!
 Pour résumer : 
 - Inclure les fichiers necessaires au fonctionnement de PHPMailer (create_mailer.php l10 - 13)) puis
 - Créer un objet PHPMailer et lui renseigner les propriétés necessaires pour établir la connexion avec le serveaur gmail 
