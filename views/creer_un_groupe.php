@@ -9,11 +9,10 @@
 	<div>
 		<fieldset>
 			<p>Ajouter des personnes : </p>
-			<input id="input_personne" name="personne" type="text" onkeydown="chercherDesPersonnes(this, <?= $logged_user->numUser ?>)" list="list_personnes"/>  
+			<input id="input_personne" name="personne" type="text" onkeyup="chercherDesPersonnes(this, <?= $logged_user->numUser ?>)" list="list_personnes"/>  
 		</fieldset>
-		<!-- remplis avec fonction js -->
-		<datalist id="list_personnes"></datalist>
 	</div>
+
 	<!-- remplis avec fonction js -->
 	<div id="display_persons">
 		<table id="tab_persons" name="tab_persons"></table> 
@@ -29,6 +28,7 @@
 				<button>Creer le groupe</button>
 			</form>
 		</fieldset>
+
 		<!-- remplis avec fonction js -->
 		<div id="display_persons_ajoutes">
 			<table id="tab_persons_ajoutes" name="tab_persons"></table> 

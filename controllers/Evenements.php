@@ -66,9 +66,8 @@ class Evenements extends Controller {
     try{
       $res = $this->users->users_from_nom($nom);
       echo json_encode($res);
-      //echo $res;
     }catch(Exception $e){
-      echo "erreur requete";
+      echo "";
     }
   }
 
