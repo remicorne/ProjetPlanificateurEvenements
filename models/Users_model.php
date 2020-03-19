@@ -57,7 +57,7 @@ class Users_model extends Model {
     return $this->user_from_query('SELECT numUser, nom, prenom, email, motDePasse FROM Utilisateurs WHERE email = ?', [$email]);
   }
 
-  public function users_from_nom_all_row($nom) {
+  public function users_from_nom($nom) {
     $this->check_nom($nom);
     try {
       $statement = $this->db->prepare('SELECT numUser, nom, prenom, email
@@ -138,6 +138,17 @@ class Users_model extends Model {
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database);
     }
+  }
+  
+  
+  public function reset_password($numUser){ //génération MDP sécurisé aléatoire a partir de bytes random
+    try {
+        $bytes = openssl_random_pseudo_bytes(5, $cstrong);
+        $password = bin2hex($bytes);
+        if ($cstrong == null) throw new Exception("Password generation failed");
+        $this->motDePasse_set($password, $numUser);
+        return $password;
+    } catch (Exception $e) { throw new Exception($e->getMessage());}
   }
 
   public function motDePasse_set($motDePasse, $numUser){
@@ -262,4 +273,6 @@ class Users_model extends Model {
     $data['user_has_photo'] = $this->user_has_photo($_SESSION['logged_user']->numUser);
     return $data;
   }
+
+
 }

@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html>
- <head>
-  
- </head>
-
- <body>
-
+<body>
  <br /><br />
   <div class="container" style="width:600px;">
    <br /><br />

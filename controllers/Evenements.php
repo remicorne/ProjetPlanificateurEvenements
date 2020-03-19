@@ -17,20 +17,54 @@ class Evenements extends Controller {
   }
 
   public function creer_un_groupe(){
+    if ($this->redirect_unlogged_user()) return;
     $this->loader->load('creer_un_groupe',['title'=>'Creer un groupe']);
   }
 
+  public function voir_les_groupes(){
+    if ($this->redirect_unlogged_user()) return;
+    
+    try{
+      // obtenir tous les groupes ou l'utilisateurs est de
+      $groupes = $this->evenements->voir_les_groupes_user($this->sessions->logged_user()->numUser);
+      // ajouter le nombre de membre au tableau $groupes
+      foreach ($groupes as &$groupe)
+        $groupe['nbMembre'] = $this->evenements->compter_les_membres_groupe($groupe['numGroupe'])['cpt'];      
+      unset($groupe);
+
+      $this->loader->load('voir_les_groupes',['title'=>'voir les groupes', 'groupes'=>$groupes]);
+    
+    }catch (Exception $e){
+      $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+      $this->loader->load('voir_les_groupes',$data);
+    }
+  }
+
+  // fonction appelé en js par la page voir_les_groupes.
+  public function voir_membres_groupe($numGroupe){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      echo json_encode($this->evenements->voir_les_membres_groupe($numGroupe));
+    }catch (Exception $e){
+      $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+      $this->loader->load('voir_les_groupes',$data);
+    }
+  }
+
+  // fonction appelée asynchronement en js par la page creer_un_groupe.
   public function getNomsGroupes(){
+    if ($this->redirect_unlogged_user()) return;
     try{
       echo json_encode($this->evenements->getNomsGroupes());
     }catch(Exception $e){}
   }
 
-
+  // fonction appelée asynchronement en js par la page creer_un_groupe.
   public function users_from_nom_js($nom){
+    if ($this->redirect_unlogged_user()) return;
     $nom = filter_var($nom);
     try{
-      $res = $this->users->users_from_nom_all_row($nom);
+      $res = $this->users->users_from_nom($nom);
       echo json_encode($res);
       //echo $res;
     }catch(Exception $e){
@@ -39,6 +73,7 @@ class Evenements extends Controller {
   }
 
   public function photos_get($numUser) {
+    if ($this->redirect_unlogged_user()) return;
     try {
         $numUser = filter_var($numUser);
         if (isset($_GET['thumbnail'])) { $data = $this->users->get_thumbnail($numUser); }
@@ -49,6 +84,7 @@ class Evenements extends Controller {
   }
 
   public function ajout_groupe_bd(){
+    if ($this->redirect_unlogged_user()) return;
     try{
       $utilisateurs = filter_input(INPUT_POST, 'utilisateurs');
       $utilisateurs = json_decode($utilisateurs); 

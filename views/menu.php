@@ -5,10 +5,10 @@
 			<img src="/index.php/evenements/photos_get/<?=$logged_user->numUser?>?thumbnail" alt="photo de profil">
 		</div>
 		<?php } ?>
-		<div class="info_compte">
+		<div id="info_compte">
 			<p>prenom : <?= $logged_user->prenom ?>  <p>
 			<p>nom : <?= $logged_user->nom ?>  <p>
-			<ul class="info_compte">
+			<ul>
 				<li><a href="/index.php/evenements/mon_compte">mon compte</a></li>
 				<li><a href="/index.php/sessions/sessions_destroy">se déconnecter</a></li>
 			</ul>
@@ -30,9 +30,8 @@
 			<p> Groupes <p>
 			<ul id="navigation">
 			  <li><a href="/index.php/evenements/creer_un_groupe">Créer un groupe</a></li>
-			  <li><a href="#">Voir les groupes</a></li>
+			  <li><a href="/index.php/evenements/voir_les_groupes">Voir les groupes</a></li>
 			</ul>
 		</div>
 	</div>          
 <?php } ?>
-<div class="container">
