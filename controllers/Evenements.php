@@ -131,7 +131,7 @@ class Evenements extends Controller {
           $message= filter_input(INPUT_POST, 'message');
           $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
           header("Location: /index.php/evenements/ajouter_participants"); 
-     } else $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 
+     } else $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);  //redirection vers la page sondages_new si date est nulle
 
       } catch (Exception $e) {
         $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 

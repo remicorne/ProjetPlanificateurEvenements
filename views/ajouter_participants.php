@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html>
+<body>
  <br /><br />
   <div class="container" style="width:600px;">
    <br /><br />
@@ -6,7 +9,7 @@
       <div>
         <label>Ajouter les participants</label>
      </div>
-     <select id="participants" name="participants[]" multiple class="form-control" required >
+     <select id="participants" name="participants[]" multiple class="form-control" required >  
 
      <?php foreach($users_informations as $user_informations){ 
 
@@ -31,30 +34,32 @@
 
 
 <script>
-$(document).ready(function(){
+  
+$(document).ready(function(){   //Attendre la disponibilité du DOM (obligatoire comme le main)
+
  $('#participants').multiselect({
-  nonSelectedText: 'Select participants',
+  nonSelectedText: 'Select participants',  // affichage  Select participant lorsque aucune selection n'est faite
   enableFiltering: true,
-  enableCaseInsensitiveFiltering: true,
-  buttonWidth:'400px'
+  enableCaseInsensitiveFiltering: true,   //activer la barre de recherche rapide 
+  buttonWidth:'400px'                     // largeur de la barre de selection
  });
  
- $('#submit').on('submit', function(event){
-  event.preventDefault();
-  var form_data = $(this).serialize();
+ $('#submit').on('submit', function(event){ // lorsque on clique sur submit on fait appelle à cette fonction
+  event.preventDefault();  //Empêche le comportement par défaut des navigateurs (comme l'envoi d'un formulaire'), mais n'empêche pas l'événement de se propager dans le DOM. (sécurité)
+  var form_data = $(this).serialize();  // cette méthode crée une chaîne de texte codée URL en sérialisant les valeurs du formulaire.
 
   
   $.ajax({
-   url:"/index.php/evenements/participants_add",
-   method:"POST",
-   data:form_data,
-   success:function(data)
+   url:"/index.php/evenements/participants_add", //adresse à laquelle la requête doit être envoyée
+   method:"POST",  //type de la requête, GET ou POST (GET par défaut).
+   data:form_data,  //données à envoyer au serveur.
+   success:function(data) // fonction à appeler si la requête aboutit. (inutile dans notre cas, car on change de page lorsque on clique sur submit)
    {
-    $('#participants option:selected').each(function(){
-     $(this).prop('selected', false);
+    $('#participants option:selected').each(function(){  //c'est comme une boucle  : parcourir les cases cochées 
+     $(this).prop('selected', false);  //Ajouter (modifier) la propriété  de selection ( décoché les cases cochées un par un)
     });
-    $('#participants').multiselect('refresh');
-    alert(data);
+    $('#participants').multiselect('refresh'); // rafrachir la barre de selection  (mettre à jour les résultats)
+    alert(data); // pour débuguer seulement 
    }
   });
  });
