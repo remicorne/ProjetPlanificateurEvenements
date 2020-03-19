@@ -120,7 +120,7 @@ class Users_model extends Model {
       $statement->execute(["nom"=>$nom,
                            "prenom"=>$prenom,
                            "numUser"=>$numUser]);
-      return $this->db->lastInsertId();
+      //return $this->db->lastInsertId();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database);
     }
@@ -134,7 +134,7 @@ class Users_model extends Model {
                                         WHERE numUser= :numUser");
       $statement->execute(["email"=>$email,
                            "numUser"=>$numUser]);
-      return $this->db->lastInsertId();
+      //return $this->db->lastInsertId();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database);
     }
@@ -148,7 +148,7 @@ class Users_model extends Model {
                                         SET motDePasse = :hash
                                         WHERE numUser= :numUser");
       $statement->execute(["hash"=>$hash, "numUser"=>$numUser]);
-      return $this->db->lastInsertId();
+      //return $this->db->lastInsertId();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database);
     }
@@ -163,7 +163,7 @@ class Users_model extends Model {
       $statement->execute(["photo"=>null,
                            "thumbnail"=>null, 
                            "numUser"=>$numUser]);
-      return $this->db->lastInsertId();
+      //return $this->db->lastInsertId();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database);
     } 
@@ -206,7 +206,7 @@ class Users_model extends Model {
       $statement->execute(["photo"=>$this->create_photo($tmp_file),
                            "thumbnail"=>$this->create_thumbnail($tmp_file), 
                            "numUser"=>$numUser]);
-      return $this->db->lastInsertId();
+      //return $this->db->lastInsertId();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database);
     } catch ( ImagickException $e ) {
