@@ -144,6 +144,46 @@ class Evenements_model extends Model{
     }
   }
 
+  // indique si le participant à deja été ajouté à l'evenements.
+  public function participant_deja_ajoute($numUser, $numEvent){
+    try {
+       $statement = $this->db->prepare("SELECT numUser FROM Participants WHERE numUser=? AND numEvent=?");
+       $statement->execute([$numUser, $numEvent]);
+       return count($statement->fetchAll())!=0;
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' participant_deja_ajoute'.$e);
+    }
+  }
+
+  public function ajouter_participant_bd($numUser, $numEvent, $statut){
+    try {
+       $statement = $this->db->prepare("INSERT INTO Participants(numUser, numEvent, statut) VALUES (?,?,?)");
+       $statement->execute([$numUser, $numEvent, $statut]);
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' ajouter_participant_bd'.$e);
+    } 
+  }
+
+  public function retirer_participant_bd($numUser, $numEvent){
+    try {
+       $statement = $this->db->prepare("DELETE FROM Participants WHERE numUser=? AND numEvent=?");
+       $statement->execute([$numUser, $numEvent]);
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' retirer_participant_bd'.$e);
+    } 
+  }
+
+public function afficher_les_participants_event($numEvent){
+  try{
+      $statement = $this->db->prepare("SELECT U.numUser, nom, prenom, email, statut FROM Participants P JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=?");
+      $statement->execute([$numEvent]);
+      return $statement->fetchAll();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' afficher_les_participants_event'.$e);
+    }
+}
+
+/*
   public function users_information() {
     try {
       $statement = $this->db->query("select numUser,nom,prenom,email from utilisateurs");
@@ -154,7 +194,6 @@ class Evenements_model extends Model{
     }
   }
 
-/*
   public function ajouter_participant($numUser){
     try {
       foreach($participants as $participant){

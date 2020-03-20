@@ -40,5 +40,41 @@ function xhrGET(url, typeRep){
 	return xhr;
 }
 
+/////////////////// Fonctions communes au pages voir_les_groupes, creer_un_groupe, ajouter_des_paticipants  ////////////////////////////////////////////:
+
+function construireTableauDePersonne(idTab, personnes){
+	if(personnes==null) return;
+
+	var tab = document.getElementById(idTab);
+	
+	personnes.forEach(function(personne){
+		var newRow = document.createElement("tr");
+		var numUser = personne['numUser'];
+		var src = "/index.php/evenements/photos_get/"+numUser+"?thumbnail";
+		newRow.appendChild(addColumn("td", '<img src="'+src+'" alt="photo de profil" height="50" width="50" />'));
+		newRow.appendChild(addColumn("td", personne['nom']));
+		newRow.appendChild(addColumn("td", personne['prenom']));
+		newRow.appendChild(addColumn("td", personne['email']));
+		newRow.appendChild(addColumn("td", personne['numUser']));
+		newRow.lastChild.style.display = 'none';
+		tab.appendChild(newRow);
+	});
+	return tab;
+}
+
+/**
+*Fonction qui recherche les utilisateurs dont les premières lettre du nom correspondent à la chaine.
+*/
+function chercherDesPersonnes(input){
+	var nom = input.value;
+	//encodeage pour eviter les caractères interdits dans une url
+	var valeur = encodeURIComponent(nom);
+	//ouvrir la connexion et choisir type d'envoie 
+	var url="http://localhost:8080/index.php/evenements/users_from_nom_js/"+nom;
+	//ajout d'un listener qui ecoute le changement d'etat.
+	var requete = xhrGET(url,'json');
+	return requete
+}
+
 
 

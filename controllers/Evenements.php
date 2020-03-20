@@ -4,7 +4,7 @@ class Evenements extends Controller {
     $this->tableau_de_bord();
   }
 
-  
+  /////////////////////////////////////////// methodes de redirection///////////////////////////////////////////////////////
   public function tableau_de_bord() {
     if ($this->redirect_unlogged_user()) return;
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
@@ -20,6 +20,19 @@ class Evenements extends Controller {
     if ($this->redirect_unlogged_user()) return;
     $this->loader->load('creer_un_groupe',['title'=>'Creer un groupe']);
   }
+
+  public function ajouter_participants($numEvent){
+    if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('ajouter_participants', ['title'=>'Ajouter des participants',
+                                                   'numEvent' => $numEvent]);
+  }
+
+  public function sondages_new(){
+    if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public function voir_les_groupes(){
     if ($this->redirect_unlogged_user()) return;
@@ -108,12 +121,6 @@ class Evenements extends Controller {
     return false;
   }
 
-
-  public function sondages_new(){
-    if ($this->redirect_unlogged_user()) return;
-      $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
-  }
-
   public function creer_sondages_event(){
     if ($this->redirect_unlogged_user()) return;
     try {
@@ -139,22 +146,50 @@ class Evenements extends Controller {
   }
 
 
-
-  public function ajouter_participants($numEvent){
+  // indique si le participant à deja été ajouté à l'evenements.
+  public function participant_deja_ajoute($numUser, $numEvent){
     if ($this->redirect_unlogged_user()) return;
-      $users_informations= $this->evenements->users_information();
-      $this->loader->load('ajouter_participants', ['users_informations'=>$users_informations ,'title'=>'L Ajout des participants']);
+    try{
+      $rep =  $this->evenements->participant_deja_ajoute($numUser, $numEvent);
+      echo json_encode($rep);
+    }catch(Exception $e){
+
+    }
   }
 
-
-  public function participants_add(){
-
-    $participants=$_POST["participants"];
-    if(isset($participants))
-      $this->evenements->ajouter_participants($participants);
-    header('Location: /index.php');
+  public function ajouter_participant_event($numUser, $numEvent, $statut){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numUser = filter_var($numUser);
+      $numEvent = filter_var($numEvent);
+      $statut = filter_var($statut);
+      $this->evenements->ajouter_participant_bd($numUser, $numEvent, $statut);
+    }catch(Exception $e){
+    }
   }
+
+  public function retirer_participant_event($numUser, $numEvent){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numUser = filter_var($numUser);
+      $numEvent = filter_var($numEvent);
+      $this->evenements->retirer_participant_bd($numUser, $numEvent);
+    }catch(Exception $e){
+    }
   }
+
+  // fonction appelé en js.
+  public function afficher_participants_event($numEvent){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numEvent = filter_var($numEvent);
+      $rep = $this->evenements->afficher_les_participants_event($numEvent);
+      echo json_encode($rep);
+    }catch(Exception $e){
+    }
+  }
+  
+}
   
      
 

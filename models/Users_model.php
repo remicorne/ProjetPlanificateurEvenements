@@ -71,11 +71,11 @@ class Users_model extends Model {
   }
 
   private function check_nom($nom) {
-    $this->check_format_with_regex($nom, '/^[0-9a-zA-Z]{2,10}$/', self::str_error_nom_format);
+    $this->check_format_with_regex($nom, '/^[0-9a-zA-Z]{1,10}$/', self::str_error_nom_format);
   }
 
   private function check_prenom($prenom) {
-    $this->check_format_with_regex($prenom, '/^[0-9a-zA-Z]{2,10}$/', self::str_error_prenom_format);
+    $this->check_format_with_regex($prenom, '/^[0-9a-zA-Z]{1,10}$/', self::str_error_prenom_format);
   }
 
   private function check_email($email) {
