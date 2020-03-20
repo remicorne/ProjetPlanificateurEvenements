@@ -110,37 +110,37 @@ class Evenements extends Controller {
 
 
   public function sondages_new(){
-
     if ($this->redirect_unlogged_user()) return;
-
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
   }
 
-
-  public function sondages_add(){
-
+  public function creer_sondages_event(){
     if ($this->redirect_unlogged_user()) return;
     try {
-        if(isset($_POST['date']) &&  isset($_POST['horaireD']) && isset($_POST['horaireF']))  {
+      if(!isset($_POST['titre']) && !isset($_POST['lieu']) && !isset($_POST['dates']) &&  !isset($_POST['horairesD']) && !isset($_POST['horairesF'])) 
+        throw new Exception("Le titre, le lieu, la descri, la date, heure de debut et heure de fin doivent être renseignés.");
+        
+        $donnees=filter_input_array(INPUT_POST);
+        // creation de l'évènement.
+        $numEvent = $this->evenements->creer_un_evenement($donnees['titre'],$donnees['lieu'],$donnees['descri']);
+        // ajout du createur a la table participants.
+        $numPart = $this->evenements->ajouter_un_participant($this->sessions->logged_user()->numUser, $numEvent, 'createur');
+        // creation des sondages liés à l'évènement.
+        for ($i=0; $i<count($donnees['dates']); $i++) {
+          $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
+          $this->evenements->creer_reponse($numSond, $numPart);
+        }
 
-          $date=$_POST['date'];
-          $horaireD=$_POST['horaireD'];
-          $horaireF=$_POST['horaireF'];
-          $titre = filter_input(INPUT_POST, 'titre');
-          $lieu = filter_input(INPUT_POST, 'lieu');
-          $message= filter_input(INPUT_POST, 'message');
-          $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
-          header("Location: /index.php/evenements/ajouter_participants"); 
-     } else $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);  //redirection vers la page sondages_new si date est nulle
-
+        header("Location: /index.php/evenements/ajouter_participants/$numEvent"); 
       } catch (Exception $e) {
-        $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 
-    }
+        $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];
+        $this->loader->load('sondages_new', $data );
+      }
   }
 
 
 
-  public function ajouter_participants(){
+  public function ajouter_participants($numEvent){
     if ($this->redirect_unlogged_user()) return;
       $users_informations= $this->evenements->users_information();
       $this->loader->load('ajouter_participants', ['users_informations'=>$users_informations ,'title'=>'L Ajout des participants']);

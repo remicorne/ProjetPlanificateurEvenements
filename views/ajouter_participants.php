@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html>
-<body>
  <br /><br />
   <div class="container" style="width:600px;">
    <br /><br />
@@ -29,8 +26,6 @@
    </form>
    <br/>
   </div>
-</body>
-</html>
 
 
 <script>
