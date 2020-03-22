@@ -5,7 +5,7 @@
 function afficherLesMembresGroupe(numGoupe, nomGroupe){
 	document.getElementById("tab_groupe").innerHTML="";
 	//ouvrir la connexion et choisir type d'envoie 
-	var url="http://localhost:8080/index.php/evenements/voir_membres_groupe/"+numGoupe;
+	var url="/index.php/evenements/voir_membres_groupe/"+numGoupe;
 	//ajout d'un listener qui ecoute le changement d'etat.
 	var requete = xhrGET(url,'json');
 
