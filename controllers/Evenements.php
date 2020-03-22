@@ -4,7 +4,7 @@ class Evenements extends Controller {
     $this->tableau_de_bord();
   }
 
-  
+  /////////////////////////////////////////// methodes de redirection///////////////////////////////////////////////////////
   public function tableau_de_bord() {
     if ($this->redirect_unlogged_user()) return;
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
@@ -21,23 +21,37 @@ class Evenements extends Controller {
     $this->loader->load('creer_un_groupe',['title'=>'Creer un groupe']);
   }
 
+  public function ajouter_participants($numEvent){
+    if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('ajouter_participants', ['title'=>'Ajouter des participants',
+                                                   'numEvent' => $numEvent]);
+  }
+
+  public function sondages_new(){
+    if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
+  }
+
   public function voir_les_groupes(){
     if ($this->redirect_unlogged_user()) return;
-    
     try{
-      // obtenir tous les groupes ou l'utilisateurs est de
-      $groupes = $this->evenements->voir_les_groupes_user($this->sessions->logged_user()->numUser);
-      // ajouter le nombre de membre au tableau $groupes
-      foreach ($groupes as &$groupe)
-        $groupe['nbMembre'] = $this->evenements->compter_les_membres_groupe($groupe['numGroupe'])['cpt'];      
-      unset($groupe);
-
+      $groupes = $this->construire_tableau_des_groupes();
       $this->loader->load('voir_les_groupes',['title'=>'voir les groupes', 'groupes'=>$groupes]);
-    
     }catch (Exception $e){
       $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
       $this->loader->load('voir_les_groupes',$data);
     }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  private function construire_tableau_des_groupes(){
+    // obtenir tous les groupes ou l'utilisateurs est de
+    $groupes = $this->evenements->voir_les_groupes_user($this->sessions->logged_user()->numUser);
+    // ajouter le nombre de membre au tableau $groupes
+    foreach ($groupes as &$groupe)
+      $groupe['nbMembre'] = $this->evenements->compter_les_membres_groupe($groupe['numGroupe'])['cpt'];      
+    unset($groupe);
+    return $groupes;
   }
 
   // fonction appelé en js par la page voir_les_groupes.
@@ -66,9 +80,8 @@ class Evenements extends Controller {
     try{
       $res = $this->users->users_from_nom($nom);
       echo json_encode($res);
-      //echo $res;
     }catch(Exception $e){
-      echo "erreur requete";
+      echo json_encode(null);
     }
   }
 
@@ -109,53 +122,129 @@ class Evenements extends Controller {
     return false;
   }
 
-
-  public function sondages_new(){
-
+  public function creer_sondages_event(){
     if ($this->redirect_unlogged_user()) return;
+    try {
+      if(!isset($_POST['titre']) && !isset($_POST['lieu']) && !isset($_POST['dates']) &&  !isset($_POST['horairesD']) && !isset($_POST['horairesF'])) 
+        throw new Exception("Le titre, le lieu, la descri, la date, heure de debut et heure de fin doivent être renseignés.");
+        // recuperation des données dans un tableau.
+        $donnees=filter_input_array(INPUT_POST);
+        // creation de l'évènement.
+        $numEvent = $this->evenements->creer_un_evenement($donnees['titre'],$donnees['lieu'],$donnees['descri']);
+        // ajout du createur a la table participants.
+        $numPart = $this->evenements->ajouter_un_participant($this->sessions->logged_user()->numUser, $numEvent, 'createur');
+        // creation des sondages liés à l'évènement.
+        for ($i=0; $i<count($donnees['dates']); $i++) {
+          $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
+          $this->evenements->creer_reponse($numSond, $numPart);
+        }
 
-      $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
+        header("Location: /index.php/evenements/ajouter_participants/$numEvent"); 
+      } catch (Exception $e) {
+        $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];
+        $this->loader->load('sondages_new', $data );
+      }
   }
 
 
-  public function sondages_add(){
-
+  // indique si le participant à deja été ajouté à l'evenements.
+  public function participant_deja_ajoute($numUser, $numEvent){
     if ($this->redirect_unlogged_user()) return;
-    try {
-        if(isset($_POST['date']) &&  isset($_POST['horaireD']) && isset($_POST['horaireF']))  {
-
-          $date=$_POST['date'];
-          $horaireD=$_POST['horaireD'];
-          $horaireF=$_POST['horaireF'];
-          $titre = filter_input(INPUT_POST, 'titre');
-          $lieu = filter_input(INPUT_POST, 'lieu');
-          $message= filter_input(INPUT_POST, 'message');
-          $this->evenements->create_sondage($titre,$lieu,$message,$date,$horaireD,$horaireF);
-          header("Location: /index.php/evenements/ajouter_participants"); 
-     } else $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);  //redirection vers la page sondages_new si date est nulle
-
-      } catch (Exception $e) {
-        $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']); 
+    try{
+      $rep =  $this->evenements->participant_deja_ajoute($numUser, $numEvent);
+      echo json_encode($rep);
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+      $this->loader->load('ajouter_participants', $data );
     }
   }
 
-
-
-  public function ajouter_participants(){
+  public function ajouter_groupe_event($numGroupe, $numEvent){
     if ($this->redirect_unlogged_user()) return;
-      $users_informations= $this->evenements->users_information();
-      $this->loader->load('ajouter_participants', ['users_informations'=>$users_informations ,'title'=>'L Ajout des participants']);
+    try{
+      $numGroupe = filter_var($numGroupe);
+      $numEvent = filter_var($numEvent);
+      $membres = $this->evenements->voir_les_membres_groupe($numGroupe);
+      foreach ($membres as $membre) {
+        $rep = $this->evenements->participant_deja_ajoute($membre['numUser'], $numEvent);
+        if(!$rep)
+          $this->ajouter_participant_event($membre['numUser'], $numEvent, 'participant');
+      }
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+      $this->loader->load('ajouter_participants', $data );
+    }
   }
 
+public function retirer_groupe_event($numGroupe, $numEvent){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numGroupe = filter_var($numGroupe);
+      $numEvent = filter_var($numEvent);
+      $numParts = $this->evenements->voir_numPart_membres_groupe($numGroupe, $numEvent);
+      foreach ($numParts as $numPart)
+          $this->retirer_participant_event($numPart['numPart']);
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+      $this->loader->load('ajouter_participants', $data );
+    }
+  
+  }  
 
-  public function participants_add(){
+  public function ajouter_participant_event($numUser, $numEvent, $statut){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numUser = filter_var($numUser);
+      $numEvent = filter_var($numEvent);
+      $statut = filter_var($statut);
 
-    $participants=$_POST["participants"];
-    if(isset($participants))
-      $this->evenements->ajouter_participants($participants);
-    header('Location: /index.php');
+      $numPart = $this->evenements->ajouter_participant_bd($numUser, $numEvent, $statut);
+      $sondages = $this->evenements->obtenir_les_sondages($numEvent);
+      // on remplis la table repondre dans le futur connaitre les reponse du participants.
+      foreach ($sondages as $sondage)
+        $this->evenements->creer_reponse($sondage['numSond'], $numPart);
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+      $this->loader->load('ajouter_participants', $data );
+    }
   }
+
+  public function retirer_participant_event($numPart){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numPart = filter_var($numPart);
+      $this->evenements->retirer_reponse($numPart);
+      $this->evenements->retirer_participant_bd($numPart);
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+      $this->loader->load('ajouter_participants', $data );
+    }
   }
+
+  // fonction appelé en js.
+  public function afficher_participants_event($numEvent){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numEvent = filter_var($numEvent);
+      $rep = $this->evenements->afficher_les_participants_event($numEvent);
+      echo json_encode($rep);
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+      $this->loader->load('ajouter_participants', $data );
+    }
+  }
+
+  // fonction appelé en js par la page 'ajouter_participants'
+  public function obtenir_les_groupes(){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      echo json_encode($this->construire_tableau_des_groupes());
+    }catch (Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+      $this->loader->load('ajouter_participants', $data );
+    }
+  }
+}
   
      
 

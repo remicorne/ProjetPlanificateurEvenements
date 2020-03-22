@@ -1,0 +1,13 @@
+#display_persons{
+	float:left;
+	position: absolute;
+	left: 0;
+	border: solid;
+}
+
+#div_creer_groupe{
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: solid;
+}

@@ -6,8 +6,7 @@
 		<div class="alert alert-warning" role="alert"><?= $error ?></div>
 	<?php } ?>
 
-	
-	<div id="tab_groupes">
+	<div id="div_tab_groupes">
 		<table>
 			<tr>
 				<th>Nom du groupe</th> <th>Nb membres</th>
@@ -26,5 +25,5 @@
 	<!-- remplis avec fonction js -->
 	<div id="div_groupe"> 
 		<p id="p_membres"></p>
-		<table id="tab_groupe" name="tab_persons"></table> 
+		<table id="tab_groupe"></table> 
 	</div>

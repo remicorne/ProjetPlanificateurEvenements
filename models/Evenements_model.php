@@ -1,6 +1,9 @@
 <?php 
 class Evenements_model extends Model{
-	const str_error_nomGroupe_format = 'Le nom d\'utilisateur doit contenir entre 2 et 10  lettres et chiffres.';
+	const str_error_nomGroupe_format = 'Le nom du groupe doit contenir entre 2 et 10  lettres et chiffres.';
+  const str_error_titre_evenement_format = 'Le titre de l\'evenement doit contenir entre 2 et 50  lettres et chiffres.';
+  const str_error_descri_evenement_format = 'La descri de l\'evenement doit contenir entre 2 et 150  lettres et chiffres ,!?. .';
+  const str_error_lieu_evenement_format = 'Le lieu de l\'evenement doit contenir entre 2 et 30  lettres et chiffres ,!?. .';
   const str_error_database = 'Problème avec la base de données.';
 
 	public function ajout_groupe_bd($nomGroupe){
@@ -43,6 +46,16 @@ class Evenements_model extends Model{
     }catch(PDOException $e){
       throw new Exception(self::str_error_database);
     }
+  }
+
+  public function voir_numPart_membres_groupe($numGroupe, $numEvent){
+    try{
+      $statement = $this->db->prepare("SELECT numPart FROM (Appartenir A JOIN Utilisateurs U ON A.numUser=U.numUser) JOIN Participants P ON P.numUser=U.numUser WHERE numGroupe=? AND numEvent=?");
+      $statement->execute([$numGroupe, $numEvent]);
+      return $statement->fetchAll();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database);
+    }
   }  
 
   public function compter_les_membres_groupe($numGroupe){
@@ -64,7 +77,19 @@ class Evenements_model extends Model{
 	}
 
   private function check_nomGroupe($nomGroupe) {
-    $this->check_format_with_regex($nomGroupe, '/^[0-9a-zA-Z]{2,10}$/', self::str_error_nomGroupe_format);
+    $this->check_format_with_regex($nomGroupe, '/^[0-9a-zA-Z]{1,10}$/', self::str_error_nomGroupe_format);
+  }
+
+  private function check_titre_evenement($titre) {
+    $this->check_format_with_regex($titre, '/^[0-9a-zA-Z]{1,50}$/', self::str_error_titre_evenement_format);
+  }
+
+  private function check_descri_evenement($descri) {
+    $this->check_format_with_regex($descri, '/^[0-9a-zA-Z.?!, ]{0,150}$/', self::str_error_descri_evenement_format);
+  }
+
+  private function check_lieu_evenement($lieu) {
+    $this->check_format_with_regex($lieu, '/^[0-9a-zA-Z ]{1,30}$/', self::str_error_lieu_evenement_format);
   }
 
   private function check_format_with_regex($variable, $regex, $error_message) {
@@ -78,46 +103,115 @@ class Evenements_model extends Model{
     }
   }
 
-  public function create_sondage($titre,$lieu,$message,$dates,$horaireD,$horaireF){
+  public function creer_un_evenement($titre,$lieu,$descri){
+    $this->check_titre_evenement($titre);
+    $this->check_lieu_evenement($lieu);
+    $this->check_descri_evenement($descri);
     try {
-      $count=0;
-      foreach($dates as $date){
-
-       $statement = $this->db->prepare("insert into Dates(date_reunion, heureD, heureF) VALUES (:date_reunion, :heureD, :heureF)");
-       $statement->execute(['date_reunion'=> $date, 
-                          'heureD'=>$horaireD[$count],
-                          'heureF'=>$horaireF[$count]]);
-                          $count++;
-        $statement = $this->db->prepare("insert into Evenements(titre, lieu, descri) VALUES (:titre, :lieu, :descri)");
+        $statement = $this->db->prepare("INSERT INTO Evenements(titre, lieu, descri) VALUES (:titre, :lieu, :descri)");
         $statement->execute(['titre'=> $titre, 
                             'lieu'=>$lieu,
-                            'descri'=>$message]);
+                            'descri'=>$descri]);
+        return $this->db->lastInsertId();
+    }catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' creer_un_evenement'.$e);
+    }
+  }
+
+  public function ajouter_un_participant($numUser, $numEvent, $statut){
+    try {
+      var_dump($numUser); echo "<br>";
+      var_dump($numEvent); echo "<br>";
+      var_dump($statut); echo "<br>";
+       $statement = $this->db->prepare("INSERT INTO Participants(numEvent, numUser, statut) VALUES (?,?,?)");
+       $statement->execute([$numEvent, $numUser, $statut]);
+       return $this->db->lastInsertId();
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' ajouter_un_participant'.$e);
+    }
+  }
+
+  public function creer_un_sondage($numEvent, $date, $horaireD, $horaireF){
+    try {
+       $statement = $this->db->prepare("INSERT INTO Sondages(date_sond, heureD, heureF, numEvent) VALUES (:date_sond, :heureD, :heureF, :numEvent)");
+       $statement->execute(['date_sond'=> $date, 
+                            'heureD'=>$horaireD,
+                            'heureF'=>$horaireF,
+                            'numEvent' =>$numEvent]);
+       $numSond = $this->db->lastInsertId();
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' creer_un_sondage'.$e);
+    }
+  }
+
+  public function obtenir_les_sondages($numEvent){
+    try {
+       $statement = $this->db->prepare("SELECT * FROM Sondages WHERE numEvent=?");
+       $statement->execute([$numEvent]);
+       return $statement->fetchAll();
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' obtenir_les_sondages'.$e);
+    }
+  }
+
+  public function creer_reponse($numSond, $numPart){
+    try {
+       $statement = $this->db->prepare("INSERT INTO Repondre(numSond, numPart) VALUES (?,?)");
+       $statement->execute([$numSond, $numPart]);
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' creer_reponse'.$e);
+    }
+  }
+
+  public function retirer_reponse($numPart){
+    try {
+       $statement = $this->db->prepare("DELETE FROM Repondre 
+                                        WHERE numPart=? AND 'createur' NOT IN (SELECT statut 
+                                                                          FROM Repondre R JOIN Participants P ON R.numPart=P.numPart
+                                                                          WHERE statut='createur') ");
+       $statement->execute([$numPart]);
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' retirer_reponse'.$e);
+    }
+  }
+
+  // indique si le participant à deja été ajouté à l'evenements.
+  public function participant_deja_ajoute($numUser, $numEvent){
+    try {
+       $statement = $this->db->prepare("SELECT numUser FROM Participants WHERE numUser=? AND numEvent=?");
+       $statement->execute([$numUser, $numEvent]);
+       return count($statement->fetchAll())!=0;
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' participant_deja_ajoute'.$e);
+    }
+  }
+
+  public function ajouter_participant_bd($numUser, $numEvent, $statut){
+    try {
+       $statement = $this->db->prepare("INSERT INTO Participants(numUser, numEvent, statut) VALUES (?,?,?)");
+       $statement->execute([$numUser, $numEvent, $statut]);
+       return $this->db->lastInsertId();
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' ajouter_participant_bd'.$e);
+    } 
+  }
+
+  public function retirer_participant_bd($numPart){
+    try {
+       $statement = $this->db->prepare("DELETE FROM Participants WHERE numPart=? AND statut!='createur'");
+       $statement->execute([$numPart]);
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' retirer_participant_bd'.$e);
+    } 
+  }
+
+  public function afficher_les_participants_event($numEvent){
+    try{
+        $statement = $this->db->prepare("SELECT numPart, U.numUser, nom, prenom, email, statut FROM Participants P JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=?");
+        $statement->execute([$numEvent]);
+        return $statement->fetchAll();
+      }catch(PDOException $e){
+        throw new Exception(self::str_error_database.' afficher_les_participants_event'.$e);
       }
-      return $this->db->lastInsertId();
-    } catch (PDOException $e) {
-        throw new Exception(self::str_error_database);
-    }
   }
-
-  public function users_information() {
-    try {
-      $statement = $this->db->query("select numUser,nom,prenom,email from utilisateurs");
-      $result = $statement->fetchAll();
-      return $result;
-    } catch (PDOException $e) {
-      throw new Exception(self::str_error_database);
-    }
-  }
-
-  public function ajouter_participants($participants){
-    try {
-      foreach($participants as $participant){
-        $statement = $this->db->prepare("insert into Participants(numUser) VALUES (:numUser)");
-        $statement->execute(['numUser'=> $participant]); 
-      } 
-    } catch (PDOException $e) {
-      throw new Exception(self::str_error_database);
-    }
-  }
-
 }
