@@ -15,3 +15,9 @@
 
 # identifiants messagerie du projet #
 identifiants_messagerie.json
+
+# error log #
+error
+
+# debug configuration #
+launch.json
