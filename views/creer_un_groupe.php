@@ -9,11 +9,11 @@
 	<div>
 		<fieldset>
 			<p>Ajouter des personnes : </p>
-			<input id="input_personne" name="personne" type="text" onkeyup="chercherDesPersonnes(this, <?= $logged_user->numUser ?>)" list="list_personnes"/>  
+			<input id="input_personne" type="text" onkeyup="remplirTabPersonsCherches('tab_persons', this, <?= $logged_user->numUser ?>)"/> 
 		</fieldset>
 	</div>
 
-	<!-- remplis avec fonction js -->
+	<!-- remplis avec fonction js 'remplirTabPersonsCherches' -->
 	<div id="display_persons">
 		<table id="tab_persons" name="tab_persons"></table> 
 	</div>
