@@ -149,11 +149,13 @@ class Evenements extends Controller {
 
 
   public function participants_add(){
-
-    $participants=$_POST["participants"];
-    if(isset($participants))
+    try{
+      $participants=$_POST["participants"];
+      if(isset($participants))
       $this->evenements->ajouter_participants($participants);
-    header('Location: /index.php');
+      $this->loader->load('ajouter_documents', ['title'=>'L\'ajout des documents']);
+    } catch (Exception $e) {header('Location: /index.php'); }
+
   }
   }
   
