@@ -1,23 +1,31 @@
 <script type="text/javascript" src="/assets/js/script_gestion_des_participants.js"></script>
 
-<div class="container" style="width:600px;">
+<div class="container">
   <br /><br />
 
-  <div class="form-group">
+  <div id="div_persons_cherches" >
       <p>Ajouter les participants</p>
-      <input type="text" id="input_recherche" class="form-control"  onkeyup="remplirTabPersonsCherches('tab_persons', this,<?= $numEvent ?>)">
-      <button class="btn btn-light">Q</span>
+      <input type="text" id="input_recherche_personnes" onkeyup="remplirTabPersonsCherches('tab_persons', this, <?= $numEvent ?>)">
+      <button class="btn btn-light">Q</button>
+      <!-- remplis avec fonction js 'remplirTabPersonsCherches' -->
+      <table id="tab_persons"></table>
   </div>
 
-  <!-- remplis avec fonction js 'remplirTabPersonsCherches' -->
-  <div id="display_persons">
-    <table id="tab_persons" name="tab_persons"></table> 
+  <!-- remplis avec fonction js 'remplirTabGroupesCherches' -->
+  <div id="div_groupes_cherches">
+    <p>Ajouter les groupes</p>
+    <table id="tab_groupes_cherches"></table> 
   </div>
 
   <!-- remplis avec fonction js -->
   <div id="div_participants"> 
-    <table id="tab_participants" ></table> 
+    <p> Tableau des participants ajoutés</p>
+    <table id="tab_participants" > 
+    </table>
   </div>
-  
-  <script>afficherParticipantsEvent(<?= $numEvent ?>);</script>
+
+  <script>
+    remplirTabGroupesCherches("tab_groupes_cherches",<?= $numEvent ?>);
+    afficherParticipantsEvent('tab_participants' ,<?= $numEvent ?>);
+  </script>
 </div>

@@ -5,7 +5,6 @@ html {
 body{
 	margin: 0;
 	padding: 0;
-	min-width: 90%;
 }
 
 table {
@@ -14,7 +13,7 @@ table {
  border-color:black;
  }
  
-td { 
+td,th { 
  border-width:1px;
  border-style:solid; 
  border-color:black;
@@ -24,8 +23,8 @@ td {
 	position:absolute;
 	left: 25vh;
 	border: solid;
-	min-width: 80%;
-	min-height: 80%;
+	min-width: 100vh;
+	min-height: 100vh;
 }
 
 #titre{
@@ -38,24 +37,5 @@ td {
 	top: 0;
 	min-height: 100vh;
 	width: 25vh;
-	border: solid;
-}
-
-#sondage_new{
-	position:absolute;
-    left: 40%;
-}
-
-#display_persons{
-	float:left;
-	position: absolute;
-	left: 0;
-	border: solid;
-}
-
-#div_creer_groupe{
-	position: absolute;
-	top: 0;
-	right: 0;
 	border: solid;
 }

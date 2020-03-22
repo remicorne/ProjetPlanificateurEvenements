@@ -44,9 +44,7 @@ function xhrGET(url, typeRep){
 
 function construireTableauDePersonne(idTab, personnes){
 	if(personnes==null) return;
-
 	var tab = document.getElementById(idTab);
-	
 	personnes.forEach(function(personne){
 		var newRow = document.createElement("tr");
 		var numUser = personne['numUser'];
@@ -75,6 +73,5 @@ function chercherDesPersonnes(input){
 	var requete = xhrGET(url,'json');
 	return requete
 }
-
 
 
