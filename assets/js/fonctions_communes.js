@@ -68,7 +68,7 @@ function chercherDesPersonnes(input){
 	//encodeage pour eviter les caractères interdits dans une url
 	var valeur = encodeURIComponent(nom);
 	//ouvrir la connexion et choisir type d'envoie 
-	var url="http://localhost:8080/index.php/evenements/users_from_nom_js/"+nom;
+	var url="/index.php/evenements/users_from_nom_js/"+nom;
 	//ajout d'un listener qui ecoute le changement d'etat.
 	var requete = xhrGET(url,'json');
 	return requete
