@@ -1,64 +1,31 @@
- <br /><br />
-  <div class="container" style="width:600px;">
-   <br /><br />
-   <form action="/index.php/evenements/participants_add" method="post" >
-    <div class="form-group">
-      <div>
-        <label>Ajouter les participants</label>
-     </div>
-     <select id="participants" name="participants[]" multiple class="form-control" required >
+<script type="text/javascript" src="/assets/js/script_gestion_des_participants.js"></script>
 
-     <?php foreach($users_informations as $user_informations){ 
+<div class="container">
+  <br /><br />
 
-       if($user_informations['numUser'] === $logged_user->numUser){?>
-        
-        <option value=<?=$user_informations['numUser']?> selected="selected"><?=$user_informations['nom']?> <?=$user_informations['prenom']?> ( <?=$user_informations['email']?> ) [Organisateur]</option>
-       <?php } else { ?>
-        <option value=<?=$user_informations['numUser']?>><?=$user_informations['nom']?> <?=$user_informations['prenom']?> ( <?=$user_informations['email']?> )</option>
-      <?php }} ?>
-     </select>
-    </div>
-
-    <div class="form-group">
-     <input type="submit" class="btn btn-info" name="submit" value="Terminer" />
-    </div>
-
-   </form>
-   <br/>
+  <div id="div_persons_cherches" >
+      <p>Ajouter les participants</p>
+      <input type="text" id="input_recherche_personnes" onkeyup="remplirTabPersonsCherches('tab_persons', this, <?= $numEvent ?>)">
+      <button class="btn btn-light">Q</button>
+      <!-- remplis avec fonction js 'remplirTabPersonsCherches' -->
+      <table id="tab_persons"></table>
   </div>
-</body>
-</html>
 
+  <!-- remplis avec fonction js 'remplirTabGroupesCherches' -->
+  <div id="div_groupes_cherches">
+    <p>Ajouter les groupes</p>
+    <table id="tab_groupes_cherches"></table> 
+  </div>
 
-<script>
-$(document).ready(function(){
- $('#participants').multiselect({
-  nonSelectedText: 'Select participants',
-  enableFiltering: true,
-  enableCaseInsensitiveFiltering: true,
-  buttonWidth:'400px'
- });
- 
- $('#submit').on('submit', function(event){
-  event.preventDefault();
-  var form_data = $(this).serialize();
+  <!-- remplis avec fonction js -->
+  <div id="div_participants"> 
+    <p> Tableau des participants ajoutés</p>
+    <table id="tab_participants" > 
+    </table>
+  </div>
 
-  
-  $.ajax({
-   url:"/index.php/evenements/participants_add",
-   method:"POST",
-   data:form_data,
-   success:function(data)
-   {
-    $('#participants option:selected').each(function(){
-     $(this).prop('selected', false);
-    });
-    $('#participants').multiselect('refresh');
-    alert(data);
-   }
-  });
- });
- 
- 
-});
-</script>
+  <script>
+    remplirTabGroupesCherches("tab_groupes_cherches",<?= $numEvent ?>);
+    afficherParticipantsEvent('tab_participants' ,<?= $numEvent ?>);
+  </script>
+</div>

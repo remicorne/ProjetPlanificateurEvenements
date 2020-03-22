@@ -1,33 +1,11 @@
-/////////////////// Fonctions communes au pages voir_les_groupes et creer_un_groupe. ////////////////////////////////////////////:
-
-function construireTableauDePersonne(idTab, personnes){
-	if(personnes==null) return;
-
-	var tab = document.getElementById(idTab);
-	tab.innerHTML="";
-	
-	personnes.forEach(function(personne){
-		var newRow = document.createElement("tr");
-		var numUser = personne['numUser'];
-		var src = "/index.php/evenements/photos_get/"+numUser+"?thumbnail";
-		newRow.appendChild(addColumn("td", '<img src="'+src+'" alt="photo de profil" height="50" width="50" />'));
-		newRow.appendChild(addColumn("td", personne['nom']));
-		newRow.appendChild(addColumn("td", personne['prenom']));
-		newRow.appendChild(addColumn("td", personne['email']));
-		newRow.appendChild(addColumn("td", personne['numUser']));
-		newRow.lastChild.style.display = 'none';
-		tab.appendChild(newRow);
-	});
-	return tab;
-}
-
 /////////////////// Fonctions la page voir_les_groupe. ////////////////////////////////////////////:
 /**
 *Fonction qui recherche les membres d'un groupe.
 */
 function afficherLesMembresGroupe(numGoupe, nomGroupe){
+	document.getElementById("tab_groupe").innerHTML="";
 	//ouvrir la connexion et choisir type d'envoie 
-	var url="http://localhost:8080/index.php/evenements/voir_membres_groupe/"+numGoupe;
+	var url="/index.php/evenements/voir_membres_groupe/"+numGoupe;
 	//ajout d'un listener qui ecoute le changement d'etat.
 	var requete = xhrGET(url,'json');
 
@@ -42,62 +20,30 @@ function afficherLesMembresGroupe(numGoupe, nomGroupe){
 		}
 	});
 }	
-
-
 /////////////////// Fonctions la page creer_un_groupe. ////////////////////////////////////////////:
-/**
-*Fonction qui recherche les utilisateurs dont les premières lettre du nom correspondent à la chaine
-*entrée dans l'input 'input_personne' de la page creer_un_groupe.
-*/
-function chercherDesPersonnes(input, prop){
-	var nom = input.value;
-	if(nom.length>1){
-		//encodeage pour eviter les caractères interdits dans une url
-		var valeur = encodeURIComponent(nom);
-		//ouvrir la connexion et choisir type d'envoie 
-		var url="http://localhost:8080/index.php/evenements/users_from_nom_js/"+nom;
-		//ajout d'un listener qui ecoute le changement d'etat.
-		var requete = xhrGET(url,'json');
-
-		requete.addEventListener('readystatechange',function(){
-			if (requete.readyState === XMLHttpRequest.DONE && requete.status==200) { // La constante DONE appartient à l'objet XMLHttpRequest, elle n'est pas globale
-				var PersCherches = requete.response; 
-				// on remplis le tableau des personnes cherchés.
-				ajouterPersonsALaDataList("list_personnes", PersCherches);
-				remplirTabPersonsCherches("tab_persons", PersCherches, prop);
-			}
-		});
-	}	
-}
-
-/**
-*Fontion qui ajoute les propositions de personnes sous l'input 'input_personne' de la page creer_un_groupe.
-*/
-function ajouterPersonsALaDataList(idList, PersCherches){
-	var datalist = document.getElementById(idList);
-	var options = '';
-	if(PersCherches===null) return;
-	PersCherches.forEach(function(personne){
-		options += '<option value="'+personne['nom']+" "+personne['prenom']+'" />';
-	});
-	datalist.innerHTML = options;
-}
-
 /**
 *Fonction qui ajoute les utilisateurs au tableau 'tab_persons' de la page creer_un_groupe.
 *les utilisateurs sont ajoutés au tableau en fonction de ce qu'y est tapé dans l'input 'input_personne'.
 */
-function remplirTabPersonsCherches(idTab, PersCherches, prop){
-	tab = construireTableauDePersonne(idTab, PersCherches);
-	for (var i = 0; i < tab.children.length; i++) {
-		if (!verifierSiPersDejaAjoute(PersCherches[i]) && PersCherches[i]['numUser']!=prop){
-			//console.log(tab.children[i].parentNode);
-			tab.children[i].append(addColumn("td",'<button id="bouton" onClick="remplirTabPersonsAjoutes(this.parentNode.parentNode)" >ajouter</button> '));
-		}else if(PersCherches[i]['numUser']==prop)
-			tab.children[i].append(addColumn("td", "proprietaire"));
-		else
-			tab.children[i].append(addColumn("td", "ajouté"));
-	}
+function remplirTabPersonsCherches(idTab,input, prop){
+	document.getElementById(idTab).innerHTML="";
+	requete = chercherDesPersonnes(input);
+	requete.addEventListener('readystatechange',function(){
+		if (requete.readyState === XMLHttpRequest.DONE && requete.status==200) { // La constante DONE appartient à l'objet XMLHttpRequest, elle n'est pas globale
+			var persCherches = requete.response; 
+			if(persCherches===null) return;
+			// on remplis le tableau des personnes cherchés.
+			tab = construireTableauDePersonne(idTab, persCherches);
+			for (var i = 0; i < tab.children.length; i++) {
+				if (!verifierSiPersDejaAjoute(persCherches[i]) && persCherches[i]['numUser']!=prop)
+					tab.children[i].append(addColumn("td",'<button id="bouton" onClick="remplirTabPersonsAjoutes(this.parentNode.parentNode)" >ajouter</button> '));
+				else if(persCherches[i]['numUser']==prop)
+					tab.children[i].append(addColumn("td", "proprietaire"));
+				else
+					tab.children[i].append(addColumn("td", "ajouté"));
+			}
+		}
+	});	
 }
 
 /**
