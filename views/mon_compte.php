@@ -3,10 +3,6 @@
 <div class="container">
   <div>
 
-    <?php if (isset($error)) { ?>
-      <div class="alert alert-warning" role="alert"><?= $error ?></div>
-    <?php } ?>
-
     <div class="div_mon_compte">
       <?php if($photo!==null){ ?>
       <div>

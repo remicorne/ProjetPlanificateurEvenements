@@ -1,11 +1,6 @@
 <div class="container" style="margin-top: 40px">
   <strong>Formulaire d'inscription</strong>
     <div >
-    
-    <?php if (isset($error)) { ?>
-      <div class="alert alert-warning" role="alert"><?= $error ?></div>
-    <?php } ?>
-    
     <form role="form" action="/index.php/users/users_create" method="post">
       <fieldset>
         <input placeholder="Nom" name="nom" type="text" autofocus/><br>
