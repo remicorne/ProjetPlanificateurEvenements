@@ -13,19 +13,17 @@ class Users extends Controller {
   public function send_reset_password()// IMPROVE utiliser un lien de réinitialisation (nécessite un changement de la BD)
   { 
       try {
-          require "assets/PHPMailer/create_mailer.php"; //construit un objet de type mailer dans $mailer selon le process indiqué dans la doc
+          //require "assets/PHPMailer/create_mailer.php"; //construit un objet de type mailer dans $mailer selon le process indiqué dans la doc
           $email = filter_input(INPUT_POST, 'email');
           $user = $this->users->user_from_email($email); //trouve le user 
           if ($user == null) throw new Exception ('Pas de compte associé à cet e-mail');
           $name = "$user->prenom $user->nom"; //construit le nom du user
           $password = $this->users->reset_password($user->numUser);
-          $this->mailer->build_password_reset_email($mailer, $email, $name, $password); //construit l'email à envoyer et retourne le nouveau mdp
-          $this->mailer->send_email($mailer);
+          $this->mailer->build_password_reset_email($email, $name, $password); //construit l'email à envoyer et retourne le nouveau mdp
+          $this->mailer->send_email();
           header('Location: /index.php/sessions/sessions_new');
       } catch (Exception $e) {
-          var_dump($e->getMessage());
-          $this->loader->load('password_forgotten', ['title'=>'Votre adresse email de récupération',
-        'error_message' => $e->getMessage()]);
+          $this->loader->load('password_forgotten', ['title'=>'Votre adresse email de récupération','error' => $e->getMessage()]);
       }
   }
 
