@@ -21,3 +21,17 @@
 	top: 150px;
   	border: solid;
 }
+
+#div_documents{
+	position: absolute;
+	left: 100px;
+	height: 200px;
+	width: 300px;
+	top: 300px;
+}
+
+#button_submit{
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}

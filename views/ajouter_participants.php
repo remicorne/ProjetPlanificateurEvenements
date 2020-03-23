@@ -24,6 +24,16 @@
     </table>
   </div>
 
+  <!-- ajout des documents -->
+  <div id="div_documents"> 
+  <button id="button_ajouterDocument" onclick="ajouterDocument()">Ajouter des document</button>
+    <form enctype="multipart/form-data" method="post" action="/index.php/users/document_add">
+        <div id="div_input_documents">
+        </div>
+        <button id="button_submit" type="submit">Soumettre</button>
+    </form>
+  </div>
+
   <script>
     remplirTabGroupesCherches("tab_groupes_cherches",<?= $numEvent ?>);
     afficherParticipantsEvent('tab_participants' ,<?= $numEvent ?>);

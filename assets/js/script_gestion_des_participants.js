@@ -2,6 +2,9 @@
 *Fonction qui ajoute les utilisateurs au tableau 'tab_persons' de la page ajout_des_participants.
 *les utilisateurs sont ajoutés au tableau en fonction de ce qui est tapé dans l'input 'input_personne'.
 */
+
+var numberOfFiles = 0;
+
 function remplirTabPersonsCherches(idTab,input,numEvent){
 	$('#'+idTab).html("");
 	var nom = input.value;
@@ -117,4 +120,22 @@ function retirerParticipantBd(numPart, numEvent, nomTab){
 		$('#tab_persons').html("");
 		afficherParticipantsEvent(nomTab, numEvent);
 	});
+}
+
+function stockerDocument(){
+	console.log("document stocké");
+}
+
+function ajouterDocument(){
+	numberOfFiles += 1;
+	var newDoc = $("<input></input>").attr({
+		"type" : "file",
+		"class" : "fileAdd",
+		"name" : "file"+numberOfFiles
+	});
+	var submit = $("<button></button>").attr({ //TODO il faut peut etre faire un truc comme ca, on verra apres ajax
+		"onclick" : stockerDocument()//Passer le deocument en argument?
+	});
+	$("#div_input_documents").append(newDoc, submit);
+	$("#button_ajouterDocument").hide();
 }

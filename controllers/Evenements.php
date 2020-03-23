@@ -244,6 +244,11 @@ public function retirer_groupe_event($numGroupe, $numEvent){
       $this->loader->load('ajouter_participants', $data );
     }
   }
+
+  public function go_ajouter_participants() {//TODO : virer cette fonction qui sert à afficher la page d'ajout des documents
+    if (!isset($numEvent)) $numEvent = 1; //TODO : retirer isset et $numEvent à la ligne d'après (je crois)
+    $this->loader->load('ajouter_participants', ['title'=>'Ajouter des participants', 'numEvent'=>$numEvent]);
+  }
 }
   
      
