@@ -1,7 +1,9 @@
-Fonctionnement de PHPMailer :
 
+                                    -------------------------
+                                    Installation de PHPMailer
+                                    -------------------------
 - Installer Composer, l'outil qui permet d'installer des librairies PHP (https://getcomposer.org/) :
-- Pour l'installation automatique : utiliser un fichier .sh avec le contenu suivant dans le dossier ou se situe le projet
+- Pour l'installation automatique : se deplacer dans le dossier du projet puis utiliser un script (fichier .sh) avec le contenu suivant;
 
 #!/bin/sh
 
@@ -25,6 +27,15 @@ exit $RESULT
 - ./composer.phar require phpmailer/phpmailer
 
 Ceci crée un dossier vendor contenant les fichiers necessaires au fonctionnement de PHPMailer
+
+Pour finir l'installation, déplacer les dossiers composer et le contenu de vendor dans assets/PHPmailer.
+
+Le contenu de phpmailer/phpmailer ne se met pas sur github car c'est une librairie gérée par composer, il faut donc la telecharger pour pouvoir s'en servir.
+
+                                        ------------------------
+                                        Utilisation de PHPMailer
+                                        ------------------------
+
 Dans le dossier phpMailer/phpMailer/examples se trouvent les infos necessaires pour une authentification et un envoi de mail via gmail.
 Pour résumer : 
 - Inclure les fichiers necessaires au fonctionnement de PHPMailer (create_mailer.php l10 - 13)) puis
