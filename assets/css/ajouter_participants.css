@@ -30,6 +30,15 @@
 	top: 300px;
 }
 
+#div_documents_ajoutes{
+	position: absolute;
+	right: 100px;
+	height: 100px;
+	width: 300px;
+	top: 25px;
+	border: solid;
+}
+
 #button_submit{
 	position: absolute;
 	right: 0px;

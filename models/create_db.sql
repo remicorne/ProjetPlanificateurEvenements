@@ -67,17 +67,15 @@ CREATE TABLE Repondre(
 );
 
 
-DROP TABLE IF EXISTS Documents ;
-CREATE TABLE Documents(
-	numDoc INTEGER PRIMARY KEY AUTOINCREMENT,
-	nomDoc TEXT,
-	com TEXT
-);
-
-
-DROP TABLE IF EXISTS DocsEven ;
-CREATE TABLE DocsEven(
+DROP TABLE IF EXISTS DocsEvent ;
+CREATE TABLE DocsEvent(
 	numEvent INTEGER REFERENCES Evenements(numEvent) ON DELETE CASCADE,
-	numDoc INTEGER REFERENCES Documents(numDoc) ON DELETE CASCADE,
-	PRIMARY KEY(numEvent,numDoc)
+	nomDoc INTEGER REFERENCES Documents(numDoc) ON DELETE CASCADE,
+	PRIMARY KEY(numEvent,nomDoc)
 );
+
+INSERT INTO Evenements(titre, lieu, descri) VALUES("test", "panam", "ceci est un test");
+INSERT INTO DocsEvent(numEvent, nomDoc) VALUES("1", "doc1");
+INSERT INTO DocsEvent(numEvent, nomDoc) VALUES("1", "doc2");
+
+

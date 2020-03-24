@@ -83,10 +83,9 @@ try{
         generate_error_404($exception);
 }
 
-/*
-echo 'path_elements : '; var_dump($path_elements); echo '<br>';
-echo 'controller_name : '; var_dump($controller_name);echo '<br>';
-echo 'method_name : '; var_dump($method_name);echo '<br>';
-echo 'controller : '; var_dump($controller);echo '<br>';
-echo 'parameters : '; var_dump($parameters);echo '<br>';
- */
+
+// echo 'path_elements : '; var_dump($path_elements); echo '<br>';
+// echo 'controller_name : '; var_dump($controller_name);echo '<br>';
+// echo 'method_name : '; var_dump($method_name);echo '<br>';
+// echo 'controller : '; var_dump($controller);echo '<br>';
+// echo 'parameters : '; var_dump($parameters);echo '<br>';

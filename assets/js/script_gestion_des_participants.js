@@ -3,8 +3,6 @@
 *les utilisateurs sont ajoutés au tableau en fonction de ce qui est tapé dans l'input 'input_personne'.
 */
 
-var numberOfFiles = 0;
-
 function remplirTabPersonsCherches(idTab,input,numEvent){
 	$('#'+idTab).html("");
 	var nom = input.value;
@@ -122,20 +120,89 @@ function retirerParticipantBd(numPart, numEvent, nomTab){
 	});
 }
 
-function stockerDocument(){
-	console.log("document stocké");
-}
 
-function ajouterDocument(){
-	numberOfFiles += 1;
+function nouveauDocument(){ // TODO creer toyut ca au chargeemnt de la page puis les cacher
+	$("#nouveau_document").hide();
 	var newDoc = $("<input></input>").attr({
 		"type" : "file",
-		"class" : "fileAdd",
-		"name" : "file"+numberOfFiles
+		"id" : "newDoc",
+		"name" : "document"
 	});
-	var submit = $("<button></button>").attr({ //TODO il faut peut etre faire un truc comme ca, on verra apres ajax
-		"onclick" : stockerDocument()//Passer le deocument en argument?
+	var docName = $("<input></input>").attr({
+		"type" : "text",
+		"id" : "docName",
+		"placeholder" : "Nommez votre fichier"
 	});
-	$("#div_input_documents").append(newDoc, submit);
-	$("#button_ajouterDocument").hide();
+	var uploader = $("<button></button>").attr({
+		"id" : "uploader"
+		});
+	uploader.text("Upload");
+	uploader.click(function(){uploadDocument()});
+	$("#div_documents_ajax").append(newDoc, docName, "format : filename.ext<br>", uploader);
+}
+
+function uploadDocument(){
+	var newDoc = $("#newDoc");
+	var docName = $("#docName");
+	docName.css('border-color', 'initial');
+	if (isNameValid(docName) && newDoc.val() != "" ) {
+		var formData = new FormData();
+		formData.append("document", newDoc[0].files[0], $("#docName").val()); 
+		$.ajax({
+			type: "POST",
+			url: "/index.php/evenements/add_document/"+numEvent,
+			data:formData,
+			processData: false, //par défaut .post() converti la data en string, ici il ne faut pas puisqu'on envoie un file (je crois)
+			contentType: false,
+			success: function (data) {
+				$("#nouveau_document").show();
+				newDoc.hide();
+				docName.hide();
+				$("#uploader").hide();
+				refreshDocTable(data)
+			},
+			error: function (error) {
+				$("body").html(error.responseText);
+				console.log(error);
+			}
+		})
+		// var reader = new FileReader();
+		// reader.readAsText(newDoc[0].files[0], 'UTF-8');
+		// reader.onload = sendFile;
+	}
+}
+
+function refreshDocTable(){
+	$.ajax({
+		url: "/index.php/evenements/get_event_documents/"+numEvent,
+		success: function (data) {
+			$("#tab_documents").html("");
+			JSON.parse(data).forEach(function(document){
+				var ligneDoc = $("<tr></tr>");
+				var nomDoc = $("<td></td>").html(document["nomDoc"]);
+				$("#tab_documents").append(ligneDoc.append(nomDoc)); 
+			})
+		},
+		error: function (error) {
+			$("body").html(error.responseText);
+			console.log(error);
+		},
+	})
+
+}
+
+// function sendFile(event){
+// 	var result = event.target.result;
+// 	var formData = new FormData();
+// 	formData.append("filename", result, $("#docName").val());
+// 	console.log(formData);
+// 	$.post("add_document", formData, refreshDocTable);
+// }
+
+function isNameValid(docName){
+	var nameFormat = /^[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/;
+	if (!nameFormat.test(docName.val())) { 
+		docName.css('border-color', '#cc0000');
+		return false;}
+	return true;
 }

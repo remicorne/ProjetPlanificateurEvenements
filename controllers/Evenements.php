@@ -4,7 +4,7 @@ class Evenements extends Controller {
     $this->tableau_de_bord();
   }
 
-  /////////////////////////////////////////// methodes de redirection///////////////////////////////////////////////////////
+  /////////////////////////////////////////// methodes de redirection/////////////////////////////////////////////////////// TODO : redirect unauthorized user (il ne s'agit pas juste d'etre logged)
   public function tableau_de_bord() {
     if ($this->redirect_unlogged_user()) return;
   	$this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
@@ -242,6 +242,30 @@ public function retirer_groupe_event($numGroupe, $numEvent){
     }catch (Exception $e){
       $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
       $this->loader->load('ajouter_participants', $data );
+    }
+  }
+
+  public function add_document($numEvent) { //TODO finir de retaper la fonction pour les fichiers
+    try {
+      
+      if (!isset($_FILES['document'])) throw new Exception('Vous devez choisir un document.');
+      if ($_FILES['document']['error'] !== UPLOAD_ERR_OK) throw new Exception('Erreur avec l\'envoi.');
+      
+      $tmp_file = $_FILES['document']['tmp_name'];
+      $nomDoc = $_FILES['document']['name'];
+      $this->evenements->add_document($tmp_file, $numEvent, $nomDoc); 
+    } catch (Exception $e) {
+      $this->loader->load('error',['title'=>"Page d'erreur", 
+                          'exception' => $e]);
+    }
+  }
+
+  public function get_event_documents($numEvent){
+    try {
+      echo json_encode($this->evenements->get_event_documents($numEvent));
+    } catch (Exception $e)  {
+      $this->loader->load('error',['title'=>"Page d'erreur", 
+                          'exception' => $e]);
     }
   }
 

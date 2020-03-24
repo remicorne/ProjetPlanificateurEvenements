@@ -214,4 +214,29 @@ class Evenements_model extends Model{
         throw new Exception(self::str_error_database.' afficher_les_participants_event'.$e);
       }
   }
+  
+  public function add_document($tmp_file, $numEvent, $nomDoc) {
+    try {
+      move_uploaded_file($tmp_file, "uploads/" .$numEvent ."/" .$nomDoc);
+
+      $statement = $this->db->prepare("INSERT INTO DocsEvent(numEvent, nomDoc) VALUES(?,?)");
+      $statement->execute([$numEvent, $nomDoc]);
+      
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database ."(add_document) : " .$e->getMessage());
+    }
+  }
+
+  public function get_event_documents($numEvent){
+    try{
+      $statement = $this->db->prepare("SELECT nomDoc FROM DocsEvent  WHERE numEvent = ?");
+      $statement->execute([$numEvent]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception (self::str_error_database ."(get_event_documents) : " .$e->getMessage());
+    }
+  }
+
+
+
 }
