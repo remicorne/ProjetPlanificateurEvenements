@@ -13,16 +13,18 @@
 				<li><a href="/index.php/sessions/sessions_destroy">se déconnecter</a></li>
 			</ul>
 		</div>
+		
 		<div id="Lien_tableau_de_bord">
 			<a href="/index.php">Tableau de bord</a></li>
 		</div>
+
 		<div id="menu_reunion">
 			<p> Réunion <p>
 			<ul id="navigation">
 			  <li><a href="/index.php/evenements/sondages_new">créer une réunion</a></li>
 			  <li><a href="#">réunions à venir</a></li>
-			  <li><a href="#">réunion en sondage</a></li>
-			  <li><a href="#">réunion passées</a></li>
+			  <li><a href="/index.php/evenements/reunions_en_sondages">réunions en sondages</a></li>
+			  <li><a href="#">réunions passées</a></li>
 			</ul>
 		</div>
 

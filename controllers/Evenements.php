@@ -32,6 +32,43 @@ class Evenements extends Controller {
       $this->loader->load('sondages_new', ['title'=>'Créer un sondage de réunion']);
   }
 
+  public function reunions_en_sondages(){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numParts_user = $this->evenements->voir_numParts_utilisateur($this->sessions->logged_user()->numUser);
+      // on recupère tous les evenement en sondages de l'utilisateur en cours.
+      foreach ($numParts_user as $num){
+        $e = $this->evenements->voir_evenement_en_sondage($num['numPart']); 
+        // construction du tableau d'event avec le numEvent en index.
+        if ($e!=null) $events[$e['numEvent']] = $e ; 
+      }
+      // si l'utilisateur a choisi un event en particulier on l'affiche sinon on affiche le premier.
+      if(isset($_POST['numEvent']))
+        $numEvent = filter_input(INPUT_POST, 'numEvent');
+      else
+        $numEvent = reset($events)['numEvent'];
+      $event_visu = $events[$numEvent]; 
+      // le sondages visualisé sur la page.
+      $sondages_event = $this->evenements->voir_sondages_evenement($numEvent);  
+      foreach ($sondages_event as &$sondage)
+        $sondage['reps'] = $this->evenements->voir_reponses_part_sond($numEvent, $sondage['numSond']);
+      unset($sondage);
+      $repUser = $this->evenements->voir_reponses_user_sond($numEvent, $event_visu['numPart']);
+      $nbPart = $this->evenements->voir_nb_part_event($numEvent);
+
+      $this->loader->load('reunions_en_sondages', ['title'=>'reunions en sondages',
+                                                   'events' => $events,
+                                                   'event_visu'=> $event_visu,
+                                                   'sondages_event'=> $sondages_event,
+                                                   'nbPart' => $nbPart,
+                                                   'numPart' => $event_visu['numPart'],
+                                                   'repUser' => $repUser ]);
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+      $this->loader->load('reunions_en_sondages',$data);
+    }
+  }
+
   public function voir_les_groupes(){
     if ($this->redirect_unlogged_user()) return;
     try{
@@ -49,9 +86,29 @@ class Evenements extends Controller {
     $groupes = $this->evenements->voir_les_groupes_user($this->sessions->logged_user()->numUser);
     // ajouter le nombre de membre au tableau $groupes
     foreach ($groupes as &$groupe)
-      $groupe['nbMembre'] = $this->evenements->compter_les_membres_groupe($groupe['numGroupe'])['cpt'];      
+      $groupe['nbMembre'] = $this->evenements->compter_les_membres_groupe($groupe['numGroupe'])['cpt']; 
     unset($groupe);
     return $groupes;
+  }
+
+  public function vote_reunion_en_sondages($numEvent, $numPart){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $numEvent = filter_var($numEvent);
+      $numPart = filter_var($numPart);
+      if(isset($_POST['radio'])){
+        $numSond = filter_input(INPUT_POST, 'radio');
+        $this->evenements->valider_date_event($numEvent, $numSond, $numPart);
+      }else{
+        $numsSonds=filter_input_array(INPUT_POST);
+        foreach ($numsSonds['checkbox'] as $numSond)
+          $this->evenements->modifier_vote_sondage($numSond, $numPart);
+      }
+      header("Location: /index.php/evenements/reunions_en_sondages");
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+      $this->loader->load('reunions_en_sondages',$data);
+    }
   }
 
   // fonction appelé en js par la page voir_les_groupes.
@@ -138,7 +195,6 @@ class Evenements extends Controller {
           $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
           $this->evenements->creer_reponse($numSond, $numPart);
         }
-
         header("Location: /index.php/evenements/ajouter_participants/$numEvent"); 
       } catch (Exception $e) {
         $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];

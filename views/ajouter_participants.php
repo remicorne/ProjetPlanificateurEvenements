@@ -1,7 +1,10 @@
 <script type="text/javascript" src="/assets/js/script_gestion_des_participants.js"></script>
 
 <div class="container">
-  <br /><br />
+  
+  <?php if (isset($error)) { ?>
+    <div class="alert alert-warning" role="alert"><?= $error ?></div>
+  <?php } ?>
 
   <div id="div_persons_cherches" >
       <p>Ajouter les participants</p>
@@ -23,9 +26,9 @@
     <table id="tab_participants" > 
     </table>
   </div>
+</div>
 
-  <script>
+<script>
     remplirTabGroupesCherches("tab_groupes_cherches",<?= $numEvent ?>);
     afficherParticipantsEvent('tab_participants' ,<?= $numEvent ?>);
-  </script>
-</div>
+</script>
