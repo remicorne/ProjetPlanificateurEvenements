@@ -244,6 +244,23 @@ public function retirer_groupe_event($numGroupe, $numEvent){
       $this->loader->load('ajouter_participants', $data );
     }
   }
+
+  public function reunions_a_venir(){
+      if ($this->redirect_unlogged_user()) return;
+      try {
+  
+        $infos_reunions = $this->evenements->recuperer_informations_sondages();
+        $this->loader->load('reunions_a_venir', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions à venir']);
+      } catch (Exception $e) {
+        $this->loader->load('reunions_a_venir', ['title'=>'Réunions à venir', 'error_message' => $e->getMessage()]);
+      }
+  }
+
+  public function reunions_passees(){
+    if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('reunions_passees', ['title'=>'Réunions passées']);
+  }
+
 }
   
      
