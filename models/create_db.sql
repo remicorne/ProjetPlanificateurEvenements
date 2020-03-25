@@ -52,6 +52,7 @@ ADD numSond INTEGER REFERENCES Sondages(numSond) ON DELETE CASCADE;
 DROP TABLE IF EXISTS Participants ;
 CREATE TABLE Participants(
 	numPart INTEGER PRIMARY KEY AUTOINCREMENT,
+	aVote TEXT CHECK(aVote IN ("oui","non")) DEFAULT "non",
 	numEvent INTEGER REFERENCES Evenements(numEvent) ON DELETE CASCADE,
 	numUser INTEGER REFERENCES Utilisateurs(numUser) ON DELETE CASCADE,
 	statut TEXT CHECK(statut IN ("createur","administrateur","participant")) DEFAULT "participant"
@@ -62,7 +63,7 @@ DROP TABLE IF EXISTS Repondre;
 CREATE TABLE Repondre(
 	numSond INTEGER REFERENCES Sondages(numSond) ON DELETE CASCADE,
 	numPart INTEGER REFERENCES Participants(numPart) ON DELETE CASCADE,
-	reponse TEXT CHECK(reponse IN ("attente","ok","nonOk")) DEFAULT "attente",
+	reponse BOOLEAN DEFAULT 0,
 	PRIMARY KEY(numPart,numSond)
 );
 

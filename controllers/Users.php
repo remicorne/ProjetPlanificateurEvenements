@@ -13,7 +13,6 @@ class Users extends Controller {
   public function send_reset_password()// IMPROVE utiliser un lien de réinitialisation (nécessite un changement de la BD)
   { 
       try {
-          //require "assets/PHPMailer/create_mailer.php"; //construit un objet de type mailer dans $mailer selon le process indiqué dans la doc
           $email = filter_input(INPUT_POST, 'email');
           $user = $this->users->user_from_email($email); //trouve le user 
           if ($user == null) throw new Exception ('Pas de compte associé à cet e-mail');

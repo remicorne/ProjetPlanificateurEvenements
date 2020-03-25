@@ -58,6 +58,76 @@ class Evenements_model extends Model{
     }
   }  
 
+  public function voir_numParts_utilisateur($numUser){
+    try{
+      $statement = $this->db->prepare("SELECT numPart FROM Participants WHERE numUser=?");
+      $statement->execute([$numUser]);
+      return $statement->fetchAll();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_numParts_utilisateur'.$e);
+    }
+  }
+
+  public function voir_evenement_en_sondage($numPart){
+    try{
+      $statement = $this->db->prepare("SELECT P.numPart, statut, aVote ,E.numEvent, titre, lieu, descri FROM Evenements E JOIN Participants P ON E.numEvent=P.numEvent WHERE numPart=? AND numSond IS NULL");
+      $statement->execute([$numPart]);
+      return $statement->fetch();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_evenements_en_sondages'.$e);
+    } 
+  }
+
+  public function voir_sondages_evenement($numEvent){
+    try{
+      $statement = $this->db->prepare("SELECT numSond, date_sond, heureD, heureF FROM Sondages WHERE numEvent=? ORDER BY numSond");
+      $statement->execute([$numEvent]);
+      return $statement->fetchAll();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_sondages_evenement'.$e);
+    }  
+  }
+
+  public function voir_reponses_part_sond($numEvent, $numSond){
+    try{
+      $statement = $this->db->prepare("SELECT P.numPart, nom, prenom, statut, aVote, reponse FROM ((Repondre R JOIN Sondages S ON R.numSond=S.numSond) JOIN Participants P ON R.numPart=P.numPart) JOIN Utilisateurs U ON P.numUser=U.numUser  WHERE S.numEvent=? AND S.numSond=? ORDER BY P.numPart");
+      $statement->execute([$numEvent, $numSond]);
+      return $statement->fetchAll();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_reponses_part_sond_event'.$e);
+    }  
+  }
+
+  public function voir_reponses_user_sond($numEvent, $numPart){
+    try{
+      $statement = $this->db->prepare("SELECT reponse FROM Repondre R JOIN Sondages S ON R.numSond=S.numSond WHERE numEvent=? AND R.numPart=? ORDER BY R.numSond");
+      $statement->execute([$numEvent, $numPart]);
+      return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_reponses_part_sond'.$e);
+    }  
+  }
+
+  public function voir_nb_part_event($numEvent){
+    try{
+      $statement = $this->db->prepare("SELECT COUNT(*) FROM Participants WHERE numEvent=?");
+      $statement->execute([$numEvent]);
+      return $statement->fetchColumn();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_nb_part_event'.$e);
+    }   
+  }
+/*
+  public function voir_participants_event($numEvent){
+    try{
+      $statement = $this->db->prepare("SELECT nom, prenom, aVote, reponse FROM (Repondre R JOIN Participants P ON R.numPart=P.numPart) JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=? AND P.numPart=?");
+      $statement->execute([$numEvent]);
+      return $statement->fetchAll();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_reponses_part_event'.$e);
+    }  
+  }
+*/
   public function compter_les_membres_groupe($numGroupe){
     try{
       $statement = $this->db->prepare('SELECT COUNT(*) cpt FROM Appartenir WHERE numGroupe=? ');
@@ -118,11 +188,19 @@ class Evenements_model extends Model{
     }
   }
 
+  public function valider_date_event($numEvent, $numSond, $numPart){
+    try {
+        $statement = $this->db->prepare("UPDATE Evenements SET numSond=? WHERE numEvent=?");
+        $statement->execute([$numSond, $numEvent]);
+        $statement = $this->db->prepare("UPDATE Participants SET aVote='oui' WHERE numPart=?");
+        $statement->execute([$numPart]);
+    }catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' valider_date_event'.$e);
+    } 
+  }
+
   public function ajouter_un_participant($numUser, $numEvent, $statut){
     try {
-      var_dump($numUser); echo "<br>";
-      var_dump($numEvent); echo "<br>";
-      var_dump($statut); echo "<br>";
        $statement = $this->db->prepare("INSERT INTO Participants(numEvent, numUser, statut) VALUES (?,?,?)");
        $statement->execute([$numEvent, $numUser, $statut]);
        return $this->db->lastInsertId();
@@ -138,7 +216,7 @@ class Evenements_model extends Model{
                             'heureD'=>$horaireD,
                             'heureF'=>$horaireF,
                             'numEvent' =>$numEvent]);
-       $numSond = $this->db->lastInsertId();
+       return $this->db->lastInsertId();
     } catch (PDOException $e) {
         throw new Exception(self::str_error_database.' creer_un_sondage'.$e);
     }
@@ -152,6 +230,21 @@ class Evenements_model extends Model{
     } catch (PDOException $e) {
         throw new Exception(self::str_error_database.' obtenir_les_sondages'.$e);
     }
+  }
+
+  public function modifier_vote_sondage($numSond, $numPart){
+    try {
+       $statement = $this->db->prepare("UPDATE Repondre SET reponse=1 WHERE numSond=?");
+       $statement->execute([$numSond]);
+
+       $statement = $this->db->prepare("UPDATE Repondre SET reponse=0 WHERE numPart=? AND numSond!=?");
+       $statement->execute([$numPart, $numSond]);
+
+       $statement = $this->db->prepare("UPDATE Participants SET aVote='oui' WHERE numPart=?");
+       $statement->execute([$numPart]);
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' modifier_vote_sondage'.$e);
+    } 
   }
 
   public function creer_reponse($numSond, $numPart){
