@@ -270,7 +270,7 @@ class Users_model extends Model {
   }
 
   public function inject_data($data) { 
-    if ($this->sessions->user_is_logged) $data['user_has_photo'] = $this->user_has_photo($_SESSION['logged_user']->numUser);
+    if (isset($_SESSION['logged_user'])) $data['user_has_photo'] = $this->user_has_photo($_SESSION['logged_user']->numUser);
     return $data;
   }
 

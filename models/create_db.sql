@@ -74,8 +74,5 @@ CREATE TABLE DocsEvent(
 	PRIMARY KEY(numEvent,nomDoc)
 );
 
-INSERT INTO Evenements(titre, lieu, descri) VALUES("test", "panam", "ceci est un test");
-INSERT INTO DocsEvent(numEvent, nomDoc) VALUES("1", "doc1");
-INSERT INTO DocsEvent(numEvent, nomDoc) VALUES("1", "doc2");
 
 

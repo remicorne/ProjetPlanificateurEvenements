@@ -2,7 +2,7 @@
 	position: absolute;
 	left: 0px;
   	width: 400px;
-  	top: 150px;
+  	top: 200px;
 	border: solid;
 }
 
@@ -10,7 +10,7 @@
 	position: absolute;
 	left: 450px;
   	width: 250px;
-  	top: 150px;
+  	top: 200px;
 	border: solid;
 }
 
@@ -18,7 +18,7 @@
 	position: absolute;
 	left: 750px;
 	width: 400px;
-	top: 150px;
+	top: 200px;
   	border: solid;
 }
 
@@ -33,9 +33,9 @@
 #div_documents_ajoutes{
 	position: absolute;
 	right: 100px;
-	height: 100px;
+	height: 125px;
 	width: 300px;
-	top: 25px;
+	top: 10px;
 	border: solid;
 }
 
@@ -43,4 +43,9 @@
 	position: absolute;
 	right: 0px;
 	top: 0px;
+}
+
+#tab_documents{
+	height: 93px;
+	width: 295px;
 }
