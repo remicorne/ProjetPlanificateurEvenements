@@ -346,43 +346,88 @@ public function retirer_groupe_event($numGroupe, $numEvent){
         }
     }
 
-    public function get_event_documents($numEvent)
-    {
-        try {
-            echo json_encode($this->evenements->get_event_documents($numEvent));
-        } catch (Exception $e) {
-            $this->loader->load('error', ['title'=>"Page d'erreur",
-                          'exception' => $e]);
-        }
+public function get_event_documents($numEvent)
+{
+    try {
+        echo json_encode($this->evenements->get_event_documents($numEvent));
+    } catch (Exception $e) {
+        $this->loader->load('error', ['title'=>"Page d'erreur",
+                      'exception' => $e]);
     }
+}
 
-    public function delete_document($numEvent, $docName)
-    {
-        try {
-            $this->redirect_non_administrator($numEvent);
-            $this->documents->delete_document($numEvent, $docName);
-            $this->evenements->delete_document($numEvent, $docName);
-        } catch (Exception $e) {
-            $this->loader->load('error', ['title'=>"Page d'erreur",
-                          'exception' => $e]);
-        }
+public function delete_document($numEvent, $docName)
+{
+    try {
+        $this->redirect_non_administrator($numEvent);
+        $this->documents->delete_document($numEvent, $docName);
+        $this->evenements->delete_document($numEvent, $docName);
+    } catch (Exception $e) {
+        $this->loader->load('error', ['title'=>"Page d'erreur",
+                      'exception' => $e]);
     }
+}
 
-    public function is_name_taken($numEvent, $docName){
-        try {
-            echo json_encode($this->documents->is_name_taken($numEvent, $docName));    
-        } catch (Exception $e) {
-            $this->loader->load('error', ['title'=>"Page d'erreur",
-                          'exception' => $e]);
+public function is_name_taken($numEvent, $docName){
+    try {
+        echo json_encode($this->documents->is_name_taken($numEvent, $docName));    
+    } catch (Exception $e) {
+        $this->loader->load('error', ['title'=>"Page d'erreur",
+                      'exception' => $e]);
 
-        }
     }
+}
 
-    public function redirect_non_administrator($numEvent){
-        $user = $this->sessions->logged_user();
-        if (!$this->evenements->check_if_administrator($user->numUser, $numEvent))
-            throw new Exception('Bien tenté mais on y a pensé');
-    }
+public function redirect_non_administrator($numEvent){
+    $user = $this->sessions->logged_user();
+    if (!$this->evenements->check_if_administrator($user->numUser, $numEvent))
+        throw new Exception('Bien tenté mais on y a pensé');
+}
+
+public function reunions_a_venir(){
+  if ($this->redirect_unlogged_user()) return;
+  try {
+
+    $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir();
+    $this->loader->load('reunions_a_venir', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions à venir']);
+  } catch (Exception $e) {
+    $this->loader->load('reunions_a_venir', ['title'=>'Réunions à venir', 'error_message' => $e->getMessage()]);
+  }
+}
+
+public function reunions_passees(){
+if ($this->redirect_unlogged_user()) return;
+try {
+
+  $infos_reunions = $this->evenements->recuperer_infos_reunions_passees();
+  $this->loader->load('reunions_passees', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions passées']);
+} catch (Exception $e) {
+  $this->loader->load('reunions_passees', ['title'=>'Réunions passées', 'error_message' => $e->getMessage()]);
+}
+}
+
+
+
+public function participants($numReunion){
+if ($this->redirect_unlogged_user()) return;
+try {
+  $infos_participants = $this->evenements->recuperer_informations_participants($numReunion);
+  $this->loader->load('participants', ['infos_participants'=>$infos_participants,'title'=>"Participants de la reunion numéro  $numReunion"]);
+} catch (Exception $e) {
+  $this->loader->load('participants', ['title'=>"participants de la reunion numéro $numReunion", 'error_message' => $e->getMessage()]);
+}
+}
+
+
+public function reunion($numReunion,$nombreParticipants){
+if ($this->redirect_unlogged_user()) return;
+try {
+  $infos_reunion = $this->evenements->recuperer_informations_reunion($numReunion);
+  $this->loader->load('reunion', ['title'=>"Réunion numéro $numReunion",'infos_reunion'=>$infos_reunion,'nombreParticipants'=>$nombreParticipants]);
+} catch (Exception $e) {
+  $this->loader->load('reunion', ['title'=>"Réunion numéro $numReunion", 'error_message' => $e->getMessage()]);
+}
+}
 
 }
   
