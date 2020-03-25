@@ -5,7 +5,7 @@
     
       <body>  
            <br /><br />  
-           <div class="container">  
+           <div class="container" style="width:900px;">  
                                 
                 <br /><br />  
                 <div class="form-group">
@@ -19,25 +19,33 @@
                     </div>
                 </div>
                 <br /><br />  
+            
+
+
+
                 <div class="table-responsive" >  
                      <table class="table table-bordered" id="reunions_table">  
+
+
+
                           <tr>  
                                <th width="5%">Numéro</th>  
-                               <th width="25%">Date</th>  
-                               <th width="35%">Heure</th>  
-                               <th width="10%">Durée</th>  
-                               <th width="20%">Sujet</th>  
-                               <th width="5%">Nombre de participants</th>  
+                               <th width="25%">Picture</th>  
+                               <th width="35%">Nom</th>  
+                               <th width="10%">Prénom</th>  
+                               <th width="20%">Email</th>  
+                               <th width="5%">Statut</th>  
                           </tr>  
 
-                     <?php foreach($infos_reunions as $infos_sondage){   ?>
+
+                     <?php foreach($infos_participants as $infos_participant){ ?>
                            <tr>  
-                               <td><a href="/evenements/reunion/<?=$infos_sondage['numEvent']?>/<?=$infos_sondage['nombreParticipant']?>"><?=$infos_sondage['numEvent']?></td>  
-                               <td><?=$infos_sondage['date_sond']?></td>  
-                               <td><?=$infos_sondage['heureD']?></td>  
-                               <td><?=$infos_sondage['heureF']-$infos_sondage['heureD']?></td>  
-                               <td><?=$infos_sondage['titre']?></td>  
-                               <td><a href="/evenements/participants/<?=$infos_sondage['numEvent']?>"><?=$infos_sondage['nombreParticipant']?></td>  
+                               <td><?=$infos_participant['numUser']?></td>  
+                               <td><img src="/index.php/evenements/photos_get/<?=$infos_participant['numUser']?>" alt="photo"></td>  
+                               <td><?=$infos_participant['nom']?></td>  
+                               <td><?=$infos_participant['prenom']?></td>  
+                               <td><?=$infos_participant['email']?></td>  
+                               <td><?=$infos_participant['statut']?></td>  
                           </tr>  
                      <?php } ?> 
                                               </table>  

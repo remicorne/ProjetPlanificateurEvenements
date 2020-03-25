@@ -249,7 +249,7 @@ public function retirer_groupe_event($numGroupe, $numEvent){
       if ($this->redirect_unlogged_user()) return;
       try {
   
-        $infos_reunions = $this->evenements->recuperer_informations_sondages();
+        $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir();
         $this->loader->load('reunions_a_venir', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions à venir']);
       } catch (Exception $e) {
         $this->loader->load('reunions_a_venir', ['title'=>'Réunions à venir', 'error_message' => $e->getMessage()]);
@@ -258,8 +258,37 @@ public function retirer_groupe_event($numGroupe, $numEvent){
 
   public function reunions_passees(){
     if ($this->redirect_unlogged_user()) return;
-      $this->loader->load('reunions_passees', ['title'=>'Réunions passées']);
-  }
+    try {
+
+      $infos_reunions = $this->evenements->recuperer_infos_reunions_passees();
+      $this->loader->load('reunions_passees', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions passées']);
+    } catch (Exception $e) {
+      $this->loader->load('reunions_passees', ['title'=>'Réunions passées', 'error_message' => $e->getMessage()]);
+    }
+}
+
+
+
+  public function participants($numReunion){
+    if ($this->redirect_unlogged_user()) return;
+    try {
+      $infos_participants = $this->evenements->recuperer_informations_participants($numReunion);
+      $this->loader->load('participants', ['infos_participants'=>$infos_participants,'title'=>"Participants de la reunion numéro  $numReunion"]);
+    } catch (Exception $e) {
+      $this->loader->load('participants', ['title'=>"participants de la reunion numéro $numReunion", 'error_message' => $e->getMessage()]);
+    }
+}
+  
+
+  public function reunion($numReunion,$nombreParticipants){
+    if ($this->redirect_unlogged_user()) return;
+    try {
+      $infos_reunion = $this->evenements->recuperer_informations_reunion($numReunion);
+      $this->loader->load('reunion', ['title'=>"Réunion numéro $numReunion",'infos_reunion'=>$infos_reunion,'nombreParticipants'=>$nombreParticipants]);
+    } catch (Exception $e) {
+      $this->loader->load('reunion', ['title'=>"Réunion numéro $numReunion", 'error_message' => $e->getMessage()]);
+    }
+}
 
 }
   
