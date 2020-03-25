@@ -26,7 +26,6 @@
     <table style="display: inline-block; overflow:auto;" id="tab_participants" > 
     </table>
   </div>
-</div>
 
   <!-- remplis avec fonction js -->
   <div id="div_documents_ajoutes"> 
@@ -41,7 +40,8 @@
   <div id="div_documents_ajax"> 
   <button id="nouveau_document" onclick="creerDivNouveauDocument()">Ajouter un document</button>
   </div>
-
+  </div>
+  
   <script>
   var numEvent = <?=$numEvent?>;
   </script>

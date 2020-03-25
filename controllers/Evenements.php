@@ -184,15 +184,6 @@ class Evenements extends Controller
     }
   }
 
-
-  private function redirect_unlogged_user() {
-    if (!$this->sessions->user_is_logged()) {
-      header('Location: /index.php/sessions/sessions_new');
-      return true;
-    }
-    return false;
-  }
-
   public function creer_sondages_event(){
     if ($this->redirect_unlogged_user()) return;
     try {
@@ -209,7 +200,7 @@ class Evenements extends Controller
           $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
           $this->evenements->creer_reponse($numSond, $numPart);
         }
-        header("Location: /index.php/evenements/ajouter_participants/$numEvent"); 
+        header("Location: /index.php/evenements/ajouter_participants_documents/$numEvent"); 
       } catch (Exception $e) {
         $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];
         $this->loader->load('sondages_new', $data );
@@ -225,7 +216,7 @@ class Evenements extends Controller
       echo json_encode($rep);
     }catch(Exception $e){
       $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-      $this->loader->load('ajouter_participants', $data );
+      $this->loader->load('ajouter_participants_documents', $data );
     }
   }
 
@@ -242,44 +233,26 @@ class Evenements extends Controller
       }
     }catch(Exception $e){
       $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-      $this->loader->load('ajouter_participants', $data );
+      $this->loader->load('ajouter_participants_documents', $data );
     }
   }
 
 public function retirer_groupe_event($numGroupe, $numEvent){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $numGroupe = filter_var($numGroupe);
-      $numEvent = filter_var($numEvent);
-      $numParts = $this->evenements->voir_numPart_membres_groupe($numGroupe, $numEvent);
-      foreach ($numParts as $numPart)
-          $this->retirer_participant_event($numPart['numPart']);
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-      $this->loader->load('ajouter_participants', $data );
+    if ($this->redirect_unlogged_user()) {
+        return;
     }
-
-    public function ajout_groupe_bd()
-    {
-        if ($this->redirect_unlogged_user()) {
-            return;
+    try {
+        $numGroupe = filter_var($numGroupe);
+        $numEvent = filter_var($numEvent);
+        $numParts = $this->evenements->voir_numPart_membres_groupe($numGroupe, $numEvent);
+        foreach ($numParts as $numPart) {
+            $this->retirer_participant_event($numPart['numPart']);
         }
-        try {
-            $utilisateurs = filter_input(INPUT_POST, 'utilisateurs');
-            $utilisateurs = json_decode($utilisateurs);
-            $prop = filter_input(INPUT_POST, 'proprietaire');
-            $nomGroupe = filter_input(INPUT_POST, 'nom_groupe');
-            $numGroupe = $this->evenements->ajout_groupe_bd($nomGroupe);
-            $this->evenements->ajout_personnes_groupe($numGroupe, $utilisateurs, 0);
-            $this->evenements->ajout_personnes_groupe($numGroupe, [$prop], 1);
-            header('Location: /index.php');
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title'=>'creer_un_groupe'];
-            $this->loader->load('creer_un_groupe', $data);
-        }
+    } catch (Exception $e) {
+        $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+        $this->loader->load('ajouter_participants_documents', $data);
     }
-
-
+}
     private function redirect_unlogged_user()
     {
         if (!$this->sessions->user_is_logged() || $this->users->user_from_email($this->sessions->logged_user()->email) == null) {
@@ -288,90 +261,7 @@ public function retirer_groupe_event($numGroupe, $numEvent){
         }
         return false;
     }
-
-    public function creer_sondages_event()
-    {
-        if ($this->redirect_unlogged_user()) {
-            return;
-        }
-        try {
-            if (!isset($_POST['titre']) && !isset($_POST['lieu']) && !isset($_POST['dates']) &&  !isset($_POST['horairesD']) && !isset($_POST['horairesF'])) {
-                throw new Exception("Le titre, le lieu, la descri, la date, heure de debut et heure de fin doivent être renseignés.");
-            }
-            // recuperation des données dans un tableau.
-            $donnees=filter_input_array(INPUT_POST);
-            // creation de l'évènement.
-            $numEvent = $this->evenements->creer_un_evenement($donnees['titre'], $donnees['lieu'], $donnees['descri']);
-            // ajout du createur a la table participants.
-            $numPart = $this->evenements->ajouter_un_participant($this->sessions->logged_user()->numUser, $numEvent, 'createur');
-            // creation des sondages liés à l'évènement.
-            for ($i=0; $i<count($donnees['dates']); $i++) {
-                $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
-                $this->evenements->creer_reponse($numSond, $numPart);
-            }
-
-            header("Location: /index.php/evenements/ajouter_participants_documents/$numEvent");
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];
-            $this->loader->load('sondages_new', $data);
-        }
-    }
-
-
-    // indique si le participant à deja été ajouté à l'evenements.
-    public function participant_deja_ajoute($numUser, $numEvent)
-    {
-        if ($this->redirect_unlogged_user()) {
-            return;
-        }
-        try {
-            $rep =  $this->evenements->participant_deja_ajoute($numUser, $numEvent);
-            echo json_encode($rep);
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_doncuments', $data);
-        }
-    }
-
-    public function ajouter_groupe_event($numGroupe, $numEvent)
-    {
-        if ($this->redirect_unlogged_user()) {
-            return;
-        }
-        try {
-            $numGroupe = filter_var($numGroupe);
-            $numEvent = filter_var($numEvent);
-            $membres = $this->evenements->voir_les_membres_groupe($numGroupe);
-            foreach ($membres as $membre) {
-                $rep = $this->evenements->participant_deja_ajoute($membre['numUser'], $numEvent);
-                if (!$rep) {
-                    $this->ajouter_participant_event($membre['numUser'], $numEvent, 'participant');
-                }
-            }
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
-        }
-    }
-
-    public function retirer_groupe_event($numGroupe, $numEvent)
-    {
-        if ($this->redirect_unlogged_user()) {
-            return;
-        }
-        try {
-            $numGroupe = filter_var($numGroupe);
-            $numEvent = filter_var($numEvent);
-            $numParts = $this->evenements->voir_numPart_membres_groupe($numGroupe, $numEvent);
-            foreach ($numParts as $numPart) {
-                $this->retirer_participant_event($numPart['numPart']);
-            }
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
-        }
-    }
-
+  
     public function ajouter_participant_event($numUser, $numEvent, $statut)
     {
         if ($this->redirect_unlogged_user()) {
