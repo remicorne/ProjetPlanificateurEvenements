@@ -1,8 +1,5 @@
 <div class="container" style="margin-top: 40px">
   <strong>Entrez votre adresse e-mail de récupération</strong>
-  <?php if (isset($error)) { ?>
-    <div class="alert alert-warning" role="alert"><?= $error ?></div>
-  <?php } ?>
   <form role="form" action="/index.php/users/send_reset_password" method="post">
     <fieldset>
       <input class="form-control" placeholder="Email" name="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required value="<?=$email?>"/><br>

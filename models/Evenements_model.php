@@ -307,4 +307,45 @@ class Evenements_model extends Model{
         throw new Exception(self::str_error_database.' afficher_les_participants_event'.$e);
       }
   }
+  
+  public function add_document($tmp_file, $numEvent, $nomDoc) {
+    try {
+      $statement = $this->db->prepare("INSERT INTO DocsEvent(numEvent, nomDoc) VALUES(?,?)");
+      $statement->execute([$numEvent, $nomDoc]);
+      
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database ."(add_document) : " .$e->getMessage());
+    }
+  }
+
+  public function get_event_documents($numEvent){
+    try{
+      $statement = $this->db->prepare("SELECT nomDoc FROM DocsEvent  WHERE numEvent = ?");
+      $statement->execute([$numEvent]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception (self::str_error_database ."(get_event_documents) : " .$e->getMessage());
+    }
+  }
+
+
+  public function delete_document($numEvent, $docName){
+    try {
+      $statement = $this->db->prepare("DELETE FROM DocsEvent WHERE numEvent=? AND nomDoc=?");
+      $statement->execute([$numEvent, $docName]);      
+    } catch (PDOException $e) {
+      throw new Exception (self::str_error_database ."(delete_document) : " .$e->getMessage());
+    }
+}
+
+  public function check_if_administrator($numUser, $numEvent){ //gérer le statur administrateur coté client
+    try {
+      $statement = $this->db->prepare("SELECT * FROM Participants WHERE numUser=? AND numEvent=? AND (statut=? OR statut=?)");
+      $statement->execute([$numUser, $numEvent, "administrateur", "createur"]);
+      return $statement->fetchAll() != null;      
+    } catch (PDOException $e) {
+      throw new Exception (self::str_error_database ."(check_if_administrator) : " .$e->getMessage());
+    }
+  }
+
 }

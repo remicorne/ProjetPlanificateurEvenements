@@ -5,7 +5,7 @@ $config = [
     'default_controller' => 'Evenements',
     'default_method' => 'index',
     'core_classes'=> ['Controller', 'Loader', 'Model'],
-    'models'=>['Evenements','Users','Sessions', 'Mailer']
+    'models'=>['Evenements','Users','Sessions', 'Mailer', 'Documents']
 ];
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -83,10 +83,9 @@ try{
         generate_error_404($exception);
 }
 
-/*
-echo 'path_elements : '; var_dump($path_elements); echo '<br>';
-echo 'controller_name : '; var_dump($controller_name);echo '<br>';
-echo 'method_name : '; var_dump($method_name);echo '<br>';
-echo 'controller : '; var_dump($controller);echo '<br>';
-echo 'parameters : '; var_dump($parameters);echo '<br>';
- */
+
+// echo 'path_elements : '; var_dump($path_elements); echo '<br>';
+// echo 'controller_name : '; var_dump($controller_name);echo '<br>';
+// echo 'method_name : '; var_dump($method_name);echo '<br>';
+// echo 'controller : '; var_dump($controller);echo '<br>';
+// echo 'parameters : '; var_dump($parameters);echo '<br>';

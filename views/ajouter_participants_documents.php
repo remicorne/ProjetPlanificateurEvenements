@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/assets/js/script_gestion_des_participants.js"></script>
+<script type="text/javascript" src="/assets/js/script_participants_documents.js"></script>
 
 <div class="container">
   
@@ -23,12 +23,26 @@
   <!-- remplis avec fonction js -->
   <div id="div_participants"> 
     <p> Tableau des participants ajoutés</p>
-    <table id="tab_participants" > 
+    <table style="display: inline-block; overflow:auto;" id="tab_participants" > 
     </table>
   </div>
-</div>
 
-<script>
-    remplirTabGroupesCherches("tab_groupes_cherches",<?= $numEvent ?>);
-    afficherParticipantsEvent('tab_participants' ,<?= $numEvent ?>);
-</script>
+  <!-- remplis avec fonction js -->
+  <div id="div_documents_ajoutes"> 
+    <p> Documents ajoutés</p>
+      <div style="overflow:auto;">
+        <table style="display: inline-block; overflow:auto;" id="tab_documents" > 
+        </table>
+      </div>
+  </div>
+
+  <!-- FormData -->
+  <div id="div_documents_ajax"> 
+  <button id="nouveau_document" onclick="creerDivNouveauDocument()">Ajouter un document</button>
+  </div>
+  </div>
+  
+  <script>
+  var numEvent = <?=$numEvent?>;
+  </script>
+</div>
