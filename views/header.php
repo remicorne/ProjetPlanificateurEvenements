@@ -23,5 +23,9 @@
         <script type="text/javascript" src="/assets/js/jquery-ui.js"></script>
      </head>
 
-     <body onload="init()">
-      <h1 id="titre"><?=$title?></h1>
+  <body onload="init()">
+  <h1 id="titre"><?=$title?></h1>
+  
+  <?php if (isset($error)) { ?>
+  <div class="alert alert-warning" role="alert"><?= $error ?></div>
+<?php } ?>

@@ -1,8 +1,5 @@
 <!DOCTYPE html>  
-
-<?php// var_dump($infos_reunions);?>
- <html>  
-    
+ <html>     
       <body>  
            <br /><br />  
            <div class="container" style="width:900px;">  
@@ -19,15 +16,8 @@
                     </div>
                 </div>
                 <br /><br />  
-            
-
-
-
                 <div class="table-responsive" >  
-                     <table class="table table-bordered" id="reunions_table">  
-
-
-
+                     <table class="table table-striped table-bordered" id="reunions_table">  
                           <tr>  
                                <th width="5%">Numéro</th>  
                                <th width="25%">Picture</th>  
@@ -36,8 +26,6 @@
                                <th width="20%">Email</th>  
                                <th width="5%">Statut</th>  
                           </tr>  
-
-
                      <?php foreach($infos_participants as $infos_participant){ ?>
                            <tr>  
                                <td><?=$infos_participant['numUser']?></td>  

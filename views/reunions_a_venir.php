@@ -20,7 +20,7 @@
                 </div>
                 <br /><br />  
                 <div class="table-responsive" >  
-                     <table class="table table-bordered" id="reunions_table">  
+                     <table class=table table-striped table-bordered" id="reunions_table">  
                           <tr>  
                                <th width="5%">Numéro</th>  
                                <th width="25%">Date</th>  
