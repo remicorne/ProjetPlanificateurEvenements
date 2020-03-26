@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/assets/js/script_gestion_des_participants.js"></script>
+<script type="text/javascript" src="/assets/js/script_participants_documents.js"></script>
 
 <div class="container">
   
