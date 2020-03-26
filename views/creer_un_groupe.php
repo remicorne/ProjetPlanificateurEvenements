@@ -1,11 +1,6 @@
 <script type="text/javascript" src="/assets/js/script_gestion_des_groupes.js"></script>
 
 <div class="container">
-
-	<?php if (isset($error)) { ?>
-		<div class="alert alert-warning" role="alert"><?= $error ?></div>
-	<?php } ?>
-
 	<div>
 		<fieldset>
 			<p>Ajouter des personnes : </p>

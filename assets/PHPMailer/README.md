@@ -2,7 +2,6 @@
                                     -------------------------
                                     Installation de PHPMailer
                                     -------------------------
-- Installer Composer, l'outil qui permet d'installer des librairies PHP (https://getcomposer.org/) :
 - Pour l'installation automatique : se deplacer dans le dossier du projet puis utiliser un script (fichier .sh) avec le contenu suivant;
 
 #!/bin/sh

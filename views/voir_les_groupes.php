@@ -1,11 +1,6 @@
 <script type="text/javascript" src="/assets/js/script_gestion_des_groupes.js"></script>
 
 <div class="container">
-
-	<?php if (isset($error)) { ?>
-		<div class="alert alert-warning" role="alert"><?= $error ?></div>
-	<?php } ?>
-
 	<div id="div_tab_groupes">
 		<table>
 			<tr>
@@ -21,7 +16,6 @@
 			<?php } ?>
 		</table> 
 	</div>
-
 	<!-- remplis avec fonction js -->
 	<div id="div_groupe"> 
 		<p id="p_membres"></p>

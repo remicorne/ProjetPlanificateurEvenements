@@ -23,26 +23,12 @@
   <!-- remplis avec fonction js -->
   <div id="div_participants"> 
     <p> Tableau des participants ajoutés</p>
-    <table style="display: inline-block; overflow:auto;" id="tab_participants" > 
+    <table id="tab_participants" > 
     </table>
   </div>
-
-  <!-- remplis avec fonction js -->
-  <div id="div_documents_ajoutes"> 
-    <p> Documents ajoutés</p>
-      <div style="overflow:auto;">
-        <table style="display: inline-block; overflow:auto;" id="tab_documents" > 
-        </table>
-      </div>
-  </div>
-
-  <!-- FormData -->
-  <div id="div_documents_ajax"> 
-  <button id="nouveau_document" onclick="creerDivNouveauDocument()">Ajouter un document</button>
-  </div>
-  </div>
-  
-  <script>
-  var numEvent = <?=$numEvent?>;
-  </script>
 </div>
+
+<script>
+    remplirTabGroupesCherches("tab_groupes_cherches",<?= $numEvent ?>);
+    afficherParticipantsEvent('tab_participants' ,<?= $numEvent ?>);
+</script>
