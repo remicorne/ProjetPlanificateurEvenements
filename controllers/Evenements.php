@@ -156,7 +156,7 @@ class Evenements extends Controller
             header('Location: /index.php');
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title' => 'ajouter participants documents'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
 
@@ -356,7 +356,7 @@ class Evenements extends Controller
                 $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
                 $this->evenements->creer_reponse($numSond, $numPart);
             }
-            header("Location: /index.php/evenements/ajouter_participants_documents/$numEvent");
+            header("Location: /index.php/evenements/reunion/$numEvent");
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];
             $this->loader->load('sondages_new', $data);
@@ -375,7 +375,7 @@ class Evenements extends Controller
             echo json_encode($rep);
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
 
@@ -410,7 +410,7 @@ class Evenements extends Controller
             }
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
   
@@ -428,7 +428,7 @@ class Evenements extends Controller
             }
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
 
@@ -459,7 +459,7 @@ class Evenements extends Controller
             }
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
 
