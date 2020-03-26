@@ -194,30 +194,6 @@ class Evenements extends Controller
         }
     }
 
-    public function vote_reunion_en_sondages($numEvent, $numPart)
-    {
-        if ($this->redirect_unlogged_user()) {
-            return;
-        }
-        try {
-            $numEvent = filter_var($numEvent);
-            $numPart = filter_var($numPart);
-            if (isset($_POST['radio'])) {
-                $numSond = filter_input(INPUT_POST, 'radio');
-                $this->evenements->valider_date_event($numEvent, $numSond, $numPart);
-            } else {
-                $numsSonds=filter_input_array(INPUT_POST);
-                foreach ($numsSonds['checkbox'] as $numSond) {
-                    $this->evenements->modifier_vote_sondage($numSond, $numPart);
-                }
-            }
-            header("Location: /index.php/evenements/reunions_en_sondages");
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
-            $this->loader->load('reunions_en_sondages', $data);
-        }
-    }
-
     // fonction appelée asynchronement en js par la page creer_un_groupe.
     public function getNomsGroupes()
     {

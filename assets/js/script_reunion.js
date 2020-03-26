@@ -206,4 +206,3 @@ function refreshDocTable() {
 function showAddDocument() {
 	$("#file_upload").show();
 }
-
