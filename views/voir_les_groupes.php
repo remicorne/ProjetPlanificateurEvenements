@@ -23,6 +23,8 @@
 			<div id="div_mdf_g"></div>
 			<table id="tab_groupe"></table> 
 		</div>
-	<?php } ?>
+	<?php }else{ ?>
 	<div><h3>Vous n'avez pas créé de groupe pour le moment.</h3></div>
+	<?php } ?>
+
 </div>

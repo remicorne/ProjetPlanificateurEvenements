@@ -34,7 +34,7 @@ class Evenements_model extends Model{
       $statement->execute([$numUser, $numGroupe]);
       if($statement->fetchColumn()!=1) throw new Exception("Vous n'êtes pas proprietaire du groupe.");
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' user_proprio_groupe'.$e);  
+      throw new Exception(self::str_error_database.' user_proprio_groupe'.$e->getMessage());  
     }
   }
 
@@ -55,7 +55,7 @@ class Evenements_model extends Model{
       $statement = $this->db->prepare("DELETE FROM Appartenir WHERE numUser=? AND numGroupe=? AND proprietaire!=1");
         $statement->execute([$numUser, $numGroupe]);
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' retirer_personne_groupe'.$e);  
+      throw new Exception(self::str_error_database.' retirer_personne_groupe'.$e->getMessage());  
     }
   }
 
@@ -65,7 +65,7 @@ class Evenements_model extends Model{
       $statement = $this->db->prepare("UPDATE Groupes SET nomGroupe=? WHERE numGroupe=?");
         $statement->execute([$nomGroupe, $numGroupe]);
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' retirer_personne_groupe'.$e);  
+      throw new Exception(self::str_error_database.' retirer_personne_groupe'.$e->getMessage());  
     }
   }
 
@@ -111,22 +111,42 @@ class Evenements_model extends Model{
 
   public function voir_numParts_utilisateur($numUser){
     try{
-      $statement = $this->db->prepare("SELECT numPart FROM Participants WHERE numUser=?");
+      $statement = $this->db->prepare("SELECT numPart FROM Participants WHERE numUser=? ");
       $statement->execute([$numUser]);
       return $statement->fetchAll();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' voir_numParts_utilisateur'.$e);
+      throw new Exception(self::str_error_database.' voir_numParts_utilisateur'.$e->getMessage());
     }
   }
 
-  public function voir_evenement_en_sondage($numPart){
+  public function voir_evenement_en_sondage_from_numPart($numPart){
     try{
       $statement = $this->db->prepare("SELECT P.numPart, statut, aVote ,E.numEvent, titre, lieu, descri FROM Evenements E JOIN Participants P ON E.numEvent=P.numEvent WHERE numPart=? AND numSond IS NULL");
       $statement->execute([$numPart]);
       return $statement->fetch();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' voir_evenements_en_sondages'.$e);
+      throw new Exception(self::str_error_database.' voir_evenements_en_sondages'.$e->getMessage());
     } 
+  }
+
+  public function voir_evenement_from_numEvent($numEvent){
+    try{
+      $statement = $this->db->prepare("SELECT titre, lieu, descri, numSond FROM Evenements WHERE numEvent=?");
+      $statement->execute([$numEvent]);
+      return $statement->fetch();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_evenement_from_numEvent'.$e->getMessage());
+    } 
+  }
+
+  public function voir_sondage($numSond){
+    try{
+      $statement = $this->db->prepare("SELECT numSond, date_sond, heureD, heureF FROM Sondages WHERE numSond=?");
+      $statement->execute([$numSond]);
+      return $statement->fetch();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_sondage'.$e->getMessage());
+    }  
   }
 
   public function voir_sondages_evenement($numEvent){
@@ -135,7 +155,7 @@ class Evenements_model extends Model{
       $statement->execute([$numEvent]);
       return $statement->fetchAll();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' voir_sondages_evenement'.$e);
+      throw new Exception(self::str_error_database.' voir_sondages_evenement'.$e->getMessage());
     }  
   }
 
@@ -145,7 +165,7 @@ class Evenements_model extends Model{
       $statement->execute([$numSond]);
       return intval($statement->fetchColumn());
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' voir_pourcentage_rep_sondage'.$e);
+      throw new Exception(self::str_error_database.' voir_pourcentage_rep_sondage'.$e->getMessage());
     }  
   }  
 
@@ -155,7 +175,7 @@ class Evenements_model extends Model{
       $statement->execute([$numEvent, $numSond]);
       return $statement->fetchAll();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' voir_reponses_part_sond_event'.$e);
+      throw new Exception(self::str_error_database.' voir_reponses_part_sond_event'.$e->getMessage());
     }  
   }
 
@@ -165,7 +185,7 @@ class Evenements_model extends Model{
       $statement->execute([$numEvent, $numPart]);
       return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' voir_reponses_part_sond'.$e);
+      throw new Exception(self::str_error_database.' voir_reponses_part_sond'.$e->getMessage());
     }  
   }
 
@@ -175,7 +195,7 @@ class Evenements_model extends Model{
       $statement->execute([$numEvent]);
       return $statement->fetchColumn();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.' voir_nb_part_event'.$e);
+      throw new Exception(self::str_error_database.' voir_nb_part_event'.$e->getMessage());
     }   
   }
 
@@ -235,7 +255,7 @@ class Evenements_model extends Model{
                             'descri'=>$descri]);
         return $this->db->lastInsertId();
     }catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' creer_un_evenement'.$e);
+        throw new Exception(self::str_error_database.' creer_un_evenement'.$e->getMessage());
     }
   }
 
@@ -246,7 +266,7 @@ class Evenements_model extends Model{
         $statement = $this->db->prepare("UPDATE Participants SET aVote='oui' WHERE numPart=?");
         $statement->execute([$numPart]);
     }catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' valider_date_event'.$e);
+        throw new Exception(self::str_error_database.' valider_date_event'.$e->getMessage());
     } 
   }
 
@@ -256,7 +276,7 @@ class Evenements_model extends Model{
        $statement->execute([$numEvent, $numUser, $statut]);
        return $this->db->lastInsertId();
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' ajouter_un_participant'.$e);
+        throw new Exception(self::str_error_database.' ajouter_un_participant'.$e->getMessage());
     }
   }
 
@@ -269,7 +289,7 @@ class Evenements_model extends Model{
                             'numEvent' =>$numEvent]);
        return $this->db->lastInsertId();
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' creer_un_sondage'.$e);
+        throw new Exception(self::str_error_database.' creer_un_sondage'.$e->getMessage());
     }
   }
 
@@ -279,7 +299,7 @@ class Evenements_model extends Model{
        $statement->execute([$numEvent]);
        return $statement->fetchAll();
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' obtenir_les_sondages'.$e);
+        throw new Exception(self::str_error_database.' obtenir_les_sondages'.$e->getMessage());
     }
   }
 
@@ -294,7 +314,7 @@ class Evenements_model extends Model{
         $statement = $this->db->prepare("UPDATE Participants SET aVote='oui' WHERE numPart=?");
         $statement->execute([$numPart]);
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' modifier_vote_sondage'.$e);
+        throw new Exception(self::str_error_database.' modifier_vote_sondage'.$e->getMessage());
     } 
   }
 
@@ -303,7 +323,7 @@ class Evenements_model extends Model{
        $statement = $this->db->prepare("INSERT INTO Repondre(numSond, numPart) VALUES (?,?)");
        $statement->execute([$numSond, $numPart]);
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' creer_reponse'.$e);
+        throw new Exception(self::str_error_database.' creer_reponse'.$e->getMessage());
     }
   }
 
@@ -315,7 +335,7 @@ class Evenements_model extends Model{
                                                                           WHERE statut='createur') ");
        $statement->execute([$numPart]);
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' retirer_reponse'.$e);
+        throw new Exception(self::str_error_database.' retirer_reponse'.$e->getMessage());
     }
   }
 
@@ -326,7 +346,7 @@ class Evenements_model extends Model{
        $statement->execute([$numUser, $numEvent]);
        return count($statement->fetchAll())!=0;
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' participant_deja_ajoute'.$e);
+        throw new Exception(self::str_error_database.' participant_deja_ajoute'.$e->getMessage());
     }
   }
 
@@ -337,7 +357,7 @@ class Evenements_model extends Model{
        $statement->execute([$numUser, $numGroupe]);
        return count($statement->fetchAll())!=0;
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' user_deja_ajoute_au_groupe'.$e);
+        throw new Exception(self::str_error_database.' user_deja_ajoute_au_groupe'.$e->getMessage());
     }
   }
 
@@ -347,7 +367,7 @@ class Evenements_model extends Model{
        $statement->execute([$numUser, $numEvent, $statut]);
        return $this->db->lastInsertId();
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' ajouter_participant_bd'.$e);
+        throw new Exception(self::str_error_database.' ajouter_participant_bd'.$e->getMessage());
     } 
   }
 
@@ -356,17 +376,17 @@ class Evenements_model extends Model{
        $statement = $this->db->prepare("DELETE FROM Participants WHERE numPart=? AND statut!='createur'");
        $statement->execute([$numPart]);
     } catch (PDOException $e) {
-        throw new Exception(self::str_error_database.' retirer_participant_bd'.$e);
+        throw new Exception(self::str_error_database.' retirer_participant_bd'.$e->getMessage());
     } 
   }
 
   public function afficher_les_participants_event($numEvent){
     try{
-        $statement = $this->db->prepare("SELECT numPart, U.numUser, nom, prenom, email, statut FROM Participants P JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=?");
+        $statement = $this->db->prepare("SELECT numPart, U.numUser, nom, prenom, email, statut, emailEnvoye FROM Participants P JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=?");
         $statement->execute([$numEvent]);
         return $statement->fetchAll();
       }catch(PDOException $e){
-        throw new Exception(self::str_error_database.' afficher_les_participants_event'.$e);
+        throw new Exception(self::str_error_database.' afficher_les_participants_event'.$e->getMessage());
       }
   }
 
@@ -386,7 +406,7 @@ class Evenements_model extends Model{
       $statement->execute(['date_sond'=> date('Y-m-d')]);
       return $statement->fetchAll();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.'recuperer_informations_sondages'.$e);
+      throw new Exception(self::str_error_database.'recuperer_informations_sondages'.$e->getMessage());
 
     }
   }
@@ -405,7 +425,7 @@ class Evenements_model extends Model{
       $statement->execute(['date_sond'=> date('Y-m-d')]);
       return $statement->fetchAll();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.'recuperer_infos_reunions_passees'.$e);
+      throw new Exception(self::str_error_database.'recuperer_infos_reunions_passees'.$e->getMessage());
 
     }
   }
@@ -422,7 +442,7 @@ class Evenements_model extends Model{
       $statement->execute(['numReunion'=>$numReunion,'stat'=>'createur']);
       return $statement->fetch();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.'recuperer_informations_sondages'.$e);
+      throw new Exception(self::str_error_database.'recuperer_informations_sondages'.$e->getMessage());
 
     }
   }
@@ -438,7 +458,7 @@ class Evenements_model extends Model{
       $statement->execute(['numReunion'=>$numReunion]);
       return $statement->fetchAll();
     }catch(PDOException $e){
-      throw new Exception(self::str_error_database.'recuperer_informations_participants'.$e);
+      throw new Exception(self::str_error_database.'recuperer_informations_participants'.$e->getMessage());
 
     }
   }
@@ -482,6 +502,27 @@ class Evenements_model extends Model{
     } catch (PDOException $e) {
       throw new Exception (self::str_error_database ."(check_if_administrator) : " .$e->getMessage());
     }
+  }
+
+  public function check_if_createur_ou_administrateur_event($numUser, $numEvent){ //gérer le statur administrateur coté client
+    try {
+      $statement = $this->db->prepare("SELECT * FROM Participants WHERE numUser=? AND numEvent=? AND (statut=? OR statut=?)");
+      $statement->execute([$numUser, $numEvent,"createur"]);
+      if (count($statement->fetchAll())==0) throw new Exception("Vous n'êtes pas createur ou administrateur de cet evenements");
+    } catch (PDOException $e) {
+      throw new Exception (self::str_error_database ."(check_if_createur_event) : " .$e->getMessage());
+    }
+  }
+
+  public function modifier_emailEnvoye_parts($numsParts = []){
+    try {
+        foreach ($numsParts as $numPart) {
+          $statement = $this->db->prepare("UPDATE Participants SET emailEnvoye=1 WHERE numPart=?");
+          $statement->execute([$numPart]);
+        }
+    } catch (PDOException $e) {
+        throw new Exception(self::str_error_database.' modifier_vote_sondage'.$e->getMessage());
+    } 
   }
 
 }

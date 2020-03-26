@@ -5,9 +5,9 @@
   <?php if (isset($error)) { ?>
     <div class="alert alert-warning" role="alert"><?= $error ?></div>
   <?php } ?>
-<
-  <div id="div_persons_cherches" >
-      <button><a href="#">OpenClassrooms</a></button>
+
+  <div id="div_b_email" >
+      <a href="/index.php/evenements/envoyer_mails_invitation_sondage/<?= $numEvent ?>"><button>Envoyer un email au participants et terminer</button></a>
   </div>
 
   <div id="div_persons_cherches" >

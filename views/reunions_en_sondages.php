@@ -86,6 +86,7 @@
         		<?php } ?>
         	</table>
     	</div>
-    <?php } ?>
+    <?php } else {?>
     <div><h3>Pas de réunions en sondages.</h3></div>
+    <?php } ?>
 </div>

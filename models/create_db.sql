@@ -55,7 +55,8 @@ CREATE TABLE Participants(
 	aVote TEXT CHECK(aVote IN ("oui","non")) DEFAULT "non",
 	numEvent INTEGER REFERENCES Evenements(numEvent) ON DELETE CASCADE,
 	numUser INTEGER REFERENCES Utilisateurs(numUser) ON DELETE CASCADE,
-	statut TEXT CHECK(statut IN ("createur","administrateur","participant")) DEFAULT "participant"
+	statut TEXT CHECK(statut IN ("createur","administrateur","participant")) DEFAULT "participant",
+	emailEnvoye BOOLEAN DEFAULT 0
 );
 
 

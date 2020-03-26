@@ -1,32 +1,31 @@
 <?php
 class Evenements extends Controller
 {
-    public function index()
-    {
-        $this->tableau_de_bord();
-    }
+  public function index(){
+      $this->tableau_de_bord();
+  }
 
-    /////////////////////////////////////////// methodes de redirection/////////////////////////////////////////////////////// TODO : redirect unauthorized user (il ne s'agit pas juste d'etre logged)
-    public function tableau_de_bord(){
-        if ($this->redirect_unlogged_user()) return;
-        $this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
-    }
+  /////////////////////////////////////////// methodes de redirection/////////////////////////////////////////////////////// TODO : redirect unauthorized user (il ne s'agit pas juste d'etre logged)
+  public function tableau_de_bord(){
+      if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
+  }
 
-    public function mon_compte(){
-        if ($this->redirect_unlogged_user()) return;
-        $photo = $this->users->get_photo($this->sessions->logged_user()->numUser);
-        $this->loader->load('mon_compte', ['title'=>'mon compte', 'photo'=>$photo]);
-    }
+  public function mon_compte(){
+      if ($this->redirect_unlogged_user()) return;
+      $photo = $this->users->get_photo($this->sessions->logged_user()->numUser);
+      $this->loader->load('mon_compte', ['title'=>'mon compte', 'photo'=>$photo]);
+  }
 
-    public function creer_un_groupe(){
-        if ($this->redirect_unlogged_user()) return;
-        $this->loader->load('creer_un_groupe', ['title'=>'Creer un groupe']);
-    }
+  public function creer_un_groupe(){
+      if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('creer_un_groupe', ['title'=>'Creer un groupe']);
+  }
 
-    public function ajouter_participants_documents($numEvent){
-        if ($this->redirect_unlogged_user()) return;
-        $this->loader->load('ajouter_participants_documents', ['title'=>'Ajouter des participants',
-                                                   'numEvent' => $numEvent]);
+  public function ajouter_participants_documents($numEvent){
+      if ($this->redirect_unlogged_user()) return;
+      $this->loader->load('ajouter_participants_documents', ['title'=>'Ajouter des participants',
+                                                 'numEvent' => $numEvent]);
   }
 
   public function sondages_new(){
@@ -40,7 +39,7 @@ class Evenements extends Controller
       $numParts_user = $this->evenements->voir_numParts_utilisateur($this->sessions->logged_user()->numUser);
       // on recupère tous les evenement en sondages de l'utilisateur en cours.
       foreach ($numParts_user as $num){
-        $e = $this->evenements->voir_evenement_en_sondage($num['numPart']); 
+        $e = $this->evenements->voir_evenement_en_sondage_from_numPart($num['numPart']); 
         // construction du tableau d'events avec le numEvent en index.
         if ($e!=null) $events[$e['numEvent']] = $e ; 
       }
@@ -104,11 +103,52 @@ class Evenements extends Controller
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-  public function envoyer_mails_participants($numEvent){
+  private function envoyer_mails_date_evenement($numEvent){
+    $infosEvent = $this->evenements->voir_evenement_from_numEvent($numEvent);
+    $date = $this->evenements->voir_sondage($infosEvent['numSond']);
+    $content = 'L\'evenement '.$infosEvent['titre'].' prendra lieu le '.$date['date_sond'].'
+                 de '.$date['heureD'].' à '.$date['heureF'].'.';
+    $subject = 'Evenement : '.$infosEvent['titre'];
+    $participants = $this->evenements->afficher_les_participants_event($numEvent);
+    foreach ($participants as $part) 
+      $emailsParts[] = $part['email'];
+    $this->envoyer_mails_participants($numEvent, $emailsParts, $subject,$content);
+  }
+
+  public function envoyer_mails_invitation_sondage($numEvent){
     if ($this->redirect_unlogged_user()) return;
+    $numEvent = filter_var($numEvent);
+    $infosEvent = $this->evenements->voir_evenement_from_numEvent($numEvent);
+
+    if($infosEvent['numSond']==0){
+      $subject = 'Sondage evenement : '.$infosEvent['titre'];
+      $content = "Vous avez été invité à l'evenement : ".$infosEvent['titre'].".<br>
+                Rendez-vous la page reunion en sondage pour repondre au sondage.";
+    }
+    else{
+      $date = $this->evenements->voir_sondage($infosEvent['numSond']);
+      $subject = 'Invitation à l\'evenement : '.$infosEvent['titre'];
+      $content = "Vous avez été invité à l'evenement : ".$infosEvent['titre'].".<br>
+                  L'evenement ".$infosEvent['titre']." aura lieu le ".$date['date_sond']."
+                  de ".$date['heureD']." à ".$date['heureF'].".";
+    }
+    $participants = $this->evenements->afficher_les_participants_event($numEvent);
+    // on recupere les participants et on regarde si un email leur a déjà été envoyé.
+    foreach ($participants as $part) 
+      if($part['emailEnvoye']!=1){
+        $emailsParts[] = $part['email'];
+        $numsParts[] = $part['numPart']; 
+      }
+    $this->envoyer_mails_participants($numEvent, $emailsParts, $subject,$content);
+    $this->evenements->modifier_emailEnvoye_parts($numsParts);
+    header('Location: /index.php');
+  }
+
+  private function envoyer_mails_participants($numEvent, $emailsParts,$subject,$content){
     try {
-      $numEvent = filter_var($numEvent);
-      header('Location: /index.php');
+      $this->evenements->check_if_createur_ou_administrateur_event($this->sessions->logged_user()->numUser, $numEvent);
+      $infosUser = $this->users->user_from_numUser($this->sessions->logged_user()->numUser);
+      $this->mailer->envoyer_mails_participants($emailsParts, $infosUser->email, $content, $subject);
     } catch (Exception $e) {
       $data = ['error' => $e->getMessage(), 'title' => 'ajouter participants documents'];
       $this->loader->load('ajouter_participants_documents',$data);
@@ -133,6 +173,7 @@ class Evenements extends Controller
       if(isset($_POST['radio'])){
         $numSond = filter_input(INPUT_POST, 'radio');
         $this->evenements->valider_date_event($numEvent, $numSond, $numPart);
+        $this->envoyer_mails_date_evenement($numEvent);
       }else{
         $numsSonds=filter_input_array(INPUT_POST);
         $this->evenements->modifier_vote_sondage($numsSonds['checkbox'], $numPart);
