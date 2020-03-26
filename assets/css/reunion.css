@@ -1,0 +1,45 @@
+#div_persons_cherches{
+	position: absolute;
+	left: 410px;
+  	width: 230px;
+  	top: 550px;
+	border: solid;
+}
+
+#div_groupes_cherches{
+	position: absolute;
+	left: 410px;
+  	width: 230px;
+  	top: 625px;
+	border: solid;
+}
+
+#div_participants{
+	position: absolute;
+	left: 0px;
+	width: 400px;
+	top: 550px;
+  	border: solid;
+}
+
+#div_documents_ajoutes{
+	position: absolute;
+	left: 0px;
+	height: 160px;
+	width: 355px;
+	top: 300px;
+	border: solid;
+}
+
+#tab_documents{
+	position: absolute;
+	left : 3px;
+	height: 123px;
+	width: 345px;
+}
+
+#div_file_upload{
+	position: absolute;
+	left: 0px;
+	top: 170px;	
+}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>  
 
-<?php// var_dump($infos_reunions);?>
+<?php ;// var_dump($infos_reunions);?>
  <html>  
     
       <body>  
@@ -31,13 +31,13 @@
                           </tr>  
 
                      <?php foreach($infos_reunions as $infos_sondage){   ?>
-                           <tr>  
-                               <td><a href="/evenements/reunion/<?=$infos_sondage['numEvent']?>/<?=$infos_sondage['nombreParticipant']?>"><?=$infos_sondage['numEvent']?></td>  
+                           <tr onclick="goToReunion(<?=$infos_sondage['numEvent']?>)">  
+                               <td><?=$infos_sondage['numEvent']?></td>  
                                <td><?=$infos_sondage['date_sond']?></td>  
                                <td><?=$infos_sondage['heureD']?></td>  
                                <td><?=$infos_sondage['heureF']-$infos_sondage['heureD']?></td>  
                                <td><?=$infos_sondage['titre']?></td>  
-                               <td><a href="/evenements/participants/<?=$infos_sondage['numEvent']?>"><?=$infos_sondage['nombreParticipant']?></td>  
+                               <td><?=$infos_sondage['nombreParticipant']?></td>  
                           </tr>  
                      <?php } ?> 
                                               </table>  
