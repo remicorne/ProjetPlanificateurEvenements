@@ -1,0 +1,28 @@
+#div_persons_cherches{
+	position: absolute;
+	left: 0px;
+  	width: 400px;
+  	top: 150px;
+	border: solid;
+}
+
+#div_tab_groupe{
+	position: absolute;
+	left: 500px;
+  	width: 600px;
+  	top: 150px;
+	border: solid;
+}
+
+#div_suppression{
+	position: absolute;
+	left: 800px;
+  	width: 200px;
+  	top: 50px;
+	border: solid;
+}
+
+.photo_user{
+	height: 70px;
+	width: 50px;
+}

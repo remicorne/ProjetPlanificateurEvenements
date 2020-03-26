@@ -4,10 +4,7 @@
 */
 function remplirTabPersonsCherches(idTab,input,numEvent){
 	$('#'+idTab).html("");
-	var nom = input.value;
-	var requete = $.ajax({
-		url: "/index.php/evenements/users_from_nom_js/"+nom
-	});
+	var requete = chercherDesPersonnes(input);
 	requete.done(function() {
 		var persCherches = JSON.parse(requete.responseText); 
 		if(persCherches===null) return;

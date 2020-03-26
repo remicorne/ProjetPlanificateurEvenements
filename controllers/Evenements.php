@@ -39,7 +39,7 @@ class Evenements extends Controller {
       // on recupère tous les evenement en sondages de l'utilisateur en cours.
       foreach ($numParts_user as $num){
         $e = $this->evenements->voir_evenement_en_sondage($num['numPart']); 
-        // construction du tableau d'event avec le numEvent en index.
+        // construction du tableau d'events avec le numEvent en index.
         if ($e!=null) $events[$e['numEvent']] = $e ; 
       }
       // si l'utilisateur a choisi un event en particulier on l'affiche sinon on affiche le premier.
@@ -47,15 +47,19 @@ class Evenements extends Controller {
         $numEvent = filter_input(INPUT_POST, 'numEvent');
       else
         $numEvent = reset($events)['numEvent'];
+      // tab d'info de l'event visualisé sur la page.
       $event_visu = $events[$numEvent]; 
-      // le sondages visualisé sur la page.
+      // les sondages visualisé sur la page.
       $sondages_event = $this->evenements->voir_sondages_evenement($numEvent);  
-      foreach ($sondages_event as &$sondage)
+      // ajout des reps des participants et % de bonne rep a chaques sondage dans le tableau.
+      foreach ($sondages_event as &$sondage){
+        $sondage['pourcentage'] = $this->evenements->voir_pourcentage_rep_sondage($sondage['numSond']);
         $sondage['reps'] = $this->evenements->voir_reponses_part_sond($numEvent, $sondage['numSond']);
+      }
       unset($sondage);
+      // reponse de l'utilisateur au sondage visualisé.
       $repUser = $this->evenements->voir_reponses_user_sond($numEvent, $event_visu['numPart']);
       $nbPart = $this->evenements->voir_nb_part_event($numEvent);
-
       $this->loader->load('reunions_en_sondages', ['title'=>'reunions en sondages',
                                                    'events' => $events,
                                                    'event_visu'=> $event_visu,
@@ -63,6 +67,7 @@ class Evenements extends Controller {
                                                    'nbPart' => $nbPart,
                                                    'numPart' => $event_visu['numPart'],
                                                    'repUser' => $repUser ]);
+
     }catch(Exception $e){
       $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
       $this->loader->load('reunions_en_sondages',$data);
@@ -77,6 +82,22 @@ class Evenements extends Controller {
     }catch (Exception $e){
       $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
       $this->loader->load('voir_les_groupes',$data);
+    }
+  }
+
+  public function modifier_groupe($numGroupe){
+    if ($this->redirect_unlogged_user()) return;
+    $numGroupe = filter_var($numGroupe);
+    try{
+      $membres = $this->evenements->voir_les_membres_groupe($numGroupe);
+      $nomGroupe = $this->evenements->voir_nom_groupe($numGroupe);
+      $this->loader->load('modifier_groupe',['title'=>'modifier le groupe', 
+                                             'membres' => $membres,
+                                             'nomGroupe' => $nomGroupe,
+                                             'numGroupe' => $numGroupe]);
+    }catch (Exception $e){
+      $data = ['error' => $e->getMessage(), 'title' => 'modifier le groupe'];
+      $this->loader->load('modifier_groupe',$data);
     }
   }
 
@@ -101,8 +122,7 @@ class Evenements extends Controller {
         $this->evenements->valider_date_event($numEvent, $numSond, $numPart);
       }else{
         $numsSonds=filter_input_array(INPUT_POST);
-        foreach ($numsSonds['checkbox'] as $numSond)
-          $this->evenements->modifier_vote_sondage($numSond, $numPart);
+        $this->evenements->modifier_vote_sondage($numsSonds['checkbox'], $numPart);
       }
       header("Location: /index.php/evenements/reunions_en_sondages");
     }catch(Exception $e){
@@ -131,6 +151,18 @@ class Evenements extends Controller {
   }
 
   // fonction appelée asynchronement en js par la page creer_un_groupe.
+  public function users_from_nom_prenom_js($nom, $prenom){
+    if ($this->redirect_unlogged_user()) return;
+    $nom = filter_var($nom);
+    $prenom = filter_var($prenom);
+    try{
+      $res = $this->users->users_from_nom_prenom($nom, $prenom);
+      echo json_encode($res);
+    }catch(Exception $e){
+      echo json_encode(null);
+    }
+  }
+
   public function users_from_nom_js($nom){
     if ($this->redirect_unlogged_user()) return;
     $nom = filter_var($nom);
@@ -167,6 +199,51 @@ class Evenements extends Controller {
     }catch(Exception $e){
       $data = ['error' => $e->getMessage(), 'title'=>'creer_un_groupe'];
       $this->loader->load('creer_un_groupe', $data );
+    }
+  }
+
+  public function supprimer_groupe($numGroupe){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $this->evenements->supprimer_groupe($numGroupe, $this->sessions->logged_user()->numUser);
+      header("Location: /index.php");
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+      $this->loader->load('modifier_groupe', $data );
+    }
+  }
+
+  public function ajout_user_groupe($numUser, $numGroupe){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $this->evenements->ajout_personnes_groupe($numGroupe, [$numUser], 0);
+      header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+      $this->loader->load('modifier_groupe', $data );
+    }
+  }
+
+  public function modifier_nom_groupe($numGroupe){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $nomGroupe = filter_input(INPUT_POST, 'nomGroupe');
+      $this->evenements->modifier_nom_groupe($numGroupe, $nomGroupe);
+      header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+      $this->loader->load('modifier_groupe', $data );
+    }
+  }
+
+  public function retirer_user_groupe($numUser, $numGroupe){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $this->evenements->retirer_personne_groupe($numUser, $numGroupe);
+      header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+      $this->loader->load('modifier_groupe', $data );
     }
   }
 
@@ -212,6 +289,17 @@ class Evenements extends Controller {
     }catch(Exception $e){
       $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
       $this->loader->load('ajouter_participants', $data );
+    }
+  }
+
+  public function user_deja_ajoute_au_groupe($numUser, $numGroupe){
+    if ($this->redirect_unlogged_user()) return;
+    try{
+      $rep =  $this->evenements->user_deja_ajoute_au_groupe($numUser, $numGroupe);
+      echo json_encode($rep);
+    }catch(Exception $e){
+      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+      $this->loader->load('modifier_groupe', $data );
     }
   }
 

@@ -25,5 +25,6 @@
 	<!-- remplis avec fonction js -->
 	<div id="div_groupe"> 
 		<p id="p_membres"></p>
+		<div id="div_mdf_g"></div>
 		<table id="tab_groupe"></table> 
 	</div>

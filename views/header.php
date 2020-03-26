@@ -23,6 +23,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/css/voir_les_groupes.css"/>
         <link rel="stylesheet" type="text/css" href="/assets/css/ajouter_participants.css"/>
         <link rel="stylesheet" type="text/css" href="/assets/css/reunions_en_sondages.css"/>
+        <link rel="stylesheet" type="text/css" href="/assets/css/modifier_groupe.css"/>
      </head>
 
      <body onload="init()">

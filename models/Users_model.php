@@ -57,12 +57,26 @@ class Users_model extends Model {
     return $this->user_from_query('SELECT numUser, nom, prenom, email, motDePasse FROM Utilisateurs WHERE email = ?', [$email]);
   }
 
+  public function users_from_nom_prenom($nom, $prenom) {
+    $this->check_nom($nom);
+    $this->check_nom($prenom);
+    try {
+      $statement = $this->db->prepare('SELECT numUser, nom, prenom, email
+                                        FROM Utilisateurs 
+                                        WHERE nom LIKE :nom AND prenom LIKE :prenom' );
+      $statement->execute(["nom"=>$nom."%", "prenom"=>$prenom."%"]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception('Impossible d\'effectuer la demande.');
+    }
+  }
+
   public function users_from_nom($nom) {
     $this->check_nom($nom);
     try {
       $statement = $this->db->prepare('SELECT numUser, nom, prenom, email
                                         FROM Utilisateurs 
-                                        WHERE nom LIKE :nom');
+                                        WHERE nom LIKE :nom' );
       $statement->execute(["nom"=>$nom."%"]);
       return $statement->fetchAll();
     } catch (PDOException $e) {
