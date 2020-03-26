@@ -1,8 +1,7 @@
 <?php
 class Mailer_model extends Model{
 
-    public function build_password_reset_email($email, $name, $password) 
-    {
+    public function build_password_reset_email($email, $name, $password) {
         try {
             $this->$mailer->addAddress($email, $name);
             $content = file_get_contents('assets/PHPMailer/emailHTML/password_reset.html');
@@ -13,8 +12,7 @@ class Mailer_model extends Model{
         }
     }
 
-    public function send_email() //pas de try/catch car si echec pas d'exception, renvoie false
-    {
+    public function send_email(){ //pas de try/catch car si echec pas d'exception, renvoie false
         if (!$this->$mailer->send()) throw new Exception ("Echec de l'envoi : $mailer->ErrorInfo");
     }
 

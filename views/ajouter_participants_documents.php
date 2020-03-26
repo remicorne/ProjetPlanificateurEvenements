@@ -5,6 +5,10 @@
   <?php if (isset($error)) { ?>
     <div class="alert alert-warning" role="alert"><?= $error ?></div>
   <?php } ?>
+<
+  <div id="div_persons_cherches" >
+      <button><a href="#">OpenClassrooms</a></button>
+  </div>
 
   <div id="div_persons_cherches" >
       <p>Ajouter les participants</p>
@@ -23,26 +27,23 @@
   <!-- remplis avec fonction js -->
   <div id="div_participants"> 
     <p> Tableau des participants ajoutés</p>
-    <table style="display: inline-block; overflow:auto;" id="tab_participants" > 
-    </table>
+    <table style="display: inline-block; overflow:auto;" id="tab_participants" > </table>
   </div>
 
   <!-- remplis avec fonction js -->
   <div id="div_documents_ajoutes"> 
     <p> Documents ajoutés</p>
       <div style="overflow:auto;">
-        <table style="display: inline-block; overflow:auto;" id="tab_documents" > 
-        </table>
+        <table style="display: inline-block; overflow:auto;" id="tab_documents" > </table>
       </div>
   </div>
 
   <!-- FormData -->
   <div id="div_documents_ajax"> 
-  <button id="nouveau_document" onclick="creerDivNouveauDocument()">Ajouter un document</button>
-  </div>
+    <button id="nouveau_document" onclick="creerDivNouveauDocument()">Ajouter un document</button>
   </div>
   
   <script>
-  var numEvent = <?=$numEvent?>;
+    var numEvent = <?=$numEvent?>;
   </script>
 </div>
