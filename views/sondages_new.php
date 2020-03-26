@@ -3,11 +3,11 @@
 	<form role="form" action="/index.php/evenements/creer_sondages_event" method="post" enctype="multipart/form-data">
    
     <p>Titre :</p>
-		<input class="form-control"  name="titre" type="text"  required/>
+		<input class="form-control"  name="titre" type="text"  maxlength="10"required/>
 		<p>Lieu :</p>
-		<input class="form-control"  name="lieu" type="text" required>
+		<input class="form-control"  name="lieu" type="text" maxlength="30" required>
 		<p>Ajouter une description : </p>
-		<textarea name="descri" rows="8" cols="45" placeholder=" Description (facultatif)"></textarea><br>
+		<textarea name="descri" rows="8" cols="45" maxlength="150" placeholder=" Description (facultatif)"></textarea><br>
 		<div>
 		  <p>Dates et horaires de la réunion :</p><br>
 		  <button type="button" name="add" id="add" class="btn btn-success btn-xs" >Add</button><br>

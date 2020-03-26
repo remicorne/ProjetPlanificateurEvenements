@@ -31,6 +31,53 @@ class Evenements_model extends Model
         }
     }
 
+    public function user_proprio_groupe($numGroupe, $numUser)
+    {
+        try {
+            $statement = $this->db->prepare("SELECT proprietaire FROM Appartenir WHERE numUser=? AND numGroupe=?");
+            $statement->execute([$numUser, $numGroupe]);
+            if ($statement->fetchColumn()!=1) {
+                throw new Exception("Vous n'êtes pas proprietaire du groupe.");
+            }
+        } catch (PDOException $e) {
+            throw new Exception(self::str_error_database.' user_proprio_groupe'.$e);
+        }
+    }
+
+    public function supprimer_groupe($numGroupe, $numUser)
+    {
+        $this->user_proprio_groupe($numGroupe, $numUser);
+        try {
+            $statement = $this->db->prepare("DELETE FROM Appartenir WHERE numGroupe=?");
+            $statement->execute([$numGroupe]);
+            $statement = $this->db->prepare("DELETE FROM Groupes WHERE numGroupe=?");
+            $statement->execute([$numGroupe]);
+        } catch (PDOException $e) {
+            throw new Exception(self::str_error_database);
+        }
+    }
+
+    public function retirer_personne_groupe($numUser, $numGroupe)
+    {
+        try {
+            $statement = $this->db->prepare("DELETE FROM Appartenir WHERE numUser=? AND numGroupe=? AND proprietaire!=1");
+            $statement->execute([$numUser, $numGroupe]);
+        } catch (PDOException $e) {
+            throw new Exception(self::str_error_database.' retirer_personne_groupe'.$e);
+        }
+    }
+
+    public function modifier_nom_groupe($numGroupe, $nomGroupe)
+    {
+        $this->check_nomGroupe($nomGroupe);
+        try {
+            $statement = $this->db->prepare("UPDATE Groupes SET nomGroupe=? WHERE numGroupe=?");
+            $statement->execute([$nomGroupe, $numGroupe]);
+        } catch (PDOException $e) {
+            throw new Exception(self::str_error_database.' retirer_personne_groupe'.$e);
+        }
+    }
+
     public function voir_les_groupes_user($numUser)
     {
         try {
@@ -42,10 +89,21 @@ class Evenements_model extends Model
         }
     }
 
+    public function voir_nom_groupe($numGroupe)
+    {
+        try {
+            $statement = $this->db->prepare("SELECT nomGroupe FROM Groupes WHERE numGroupe=?");
+            $statement->execute([$numGroupe]);
+            return $statement->fetchColumn();
+        } catch (PDOException $e) {
+            throw new Exception(self::str_error_database);
+        }
+    }
+
     public function voir_les_membres_groupe($numGroupe)
     {
         try {
-            $statement = $this->db->prepare("SELECT U.numUser, nom, prenom, email FROM Appartenir A JOIN Utilisateurs U ON A.numUser=U.numUser WHERE numGroupe=?");
+            $statement = $this->db->prepare("SELECT U.numUser, nom, prenom, email, proprietaire FROM Appartenir A JOIN Utilisateurs U ON A.numUser=U.numUser WHERE numGroupe=? ORDER BY nom");
             $statement->execute([$numGroupe]);
             return $statement->fetchAll();
         } catch (PDOException $e) {
@@ -97,6 +155,17 @@ class Evenements_model extends Model
         }
     }
 
+    public function voir_pourcentage_rep_sondage($numSond)
+    {
+        try {
+            $statement = $this->db->prepare("SELECT AVG(reponse)*100 pourcentage FROM Repondre WHERE numSond=?");
+            $statement->execute([$numSond]);
+            return intval($statement->fetchColumn());
+        } catch (PDOException $e) {
+            throw new Exception(self::str_error_database.' voir_pourcentage_rep_sondage'.$e);
+        }
+    }
+
     public function voir_reponses_part_sond($numEvent, $numSond)
     {
         try {
@@ -129,17 +198,7 @@ class Evenements_model extends Model
             throw new Exception(self::str_error_database.' voir_nb_part_event'.$e);
         }
     }
-    /*
-      public function voir_participants_event($numEvent){
-        try{
-          $statement = $this->db->prepare("SELECT nom, prenom, aVote, reponse FROM (Repondre R JOIN Participants P ON R.numPart=P.numPart) JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=? AND P.numPart=?");
-          $statement->execute([$numEvent]);
-          return $statement->fetchAll();
-        }catch(PDOException $e){
-          throw new Exception(self::str_error_database.' voir_reponses_part_event'.$e);
-        }
-      }
-    */
+
     public function compter_les_membres_groupe($numGroupe)
     {
         try {
@@ -162,17 +221,17 @@ class Evenements_model extends Model
 
     private function check_nomGroupe($nomGroupe)
     {
-        $this->check_format_with_regex($nomGroupe, '/^[0-9a-zA-Z]{1,10}$/', self::str_error_nomGroupe_format);
+        $this->check_format_with_regex($nomGroupe, '/^[0-9a-zA-Z ]{1,10}$/', self::str_error_nomGroupe_format);
     }
 
     private function check_titre_evenement($titre)
     {
-        $this->check_format_with_regex($titre, '/^[0-9a-zA-Z]{1,50}$/', self::str_error_titre_evenement_format);
+        $this->check_format_with_regex($titre, '/^[0-9a-zA-Z ]{1,50}$/', self::str_error_titre_evenement_format);
     }
 
     private function check_descri_evenement($descri)
     {
-        $this->check_format_with_regex($descri, '/^[0-9a-zA-Z.?!,"\' ]{0,150}$/', self::str_error_descri_evenement_format);
+        $this->check_format_with_regex($descri, '/^[0-9a-zA-Z.?!,éèà\' \r\n]{0,150}$/', self::str_error_descri_evenement_format);
     }
 
     private function check_lieu_evenement($lieu)
@@ -256,15 +315,15 @@ class Evenements_model extends Model
         }
     }
 
-    public function modifier_vote_sondage($numSond, $numPart)
+    public function modifier_vote_sondage($numsSonds, $numPart)
     {
         try {
-            $statement = $this->db->prepare("UPDATE Repondre SET reponse=1 WHERE numSond=?");
-            $statement->execute([$numSond]);
-
-            $statement = $this->db->prepare("UPDATE Repondre SET reponse=0 WHERE numPart=? AND numSond!=?");
-            $statement->execute([$numPart, $numSond]);
-
+            $statement = $this->db->prepare("UPDATE Repondre SET reponse=0 WHERE numPart=?");
+            $statement->execute([$numPart]);
+            foreach ($numsSonds as $numSond) {
+                $statement = $this->db->prepare("UPDATE Repondre SET reponse=1 WHERE numPart=? AND numSond=?");
+                $statement->execute([$numPart, $numSond]);
+            }
             $statement = $this->db->prepare("UPDATE Participants SET aVote='oui' WHERE numPart=?");
             $statement->execute([$numPart]);
         } catch (PDOException $e) {
@@ -307,6 +366,18 @@ class Evenements_model extends Model
         }
     }
 
+    // indique si le participant à deja été ajouté à l'evenements.
+    public function user_deja_ajoute_au_groupe($numUser, $numGroupe)
+    {
+        try {
+            $statement = $this->db->prepare("SELECT numUser FROM Appartenir WHERE numUser=? AND numGroupe=?");
+            $statement->execute([$numUser, $numGroupe]);
+            return count($statement->fetchAll())!=0;
+        } catch (PDOException $e) {
+            throw new Exception(self::str_error_database.' user_deja_ajoute_au_groupe'.$e);
+        }
+    }
+
     public function ajouter_participant_bd($numUser, $numEvent, $statut)
     {
         try {
@@ -338,8 +409,6 @@ class Evenements_model extends Model
             throw new Exception(self::str_error_database.' afficher_les_participants_event'.$e);
         }
     }
-
-
 
     public function recuperer_infos_reunions_a_venir()
     {

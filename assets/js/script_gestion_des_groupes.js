@@ -1,14 +1,23 @@
 /////////////////// Fonctions la page voir_les_groupe. ////////////////////////////////////////////:
 /**
 *Fonction qui recherche les membres d'un groupe.
-*/
-function afficherLesMembresGroupe(numGoupe, nomGroupe){
+*/      
+function afficherLesMembresGroupe(numGroupe, nomGroupe){
+	document.getElementById("div_mdf_g").innerHTML="";	
+	var b_mdf_groupe = document.createElement("button");
+	var t = document.createTextNode("modifier le groupe");
+	b_mdf_groupe.appendChild(t);
+	document.getElementById('div_mdf_g').appendChild(b_mdf_groupe);
+	
+	b_mdf_groupe.addEventListener('click', function(){
+		window.location.replace("/index.php/evenements/modifier_groupe/"+numGroupe);
+	}, false);
+
 	document.getElementById("tab_groupe").innerHTML="";
 	//ouvrir la connexion et choisir type d'envoie 
-	var url="/index.php/evenements/voir_membres_groupe/"+numGoupe;
+	var url="/index.php/evenements/voir_membres_groupe/"+numGroupe;
 	//ajout d'un listener qui ecoute le changement d'etat.
 	var requete = xhrGET(url,'json');
-
 	requete.addEventListener('readystatechange',function(){
 		if (requete.readyState === XMLHttpRequest.DONE && requete.status==200) { // La constante DONE appartient à l'objet XMLHttpRequest, elle n'est pas globale
 			var membres = requete.response; 
@@ -27,25 +36,22 @@ function afficherLesMembresGroupe(numGoupe, nomGroupe){
 */
 function remplirTabPersonsCherches(idTab,input, prop){
 	document.getElementById(idTab).innerHTML="";
-	requete = chercherDesPersonnes(input);
-	requete.addEventListener('readystatechange',function(){
-		if (requete.readyState === XMLHttpRequest.DONE && requete.status==200) { // La constante DONE appartient à l'objet XMLHttpRequest, elle n'est pas globale
-			var persCherches = requete.response; 
-			if(persCherches===null) return;
-			// on remplis le tableau des personnes cherchés.
-			tab = construireTableauDePersonne(idTab, persCherches);
-			for (var i = 0; i < tab.children.length; i++) {
-				if (!verifierSiPersDejaAjoute(persCherches[i]) && persCherches[i]['numUser']!=prop)
-					tab.children[i].append(addColumn("td",'<button id="bouton" onClick="remplirTabPersonsAjoutes(this.parentNode.parentNode)" >ajouter</button> '));
-				else if(persCherches[i]['numUser']==prop)
-					tab.children[i].append(addColumn("td", "proprietaire"));
-				else
-					tab.children[i].append(addColumn("td", "ajouté"));
-			}
+	var requete = chercherDesPersonnes(input);
+	requete.done(function() {
+		var persCherches = JSON.parse(requete.responseText); 
+		if(persCherches===null) return;
+		// on remplis le tableau des personnes cherchés.
+		tab = construireTableauDePersonne(idTab, persCherches);
+		for (var i = 0; i < tab.children.length; i++) {
+			if (!verifierSiPersDejaAjoute(persCherches[i]) && persCherches[i]['numUser']!=prop)
+				tab.children[i].append(addColumn("td",'<button id="bouton" onClick="remplirTabPersonsAjoutes(this.parentNode.parentNode)" >ajouter</button> '));
+			else if(persCherches[i]['numUser']==prop)
+				tab.children[i].append(addColumn("td", "proprietaire"));
+			else
+				tab.children[i].append(addColumn("td", "ajouté"));
 		}
 	});	
 }
-
 /**
 *Fonction qui ajoute les utlisateurs au tableau 'tab_persons_ajoutes' de la page creer_un_groupe.
 */

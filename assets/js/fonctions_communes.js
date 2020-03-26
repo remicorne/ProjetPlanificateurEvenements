@@ -62,16 +62,25 @@ function construireTableauDePersonne(idTab, personnes){
 
 /**
 *Fonction qui recherche les utilisateurs dont les premières lettre du nom correspondent à la chaine.
+*return la reponse de la requete.
 */
 function chercherDesPersonnes(input){
-	var nom = input.value;
+	var str = input.value.split(' ');
+	var nom = str[0];
+	var prenom = str.length>1 && str[1]!="" ? str[1] : null;
 	//encodeage pour eviter les caractères interdits dans une url
-	var valeur = encodeURIComponent(nom);
-	//ouvrir la connexion et choisir type d'envoie 
-	var url="/index.php/evenements/users_from_nom_js/"+nom;
-	//ajout d'un listener qui ecoute le changement d'etat.
-	var requete = xhrGET(url,'json');
+	var en_nom = encodeURIComponent(nom);
+	var en_prenom = encodeURIComponent(prenom);
+	if(prenom!=null) 
+		var m_url="/index.php/evenements/users_from_nom_prenom_js/"+en_nom+"/"+en_prenom;
+	else
+		var m_url="/index.php/evenements/users_from_nom_js/"+en_nom;
+
+	var requete = $.ajax({
+		url: m_url//adresse à laquelle la requête doit être envoyée
+	});
 	return requete
 }
+
 
 

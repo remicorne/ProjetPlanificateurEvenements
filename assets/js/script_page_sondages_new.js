@@ -28,6 +28,10 @@ $(document).ready(function(){     //Attendre la disponibilité du DOM (obligatoi
 
   // ajout d'un fonction qui ouvre le dialog au click sur le boutton add. 
   $('#add').click(function(){
+    if($('.date').length > 3){
+      alert("Quatre date maximun autorisées.");
+      return;
+    } 
     $('#user_dialog').dialog('option', 'title', 'Ajouter une date');
     $('#date').val('');
     $('#horaireD').val('');
