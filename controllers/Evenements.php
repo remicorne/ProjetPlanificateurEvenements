@@ -61,45 +61,74 @@ class Evenements extends Controller
       // reponse de l'utilisateur au sondage visualisé.
       $repUser = $this->evenements->voir_reponses_user_sond($numEvent, $event_visu['numPart']);
       $nbPart = $this->evenements->voir_nb_part_event($numEvent);
-      $this->loader->load('reunions_en_sondages', ['title'=>'reunions en sondages',
-                                                   'events' => $events,
+      $this->loader->load('reunions_en_sondages', ['title'=>'reunions en sondages','events' => $events,
                                                    'event_visu'=> $event_visu,
                                                    'sondages_event'=> $sondages_event,
                                                    'nbPart' => $nbPart,
                                                    'numPart' => $event_visu['numPart'],
                                                    'repUser' => $repUser ]);
-
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
-      $this->loader->load('reunions_en_sondages',$data);
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+            $this->loader->load('reunions_en_sondages', $data);
+        }
     }
+
+  public function reunion($numEvent)
+  {
+      if ($this->redirect_unlogged_user()) {
+          return;
+      }
+      try {
+          $user = $this->sessions->logged_user();
+          if (!$this->evenements->check_if_participant($user->numUser, $numEvent)) {
+              throw new Exception('Tu fais pas parti de cette réunion gros, bien tenté mais on y a pensé');
+          }
+          $is_administrator = $this->evenements->check_if_administrator($user->numUser, $numEvent);
+          $infos_reunion = $this->evenements->recuperer_informations_reunion($numEvent);
+          $organisateurs = $this->evenements->recuperer_informations_organisateurs($numEvent);
+          $this->loader->load('reunion', ['title'=>$infos_reunion['titre'],
+                                                 'numEvent' => $numEvent,
+                                                'is_administrator' => $is_administrator,
+                                                'infos_reunion'=>$infos_reunion,
+                                              'organisateurs' =>$organisateurs]);
+      } catch (Exception $e) {
+          $this->loader->load('error', ['title'=>"Page d'erreur",
+                'exception' => $e]);
+      }
   }
 
-  public function voir_les_groupes(){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $groupes = $this->construire_tableau_des_groupes();
-      $this->loader->load('voir_les_groupes',['title'=>'voir les groupes', 'groupes'=>$groupes]);
-    }catch (Exception $e){
-      $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
-      $this->loader->load('voir_les_groupes',$data);
+                                                   
+    public function voir_les_groupes()
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $groupes = $this->construire_tableau_des_groupes();
+            $this->loader->load('voir_les_groupes', ['title'=>'voir les groupes', 'groupes'=>$groupes]);
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+            $this->loader->load('voir_les_groupes', $data);
+        }
     }
-  }
 
-  public function modifier_groupe($numGroupe){
-    if ($this->redirect_unlogged_user()) return;
-    $numGroupe = filter_var($numGroupe);
-    try{
-      $membres = $this->evenements->voir_les_membres_groupe($numGroupe);
-      $nomGroupe = $this->evenements->voir_nom_groupe($numGroupe);
-      $this->loader->load('modifier_groupe',['title'=>'modifier le groupe', 
+    public function modifier_groupe($numGroupe)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        $numGroupe = filter_var($numGroupe);
+        try {
+            $membres = $this->evenements->voir_les_membres_groupe($numGroupe);
+            $nomGroupe = $this->evenements->voir_nom_groupe($numGroupe);
+            $this->loader->load('modifier_groupe', ['title'=>'modifier le groupe',
                                              'membres' => $membres,
                                              'nomGroupe' => $nomGroupe,
                                              'numGroupe' => $numGroupe]);
-    }catch (Exception $e){
-      $data = ['error' => $e->getMessage(), 'title' => 'modifier le groupe'];
-      $this->loader->load('modifier_groupe',$data);
-    }
+      }catch (Exception $e){
+        $data = ['error' => $e->getMessage(), 'title' => 'modifier le groupe'];
+        $this->loader->load('modifier_groupe',$data);
+      }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,178 +266,195 @@ class Evenements extends Controller
         else { $data =  $this->users->get_photo($numUser); }
         header("Content-Type: image/jpeg"); // modification du header pour changer le format des données retourné au client
         echo $data;                          // écriture du binaire de l'image vers le client
-      } catch (Exception $e) {}
-  }
-
-  public function ajout_groupe_bd(){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $utilisateurs = filter_input(INPUT_POST, 'utilisateurs');
-      $utilisateurs = json_decode($utilisateurs); 
-      $prop = filter_input(INPUT_POST, 'proprietaire');
-      $nomGroupe = filter_input(INPUT_POST, 'nom_groupe'); 
-      $numGroupe = $this->evenements->ajout_groupe_bd($nomGroupe);
-      $this->evenements->ajout_personnes_groupe($numGroupe, $utilisateurs, 0);
-      $this->evenements->ajout_personnes_groupe($numGroupe, [$prop], 1);
-      header('Location: /index.php');
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'creer_un_groupe'];
-      $this->loader->load('creer_un_groupe', $data );
-    }
-  }
-
-  public function supprimer_groupe($numGroupe){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $this->evenements->supprimer_groupe($numGroupe, $this->sessions->logged_user()->numUser);
-      header("Location: /index.php");
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
-      $this->loader->load('modifier_groupe', $data );
-    }
-  }
-
-  public function ajout_user_groupe($numUser, $numGroupe){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $this->evenements->ajout_personnes_groupe($numGroupe, [$numUser], 0);
-      header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
-      $this->loader->load('modifier_groupe', $data );
-    }
-  }
-
-  public function modifier_nom_groupe($numGroupe){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $nomGroupe = filter_input(INPUT_POST, 'nomGroupe');
-      $this->evenements->modifier_nom_groupe($numGroupe, $nomGroupe);
-      header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
-      $this->loader->load('modifier_groupe', $data );
-    }
-  }
-
-  public function retirer_user_groupe($numUser, $numGroupe){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $this->evenements->retirer_personne_groupe($numUser, $numGroupe);
-      header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
-      $this->loader->load('modifier_groupe', $data );
-    }
-  }
-
-
-  public function creer_sondages_event(){
-    if ($this->redirect_unlogged_user()) return;
-    try {
-      if(!isset($_POST['titre']) && !isset($_POST['lieu']) && !isset($_POST['dates']) &&  !isset($_POST['horairesD']) && !isset($_POST['horairesF'])) 
-        throw new Exception("Le titre, le lieu, la descri, la date, heure de debut et heure de fin doivent être renseignés.");
-        // recuperation des données dans un tableau.
-        $donnees=filter_input_array(INPUT_POST);
-        // creation de l'évènement.
-        $numEvent = $this->evenements->creer_un_evenement($donnees['titre'],$donnees['lieu'],$donnees['descri']);
-        // ajout du createur a la table participants.
-        $numPart = $this->evenements->ajouter_un_participant($this->sessions->logged_user()->numUser, $numEvent, 'createur');
-        // creation des sondages liés à l'évènement.
-        for ($i=0; $i<count($donnees['dates']); $i++) {
-          $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
-          $this->evenements->creer_reponse($numSond, $numPart);
+        } catch (Exception $e) {
         }
-        header("Location: /index.php/evenements/ajouter_participants_documents/$numEvent"); 
-      } catch (Exception $e) {
-        $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];
-        $this->loader->load('sondages_new', $data );
-      }
-  }
-
-
-  // indique si le participant à deja été ajouté à l'evenements.
-  public function participant_deja_ajoute($numUser, $numEvent){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $rep =  $this->evenements->participant_deja_ajoute($numUser, $numEvent);
-      echo json_encode($rep);
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-      $this->loader->load('ajouter_participants_documents', $data );
     }
-  }
 
-  public function user_deja_ajoute_au_groupe($numUser, $numGroupe){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $rep =  $this->evenements->user_deja_ajoute_au_groupe($numUser, $numGroupe);
-      echo json_encode($rep);
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
-      $this->loader->load('modifier_groupe', $data );
+
+    public function supprimer_groupe($numGroupe)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $this->evenements->supprimer_groupe($numGroupe, $this->sessions->logged_user()->numUser);
+            header("Location: /index.php");
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+            $this->loader->load('modifier_groupe', $data);
+        }
     }
-  }
 
-  public function ajouter_groupe_event($numGroupe, $numEvent){
-    if ($this->redirect_unlogged_user()) return;
-    try{
-      $numGroupe = filter_var($numGroupe);
-      $numEvent = filter_var($numEvent);
-      $membres = $this->evenements->voir_les_membres_groupe($numGroupe);
-      foreach ($membres as $membre) {
-        $rep = $this->evenements->participant_deja_ajoute($membre['numUser'], $numEvent);
-        if(!$rep)
-          $this->ajouter_participant_event($membre['numUser'], $numEvent, 'participant');
-      }
-    }catch(Exception $e){
-      $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-      $this->loader->load('ajouter_participants_documents', $data );
+    public function ajout_user_groupe($numUser, $numGroupe)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $this->evenements->ajout_personnes_groupe($numGroupe, [$numUser], 0);
+            header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+            $this->loader->load('modifier_groupe', $data);
+        }
     }
-  }
 
-  public function retirer_groupe_event($numGroupe, $numEvent){
-      if ($this->redirect_unlogged_user()) return;
-      try {
-          $numGroupe = filter_var($numGroupe);
-          $numEvent = filter_var($numEvent);
-          $numParts = $this->evenements->voir_numPart_membres_groupe($numGroupe, $numEvent);
-          foreach ($numParts as $numPart) {
-              $this->retirer_participant_event($numPart['numPart']);
-          }
-      } catch (Exception $e) {
-          $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-          $this->loader->load('ajouter_participants_documents', $data);
-      }
-  }
+    public function modifier_nom_groupe($numGroupe)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $nomGroupe = filter_input(INPUT_POST, 'nomGroupe');
+            $this->evenements->modifier_nom_groupe($numGroupe, $nomGroupe);
+            header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+            $this->loader->load('modifier_groupe', $data);
+        }
+    }
 
-  private function redirect_unlogged_user()
-  {
-      if (!$this->sessions->user_is_logged() || $this->users->user_from_email($this->sessions->logged_user()->email) == null) {
-          header('Location: /index.php/sessions/sessions_new');
-          return true;
-      }
-      return false;
-  }
+    public function retirer_user_groupe($numUser, $numGroupe)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $this->evenements->retirer_personne_groupe($numUser, $numGroupe);
+            header("Location: /index.php/evenements/modifier_groupe/$numGroupe");
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+            $this->loader->load('modifier_groupe', $data);
+        }
+    }
+
+
+    public function creer_sondages_event()
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            if (!isset($_POST['titre']) && !isset($_POST['lieu']) && !isset($_POST['dates']) &&  !isset($_POST['horairesD']) && !isset($_POST['horairesF'])) {
+                throw new Exception("Le titre, le lieu, la descri, la date, heure de debut et heure de fin doivent être renseignés.");
+            }
+            // recuperation des données dans un tableau.
+            $donnees=filter_input_array(INPUT_POST);
+            // creation de l'évènement.
+            $numEvent = $this->evenements->creer_un_evenement($donnees['titre'], $donnees['lieu'], $donnees['descri']);
+            // ajout du createur a la table participants.
+            $numPart = $this->evenements->ajouter_un_participant($this->sessions->logged_user()->numUser, $numEvent, 'createur');
+            // creation des sondages liés à l'évènement.
+            for ($i=0; $i<count($donnees['dates']); $i++) {
+                $numSond = $this->evenements->creer_un_sondage($numEvent, $donnees['dates'][$i], $donnees['horairesD'][$i], $donnees['horairesF'][$i]);
+                $this->evenements->creer_reponse($numSond, $numPart);
+            }
+            header("Location: /index.php/evenements/reunion/$numEvent");
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'Creer_un_sondage'];
+            $this->loader->load('sondages_new', $data);
+        }
+    }
+
+
+    // indique si le participant à deja été ajouté à l'evenements.
+    public function participant_deja_ajoute($numUser, $numEvent)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $rep =  $this->evenements->participant_deja_ajoute($numUser, $numEvent);
+            echo json_encode($rep);
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+            $this->loader->load('reunion', $data);
+        }
+    }
+
+    public function user_deja_ajoute_au_groupe($numUser, $numGroupe)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $rep =  $this->evenements->user_deja_ajoute_au_groupe($numUser, $numGroupe);
+            echo json_encode($rep);
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'modifier groupe'];
+            $this->loader->load('modifier_groupe', $data);
+        }
+    }
+
+    public function ajouter_groupe_event($numGroupe, $numEvent)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $numGroupe = filter_var($numGroupe);
+            $numEvent = filter_var($numEvent);
+            $membres = $this->evenements->voir_les_membres_groupe($numGroupe);
+            foreach ($membres as $membre) {
+                $rep = $this->evenements->participant_deja_ajoute($membre['numUser'], $numEvent);
+                if (!$rep) {
+                    $this->ajouter_participant_event($membre['numUser'], $numEvent, 'participant');
+                }
+            }
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+            $this->loader->load('reunion', $data);
+        }
+    }
   
-  public function ajouter_participant_event($numUser, $numEvent, $statut){
-      if ($this->redirect_unlogged_user()) return;
-      try {
-          $numUser = filter_var($numUser);
-          $numEvent = filter_var($numEvent);
-          $statut = filter_var($statut);
+    public function retirer_groupe_event($numGroupe, $numEvent)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $numGroupe = filter_var($numGroupe);
+            $numEvent = filter_var($numEvent);
+            $numParts = $this->evenements->voir_numPart_membres_groupe($numGroupe, $numEvent);
+            foreach ($numParts as $numPart) {
+                $this->retirer_participant_event($numPart['numPart']);
+            }
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+            $this->loader->load('reunion', $data);
+        }
+    }
 
-          $numPart = $this->evenements->ajouter_participant_bd($numUser, $numEvent, $statut);
-          $sondages = $this->evenements->obtenir_les_sondages($numEvent);
-          // on remplis la table repondre dans le futur connaitre les reponse du participants.
-          foreach ($sondages as $sondage) {
-              $this->evenements->creer_reponse($sondage['numSond'], $numPart);
-          }
-      } catch (Exception $e) {
-          $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-          $this->loader->load('ajouter_participants_documents', $data);
-      }
-  }
+    private function redirect_unlogged_user()
+    {
+        if (!$this->sessions->user_is_logged() || $this->users->user_from_email($this->sessions->logged_user()->email) == null) {
+            header('Location: /index.php/sessions/sessions_new');
+            return true;
+        }
+        return false;
+    }
+  
+    public function ajouter_participant_event($numUser, $numEvent, $statut)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $numUser = filter_var($numUser);
+            $numEvent = filter_var($numEvent);
+            $statut = filter_var($statut);
+
+            $numPart = $this->evenements->ajouter_participant_bd($numUser, $numEvent, $statut);
+            $sondages = $this->evenements->obtenir_les_sondages($numEvent);
+            // on remplis la table repondre dans le futur connaitre les reponse du participants.
+            foreach ($sondages as $sondage) {
+                $this->evenements->creer_reponse($sondage['numSond'], $numPart);
+            }
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
+            $this->loader->load('reunion', $data);
+        }
+    }
 
     public function retirer_participant_event($numPart)
     {
@@ -421,7 +467,7 @@ class Evenements extends Controller
             $this->evenements->retirer_participant_bd($numPart);
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
 
@@ -437,7 +483,7 @@ class Evenements extends Controller
             echo json_encode($rep);
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
 
@@ -451,115 +497,106 @@ class Evenements extends Controller
             echo json_encode($this->construire_tableau_des_groupes());
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title'=>'Ajouter les participants'];
-            $this->loader->load('ajouter_participants_documents', $data);
+            $this->loader->load('reunion', $data);
         }
     }
 
     public function add_document($numEvent)
-    { //TODO finir de retaper la fonction pour les fichiers
+    {
         try {
             $this->redirect_non_administrator($numEvent);
-            if (!isset($_FILES['document'])) throw new Exception('Vous devez choisir un document.');
-            if ($_FILES['document']['error'] !== UPLOAD_ERR_OK) throw new Exception("Echec de l\'envoi.");
+            if (!isset($_FILES['document'])) {
+                throw new Exception('Vous devez choisir un document.');
+            }
+            if ($_FILES['document']['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception("Echec de l\'envoi.");
+            }
             $tmp_file = $_FILES['document']['tmp_name'];
             $document_name = $_FILES['document']['name'];
             $directory_path = "uploads/" .$numEvent;
             $this->documents->add_document($tmp_file, $directory_path, $document_name);
             $this->evenements->add_document($tmp_file, $numEvent, $document_name);
+            echo json_encode("success");
         } catch (Exception $e) {
-            $this->loader->load('error', ['title'=>"Page d'erreur",
-                          'exception' => $e]);
+            echo json_encode($e->getMessage());
         }
     }
 
-public function get_event_documents($numEvent)
-{
-    try {
-        echo json_encode($this->evenements->get_event_documents($numEvent));
-    } catch (Exception $e) {
-        $this->loader->load('error', ['title'=>"Page d'erreur",
+    public function get_event_documents($numEvent)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+
+        try {
+            echo json_encode($this->evenements->get_event_documents($numEvent));
+        } catch (Exception $e) {
+            $this->loader->load('error', ['title'=>"Page d'erreur",
                       'exception' => $e]);
+        }
+    }
+
+    public function delete_document($numEvent, $docName)
+    {
+        try {
+            $this->redirect_non_administrator($numEvent);
+            $this->documents->delete_document($numEvent, $docName);
+            $this->evenements->delete_document($numEvent, $docName);
+        } catch (Exception $e) {
+            $this->loader->load('error', ['title'=>"Page d'erreur",
+                      'exception' => $e]);
+        }
+    }
+
+    public function redirect_non_administrator($numEvent)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        $user = $this->sessions->logged_user();
+        if (!$this->evenements->check_if_administrator($user->numUser, $numEvent)) {
+            throw new Exception('T\'es pas administrateur gros, bien tenté mais on y a pensé');
+        }
+    }
+
+    public function reunions_a_venir()
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir();
+            $this->loader->load('reunions_a_venir', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions à venir']);
+        } catch (Exception $e) {
+            $this->loader->load('reunions_a_venir', ['title'=>'Réunions à venir', 'error_message' => $e->getMessage()]);
+        }
+    }
+
+    public function reunions_passees()
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_passees();
+            $this->loader->load('reunions_passees', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions passées']);
+        } catch (Exception $e) {
+            $this->loader->load('reunions_passees', ['title'=>'Réunions passées', 'error_message' => $e->getMessage()]);
+        }
+    }
+
+
+
+    public function participants($numReunion)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        try {
+            $infos_participants = $this->evenements->recuperer_informations_participants($numReunion);
+            $this->loader->load('participants', ['infos_participants'=>$infos_participants,'title'=>"Participants de la reunion numéro  $numReunion"]);
+        } catch (Exception $e) {
+            $this->loader->load('participants', ['title'=>"participants de la reunion numéro $numReunion", 'error_message' => $e->getMessage()]);
+        }
     }
 }
-
-public function delete_document($numEvent, $docName)
-{
-    try {
-        $this->redirect_non_administrator($numEvent);
-        $this->documents->delete_document($numEvent, $docName);
-        $this->evenements->delete_document($numEvent, $docName);
-    } catch (Exception $e) {
-        $this->loader->load('error', ['title'=>"Page d'erreur",
-                      'exception' => $e]);
-    }
-}
-
-public function is_name_taken($numEvent, $docName){
-    try {
-        echo json_encode($this->documents->is_name_taken($numEvent, $docName));    
-    } catch (Exception $e) {
-        $this->loader->load('error', ['title'=>"Page d'erreur",
-                      'exception' => $e]);
-
-    }
-}
-
-public function redirect_non_administrator($numEvent){
-    $user = $this->sessions->logged_user();
-    if (!$this->evenements->check_if_administrator($user->numUser, $numEvent))
-        throw new Exception('Bien tenté mais on y a pensé');
-}
-
-public function reunions_a_venir(){
-  if ($this->redirect_unlogged_user()) return;
-  try {
-
-    $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir();
-    $this->loader->load('reunions_a_venir', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions à venir']);
-  } catch (Exception $e) {
-    $this->loader->load('reunions_a_venir', ['title'=>'Réunions à venir', 'error_message' => $e->getMessage()]);
-  }
-}
-
-public function reunions_passees(){
-if ($this->redirect_unlogged_user()) return;
-try {
-
-  $infos_reunions = $this->evenements->recuperer_infos_reunions_passees();
-  $this->loader->load('reunions_passees', ['infos_reunions'=>$infos_reunions,'title'=>'Réunions passées']);
-} catch (Exception $e) {
-  $this->loader->load('reunions_passees', ['title'=>'Réunions passées', 'error_message' => $e->getMessage()]);
-}
-}
-
-
-
-public function participants($numReunion){
-if ($this->redirect_unlogged_user()) return;
-try {
-  $infos_participants = $this->evenements->recuperer_informations_participants($numReunion);
-  $this->loader->load('participants', ['infos_participants'=>$infos_participants,'title'=>"Participants de la reunion numéro  $numReunion"]);
-} catch (Exception $e) {
-  $this->loader->load('participants', ['title'=>"participants de la reunion numéro $numReunion", 'error_message' => $e->getMessage()]);
-}
-}
-
-
-public function reunion($numReunion,$nombreParticipants){
-if ($this->redirect_unlogged_user()) return;
-try {
-  $infos_reunion = $this->evenements->recuperer_informations_reunion($numReunion);
-  $this->loader->load('reunion', ['title'=>"Réunion numéro $numReunion",'infos_reunion'=>$infos_reunion,'nombreParticipants'=>$nombreParticipants]);
-} catch (Exception $e) {
-  $this->loader->load('reunion', ['title'=>"Réunion numéro $numReunion", 'error_message' => $e->getMessage()]);
-}
-}
-
-}
-  
-
-
-
-
-    
-  
