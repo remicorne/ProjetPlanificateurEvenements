@@ -6,6 +6,36 @@ class Evenements_model extends Model{
   const str_error_lieu_evenement_format = 'Le lieu de l\'evenement doit contenir entre 2 et 30  lettres et chiffres ,!?. .';
   const str_error_database = 'Problème avec la base de données.';
 
+  public function __construct () {
+        parent::__construct();
+        $this->effacer_evenements_non_votes_et_sonds_depasses();
+    }
+
+  private function effacer_evenements_non_votes_et_sonds_depasses(){
+    try{
+      //on efface les sondages dépassés qui ne sont pas liés à un événement.
+      $statement = $this->db->prepare("DELETE FROM Sondages 
+                                       WHERE numSond NOT IN (SELECT S.numSond
+                                                            FROM Sondages S JOIN Evenements E ON S.numEvent=E.numEvent
+                                                            WHERE ( date_sond>DATE('now','localtime') 
+                                                            OR ( date_sond=DATE('now','localtime') AND heureD>time('now','localtime') ) )
+                                                            OR E.numSond==S.numSond)");
+      $statement->execute();  
+      //On efface les evenements qui n'ont pas été vote à temps.
+      $statement = $this->db->prepare("DELETE FROM Evenements 
+                                       WHERE numEvent NOT IN (SELECT numEvent
+                                                              FROM Sondages )");
+      $statement->execute();
+      //On efface les participants des evenements qui n'existent plus.
+      $statement = $this->db->prepare("DELETE FROM Participants 
+                                       WHERE numEvent NOT IN (SELECT numEvent
+                                                              FROM Evenements)");
+      $statement->execute();
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' effacer_evenements_non_votes_et_sonds_depasses'.$e->getMessage());
+    }
+  }
+
 	public function ajout_groupe_bd($nomGroupe){
 		$this->check_nomGroupe($nomGroupe);
 	    try{
@@ -119,16 +149,30 @@ class Evenements_model extends Model{
     }
   }
 
+  public function voir_evenements_en_sondage_from_numUser($numUser){
+    try{
+      $statement = $this->db->prepare("SELECT E.numEvent, P.numPart, statut, aVote , titre, lieu, descri 
+                                       FROM Evenements E JOIN Participants P ON E.numEvent=P.numEvent 
+                                       WHERE numUser=? AND numSond IS NULL");
+      $statement->execute([$numUser]);
+      return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }catch(PDOException $e){
+      throw new Exception(self::str_error_database.' voir_evenement_en_sondage_from_numUser'.$e->getMessage());
+    } 
+  }
+/*
   public function voir_evenement_en_sondage_from_numPart($numPart){
     try{
-      $statement = $this->db->prepare("SELECT P.numPart, statut, aVote ,E.numEvent, titre, lieu, descri FROM Evenements E JOIN Participants P ON E.numEvent=P.numEvent WHERE numPart=? AND numSond IS NULL");
+      $statement = $this->db->prepare("SELECT P.numPart, statut, aVote ,E.numEvent, titre, lieu, descri 
+                                       FROM Evenements E JOIN Participants P ON E.numEvent=P.numEvent 
+                                       WHERE numPart=? AND numSond IS NULL");
       $statement->execute([$numPart]);
       return $statement->fetch();
     }catch(PDOException $e){
       throw new Exception(self::str_error_database.' voir_evenements_en_sondages'.$e->getMessage());
     } 
   }
-
+*/
   public function voir_evenement_from_numEvent($numEvent){
     try{
       $statement = $this->db->prepare("SELECT titre, lieu, descri, numSond FROM Evenements WHERE numEvent=?");
@@ -161,7 +205,9 @@ class Evenements_model extends Model{
 
   public function voir_pourcentage_rep_sondage($numSond){
     try{
-      $statement = $this->db->prepare("SELECT AVG(reponse)*100 pourcentage FROM Repondre WHERE numSond=?");
+      $statement = $this->db->prepare("SELECT AVG(reponse)*100 pourcentage 
+                                       FROM Repondre R JOIN Participants P ON R.numPart=P.numPart
+                                       WHERE numSond=? AND statut!='createur'");
       $statement->execute([$numSond]);
       return intval($statement->fetchColumn());
     }catch(PDOException $e){
@@ -169,7 +215,7 @@ class Evenements_model extends Model{
     }  
   }  
 
-  public function voir_reponses_part_sond($numEvent, $numSond){
+  public function voir_reponses_parts_sond($numEvent, $numSond){
     try{
       $statement = $this->db->prepare("SELECT P.numPart, nom, prenom, statut, aVote, reponse FROM ((Repondre R JOIN Sondages S ON R.numSond=S.numSond) JOIN Participants P ON R.numPart=P.numPart) JOIN Utilisateurs U ON P.numUser=U.numUser  WHERE S.numEvent=? AND S.numSond=? ORDER BY P.numPart");
       $statement->execute([$numEvent, $numSond]);

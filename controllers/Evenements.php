@@ -36,13 +36,12 @@ class Evenements extends Controller
   public function reunions_en_sondages(){
     if ($this->redirect_unlogged_user()) return;
     try{
-      $numParts_user = $this->evenements->voir_numParts_utilisateur($this->sessions->logged_user()->numUser);
       // on recupère tous les evenement en sondages de l'utilisateur en cours.
-      foreach ($numParts_user as $num){
-        $e = $this->evenements->voir_evenement_en_sondage_from_numPart($num['numPart']); 
-        // construction du tableau d'events avec le numEvent en index.
+      $donneesEvents = $this->evenements->voir_evenements_en_sondage_from_numUser($this->sessions->logged_user()->numUser); 
+      // construction du tableau d'events avec le numEvent en index.
+      foreach ($donneesEvents as $e)
         if ($e!=null) $events[$e['numEvent']] = $e ; 
-      }
+
       // si l'utilisateur a choisi un event en particulier on l'affiche sinon on affiche le premier.
       if(isset($_POST['numEvent']))
         $numEvent = filter_input(INPUT_POST, 'numEvent');
@@ -50,12 +49,13 @@ class Evenements extends Controller
         $numEvent = reset($events)['numEvent'];
       // tab d'info de l'event visualisé sur la page.
       $event_visu = $events[$numEvent]; 
+
       // les sondages visualisé sur la page.
       $sondages_event = $this->evenements->voir_sondages_evenement($numEvent);  
       // ajout des reps des participants et % de bonne rep a chaques sondage dans le tableau.
       foreach ($sondages_event as &$sondage){
         $sondage['pourcentage'] = $this->evenements->voir_pourcentage_rep_sondage($sondage['numSond']);
-        $sondage['reps'] = $this->evenements->voir_reponses_part_sond($numEvent, $sondage['numSond']);
+        $sondage['reps'] = $this->evenements->voir_reponses_parts_sond($numEvent, $sondage['numSond']);
       }
       unset($sondage);
       // reponse de l'utilisateur au sondage visualisé.
@@ -107,7 +107,8 @@ class Evenements extends Controller
     $infosEvent = $this->evenements->voir_evenement_from_numEvent($numEvent);
     $date = $this->evenements->voir_sondage($infosEvent['numSond']);
     $content = 'L\'evenement '.$infosEvent['titre'].' prendra lieu le '.$date['date_sond'].'
-                 de '.$date['heureD'].' à '.$date['heureF'].'.';
+                 de '.$date['heureD'].' à '.$date['heureF'].".<br>
+                 Rendez-vous sur la page réunions à venir pour confirmer votre participation.";
     $subject = 'Evenement : '.$infosEvent['titre'];
     $participants = $this->evenements->afficher_les_participants_event($numEvent);
     foreach ($participants as $part) 
@@ -123,7 +124,7 @@ class Evenements extends Controller
     if($infosEvent['numSond']==0){
       $subject = 'Sondage evenement : '.$infosEvent['titre'];
       $content = "Vous avez été invité à l'evenement : ".$infosEvent['titre'].".<br>
-                Rendez-vous la page reunion en sondage pour repondre au sondage.";
+                  Rendez-vous la page reunion en sondage pour repondre au sondage.";
     }
     else{
       $date = $this->evenements->voir_sondage($infosEvent['numSond']);

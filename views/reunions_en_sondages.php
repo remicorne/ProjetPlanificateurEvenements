@@ -56,7 +56,7 @@
     	    			<?php if($event_visu['statut']=='createur') { ?>
 
     	    				<?php for ($i=0; $i<count($sondages_event) ; $i++) { ?>
-    	    						<th> <input type="radio" name="radio" value="<?=$sondages_event[$i]['numSond']?>" > </th>
+    	    						<th> <input type="radio" name="radio" value="<?=$sondages_event[$i]['numSond']?>" required> </th>
     	    				<?php } ?> 
     	    					<th> <button type="submit">choisir la date de l'evenement</button> </th>
     	    			
