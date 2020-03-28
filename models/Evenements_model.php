@@ -417,6 +417,7 @@ class Evenements_model extends Model
                                         WHERE numPart=? AND 'createur' NOT IN (SELECT statut 
                                                                           FROM Repondre R JOIN Participants P ON R.numPart=P.numPart
                                                                           WHERE statut='createur') ");
+<<<<<<< HEAD
             $statement->execute([$numPart]);
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database . ' retirer_reponse' . $e->getMessage());
@@ -484,10 +485,80 @@ class Evenements_model extends Model
         try {
             $statement = $this->db->prepare(" SELECT E.numEvent,titre,lieu,descri,E.numSond,statut,
                                     U.numUser,nom,prenom,email,date_sond,heureD,heureF,COUNT(E.numEvent) as nombreParticipant
+=======
+      $statement->execute([$numPart]);
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' retirer_reponse' . $e->getMessage());
+    }
+  }
+
+  // indique si le participant à deja été ajouté à l'evenements.
+  public function participant_deja_ajoute($numUser, $numEvent)
+  {
+    try {
+      $statement = $this->db->prepare("SELECT numUser FROM Participants WHERE numUser=? AND numEvent=?");
+      $statement->execute([$numUser, $numEvent]);
+      return count($statement->fetchAll()) != 0;
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' participant_deja_ajoute' . $e->getMessage());
+    }
+  }
+
+  // indique si le participant à deja été ajouté à l'evenements.
+  public function user_deja_ajoute_au_groupe($numUser, $numGroupe)
+  {
+    try {
+      $statement = $this->db->prepare("SELECT numUser FROM Appartenir WHERE numUser=? AND numGroupe=?");
+      $statement->execute([$numUser, $numGroupe]);
+      return count($statement->fetchAll()) != 0;
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' user_deja_ajoute_au_groupe' . $e->getMessage());
+    }
+  }
+
+  public function ajouter_participant_bd($numUser, $numEvent, $statut)
+  {
+    try {
+      $statement = $this->db->prepare("INSERT INTO Participants(numUser, numEvent, statut) VALUES (?,?,?)");
+      $statement->execute([$numUser, $numEvent, $statut]);
+      return $this->db->lastInsertId();
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' ajouter_participant_bd' . $e->getMessage());
+    }
+  }
+
+  public function retirer_participant_bd($numPart)
+  {
+    try {
+      $statement = $this->db->prepare("DELETE FROM Participants WHERE numPart=? AND statut!='createur'");
+      $statement->execute([$numPart]);
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' retirer_participant_bd' . $e->getMessage());
+    }
+  }
+
+  public function afficher_les_participants_event($numEvent)
+  {
+    try {
+      $statement = $this->db->prepare("SELECT numPart, U.numUser, nom, prenom, email, statut, emailEnvoye FROM Participants P JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=?");
+      $statement->execute([$numEvent]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' afficher_les_participants_event' . $e->getMessage());
+    }
+  }
+
+  public function recuperer_infos_reunions_a_venir($user)
+  {
+    try {
+      $statement = $this->db->prepare(" SELECT E.numEvent,titre,lieu,descri,E.numSond,statut,
+                                    U.numUser,nom,prenom,email,date_sond,heureD,heureF
+>>>>>>> e18aac9e6a4ba73031e38d7491a0905b50537cc5
                                     FROM (Evenements E JOIN Participants P ON E.numEvent=P.numEvent) 
                                     JOIN Utilisateurs U ON U.numUser=P.numUser 
                                     JOIN Sondages S ON S.numSond=E.numSond
                                     WHERE date_sond >= :date_sond AND E.numSond IS NOT NULL AND u.numUser=:user
+<<<<<<< HEAD
                                     GROUP BY E.numEvent
                                     ORDER BY date_sond ASC");
             $statement->execute(['date_sond' => date('Y-m-d')]);
@@ -495,35 +566,64 @@ class Evenements_model extends Model
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database . 'recuperer_informations_sondages' . $e->getMessage());
         }
+=======
+                                    ORDER BY date_sond ASC");
+      $statement->execute(['date_sond' => date('Y-m-d'), 'user' => $user]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . 'recuperer_informations_sondages' . $e->getMessage());
+>>>>>>> e18aac9e6a4ba73031e38d7491a0905b50537cc5
     }
 
 
+<<<<<<< HEAD
     public function recuperer_infos_reunions_passees()
     {
         try {
             $statement = $this->db->prepare(" SELECT E.numEvent,titre,lieu,descri,E.numSond,statut,
                                   U.numUser,nom,prenom,email,date_sond,heureD,heureF,COUNT(E.numEvent) as nombreParticipant
+=======
+  public function recuperer_infos_reunions_passees($user)
+  {
+    try {
+      $statement = $this->db->prepare(" SELECT E.numEvent,titre,lieu,descri,E.numSond,statut,
+                                  U.numUser,nom,prenom,email,date_sond,heureD,heureF
+>>>>>>> e18aac9e6a4ba73031e38d7491a0905b50537cc5
                                   FROM (Evenements E JOIN Participants P ON E.numEvent=P.numEvent) 
                                   JOIN Utilisateurs U ON U.numUser=P.numUser 
-                                  JOIN Sondages S ON S.numSond=E.numEvent 
-                                  WHERE date_sond < :date_sond
-                                  GROUP BY E.numEvent
+                                  JOIN Sondages S ON S.numSond=E.numSond
+                                  WHERE date_sond < :date_sond AND E.numSond IS NOT NULL AND u.numUser=:user
                                   ORDER BY date_sond ASC");
+<<<<<<< HEAD
             $statement->execute(['date_sond' => date('Y-m-d')]);
             return $statement->fetchAll();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database . 'recuperer_infos_reunions_passees' . $e->getMessage());
         }
+=======
+      $statement->execute(['date_sond' => date('Y-m-d'), 'user' => $user]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . 'recuperer_infos_reunions_passees' . $e->getMessage());
+>>>>>>> e18aac9e6a4ba73031e38d7491a0905b50537cc5
     }
 
+<<<<<<< HEAD
     public function recuperer_informations_reunion($numReunion)
     {
         try {
             $statement = $this->db->prepare(" SELECT  E.numEvent,titre,lieu,descri,
                                   date_sond,heureD,heureF,nom,prenom,email,U.numUser,statut,COUNT(E.numEvent) as nombreParticipant
+=======
+  public function recuperer_informations_reunion($numReunion)
+  {
+    try {
+      $statement = $this->db->prepare(" SELECT  E.numEvent,titre,lieu,descri,
+                                  date_sond,heureD,heureF,nom,prenom,email,U.numUser,statut
+>>>>>>> e18aac9e6a4ba73031e38d7491a0905b50537cc5
                                   FROM (Evenements E JOIN Participants P ON E.numEvent=P.numEvent) 
                                   JOIN Utilisateurs U ON U.numUser=P.numUser 
-                                  JOIN Sondages S ON S.numSond=E.numEvent 
+                                  JOIN Sondages S ON S.numSond=E.numSond
                                   WHERE S.numSond = :numReunion AND statut = :stat");
             $statement->execute(['numReunion' => $numReunion, 'stat' => 'createur']);
             return $statement->fetch();
@@ -634,4 +734,105 @@ class Evenements_model extends Model
             throw new Exception(self::str_error_database . "(check_if_participant) : " . $e->getMessage());
         }
     }
+<<<<<<< HEAD
+=======
+  }
+
+  public function get_event_documents($numEvent)
+  {
+    try {
+      $statement = $this->db->prepare("SELECT nomDoc FROM DocsEvent  WHERE numEvent = ?");
+      $statement->execute([$numEvent]);
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . "(get_event_documents) : " . $e->getMessage());
+    }
+  }
+
+
+  public function delete_document($numEvent, $docName)
+  {
+    try {
+      $statement = $this->db->prepare("DELETE FROM DocsEvent WHERE numEvent=? AND nomDoc=?");
+      $statement->execute([$numEvent, $docName]);
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . "(delete_document) : " . $e->getMessage());
+    }
+  }
+
+  public function check_if_administrator($numUser, $numEvent)
+  {
+    try {
+      $statement = $this->db->prepare("SELECT * FROM Participants WHERE numUser=? AND numEvent=? AND (statut=? OR statut=?)");
+      $statement->execute([$numUser, $numEvent, "administrateur", "createur"]);
+      return $statement->fetchAll() != null;
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . "(check_if_administrator) : " . $e->getMessage());
+    }
+  }
+
+  public function check_if_createur_ou_administrateur_event($numUser, $numEvent)
+  { //gérer le statur administrateur coté client
+    try {
+      $statement = $this->db->prepare("SELECT * FROM Participants WHERE numUser=? AND numEvent=? AND (statut=? OR statut=?)");
+      $statement->execute([$numUser, $numEvent, "createur"]);
+      if (count($statement->fetchAll()) == 0) throw new Exception("Vous n'êtes pas createur ou administrateur de cet evenements");
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . "(check_if_createur_event) : " . $e->getMessage());
+    }
+  }
+  public function modifier_emailEnvoye_parts($numsParts = [])
+  {
+    try {
+      foreach ($numsParts as $numPart) {
+        $statement = $this->db->prepare("UPDATE Participants SET emailEnvoye=1 WHERE numPart=?");
+        $statement->execute([$numPart]);
+      }
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' modifier_vote_sondage' . $e->getMessage());
+    }
+  }
+  public function check_if_participant($numUser, $numEvent)
+  {
+    try {
+      $statement = $this->db->prepare("SELECT * FROM Participants WHERE numUser=? AND numEvent=?");
+      $statement->execute([$numUser, $numEvent]);
+      return $statement->fetchAll() != null;
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . "(check_if_participant) : " . $e->getMessage());
+    }
+  }
+
+  public function get_user_events($numUser, $schedulerParams = null)
+  {
+    $requete = "SELECT E.numEvent id, S.date_sond || ' ' || S.heureD || ':00' 'start_date', S.date_sond || ' ' || S.heureF || ':00' end_date, E.titre 'text' 
+                    FROM  (Evenements E JOIN Sondages S ON E.numSond=S.numSond) 
+                    JOIN Participants P ON E.numEvent=P.numEvent 
+                    WHERE numUser=?";
+
+
+    $parametres = [];
+    array_push($parametres, $numUser);
+    // handle dynamic loading
+    if (isset($schedulerParams["from"]) && isset($schedulerParams["to"])) {
+      $requete .= " WHERE `S.date_sond`>=? AND `S.date_sond` < ?;";
+      array_push($parametres, $schedulerParams["from"], $schedulerParams["to"]);
+    }
+    $statement = $this->db->prepare($requete);
+    $statement->execute($parametres);
+    $events = $statement->fetchAll();
+
+    foreach ($events as $event) {
+      $numEvent = $event["id"];
+      $data[] = array(
+        'id'   => $numEvent,
+        'start_date'   => $event["start_date"],
+        'end_date'   => $event["end_date"],
+        'text'   => htmlentities($event["text"])
+      );
+    }
+
+    return $data;
+  }
+>>>>>>> e18aac9e6a4ba73031e38d7491a0905b50537cc5
 }

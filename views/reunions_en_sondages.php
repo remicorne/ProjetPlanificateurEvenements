@@ -78,7 +78,9 @@
 				<?php for ($i = 0; $i < $nbPart; $i++) { ?>
 					<tr>
 						<!-- Si numPart = numPart de l'utilisateur on n'affiche pas. -->
-						<?php if ($sondages_event[0]['reps'][$i]['numPart'] == $numPart) continue;  ?>
+						<?php if ($sondages_event[0]['reps'][$i]['numPart'] == $numPart) {
+    continue;
+}  ?>
 						<td><?= $sondages_event[0]['reps'][$i]['prenom'] ?> <?= $sondages_event[0]['reps'][$i]['nom'] ?></td>
 						<?php foreach ($sondages_event as $rep) { ?>
 							<td> <?= $rep['reps'][$i]["reponse"] ?></td>
