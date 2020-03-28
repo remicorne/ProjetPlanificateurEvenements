@@ -605,8 +605,13 @@ class Evenements extends Controller
             return;
         }
         try {
-            $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir();
-            $this->loader->load('reunions_a_venir', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions à venir']);
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir($this->sessions->logged_user()->numUser);
+            $nombre_part_array = array();
+            foreach ($infos_reunions as $infos_reunion) {
+
+                $nombre_part_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_part_event($infos_reunion['numEvent']);
+            }
+            $this->loader->load('reunions_a_venir', ['infos_reunions' => $infos_reunions, 'nombre_part_array' => $nombre_part_array, 'title' => 'Réunions à venir']);
         } catch (Exception $e) {
             $this->loader->load('reunions_a_venir', ['title' => 'Réunions à venir', 'error_message' => $e->getMessage()]);
         }
@@ -618,7 +623,7 @@ class Evenements extends Controller
             return;
         }
         try {
-            $infos_reunions = $this->evenements->recuperer_infos_reunions_passees();
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_passees($this->sessions->logged_user()->numUser);
             $this->loader->load('reunions_passees', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions passées']);
         } catch (Exception $e) {
             $this->loader->load('reunions_passees', ['title' => 'Réunions passées', 'error_message' => $e->getMessage()]);
@@ -656,5 +661,10 @@ class Evenements extends Controller
         }
         header("Content-Type: application/json");
         echo json_encode($events);
+    }
+    public function get_nombre_participants($numEvent)
+    {
+        $nbPart = $this->evenements->voir_nb_part_event($numEvent);
+        return $nbPart;
     }
 }
