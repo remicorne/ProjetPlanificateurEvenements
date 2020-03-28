@@ -64,6 +64,20 @@ class Mailer_model extends Model
     { //pas de try/catch car si echec pas d'exception, renvoie false
         if (!$this->mailer->send()) throw new Exception("Echec de l'envoi : $mailer->ErrorInfo");
     }
+    
+        public function envoyer_mails_participants($emailsParts = [], $emailUser, $content, $subject)
+    {
+        try {
+            foreach ($emailsParts as $email)
+                if ($email != $emailUser)
+                    $this->mailer->addAddress($email);
+            $this->mailer->msgHTML($content);
+            $this->mailer->Subject = $subject;
+            $this->mailer->send();
+        } catch (Exception $e) {
+            throw new Exception('Impossible de construire l\'email' . $e);
+        }
+    }
 }
 
 Mailer_model::init();
