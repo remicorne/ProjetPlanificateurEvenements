@@ -36,7 +36,9 @@
 					<td> <?=$membre['nom'] ?> </td>
 					<td> <?=$membre['prenom'] ?> </td> 
 					<td> <?=$membre['email'] ?> </td>
-					<?php if ($membre['proprietaire']) continue; ?> 
+					<?php if ($membre['proprietaire']) {
+    continue;
+} ?> 
 					<form method="post" action="/index.php/evenements/retirer_user_groupe/<?=$membre['numUser']?>/<?=$numGroupe?>">
 						<td><button>retirer</button></td>
 					</form>

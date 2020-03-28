@@ -74,6 +74,3 @@ CREATE TABLE DocsEvent(
 	nomDoc INTEGER REFERENCES Documents(numDoc) ON DELETE CASCADE,
 	PRIMARY KEY(numEvent,nomDoc)
 );
-
-
-

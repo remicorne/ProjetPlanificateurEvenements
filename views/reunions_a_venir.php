@@ -30,12 +30,12 @@
                                <th width="5%">Nombre de participants</th>  
                           </tr>  
 
-                     <?php foreach($infos_reunions as $infos_sondage){   ?>
+                     <?php foreach ($infos_reunions as $infos_sondage) {   ?>
                            <tr onclick="goToReunion(<?=$infos_sondage['numEvent']?>)">  
                                <td><?=$infos_sondage['numEvent']?></td>  
                                <td><?=$infos_sondage['date_sond']?></td>  
                                <td><?=$infos_sondage['heureD']?></td>  
-                               <td><?=$infos_sondage['heureF']-$infos_sondage['heureD']?></td>  
+                               <td><?= intval($infos_sondage['heureF']) - intval($infos_sondage['heureD'])?></td>  
                                <td><?=$infos_sondage['titre']?></td>  
                                <td><?=$infos_sondage['nombreParticipant']?></td>  
                           </tr>  

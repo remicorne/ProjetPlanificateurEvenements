@@ -4,7 +4,7 @@
   <div>
 
     <div class="div_mon_compte">
-      <?php if($photo!==null){ ?>
+      <?php if ($photo!==null) { ?>
       <div>
         <a href="/index.php/users/delete_photo">×</a><br>
         <img src="/index.php/evenements/photos_get/<?=$logged_user->numUser?>" alt="photo">

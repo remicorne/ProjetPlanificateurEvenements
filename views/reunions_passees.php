@@ -38,7 +38,7 @@
                           </tr>  
 
 
-                     <?php foreach($infos_reunions as $infos_sondage){ ?>
+                     <?php foreach ($infos_reunions as $infos_sondage) { ?>
                            <tr>  
                                <td><a href="/evenements/reunion/<?=$infos_sondage['numEvent']?>/<?=$infos_sondage['nombreParticipant']?>"><?=$infos_sondage['numEvent']?></td>  
                                <td><?=$infos_sondage['date_sond']?></td>  

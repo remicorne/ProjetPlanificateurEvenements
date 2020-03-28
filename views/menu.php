@@ -1,5 +1,5 @@
 	<div id="menu">
-		<?php if($user_has_photo){ ?>
+		<?php if ($user_has_photo) { ?>
 		<div id="photo_profil">
 			<img src="/index.php/evenements/photos_get/<?=$logged_user->numUser?>?thumbnail" alt="photo de profil">
 		</div>

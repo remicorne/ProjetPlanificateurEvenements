@@ -12,7 +12,9 @@ class Evenements extends Controller
         if ($this->redirect_unlogged_user()) {
             return;
         }
-        $this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
+        $numUser = $this->sessions->logged_user()->numUser;
+        $this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord',
+                                                'numUser'=>$numUser]);
     }
 
     public function mon_compte()
@@ -581,5 +583,23 @@ class Evenements extends Controller
         } catch (Exception $e) {
             $this->loader->load('participants', ['title'=>"participants de la reunion numéro $numReunion", 'error_message' => $e->getMessage()]);
         }
+    }
+
+    public function tableau_de_bord_data($numUser)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        switch ($_SERVER["REQUEST_METHOD"]) {
+            case "GET":
+                $events = $this->evenements->get_user_events($numUser, $_GET);
+                break;
+            case "POST": // Pas de methode post, on ne permet pas la création d'un evenement à partir du tableau de bord
+            default:
+                throw new Exception("Unexpected Method");
+            break;
+        }
+        header("Content-Type: application/json");
+        echo json_encode($events);
     }
 }

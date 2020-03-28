@@ -26,7 +26,7 @@
                                <th width="20%">Email</th>  
                                <th width="5%">Statut</th>  
                           </tr>  
-                     <?php foreach($infos_participants as $infos_participant){ ?>
+                     <?php foreach ($infos_participants as $infos_participant) { ?>
                            <tr>  
                                <td><?=$infos_participant['numUser']?></td>  
                                <td><img src="/index.php/evenements/photos_get/<?=$infos_participant['numUser']?>" alt="photo"></td>  

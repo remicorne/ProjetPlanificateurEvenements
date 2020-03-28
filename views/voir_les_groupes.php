@@ -1,7 +1,7 @@
 <script type="text/javascript" src="/assets/js/script_gestion_des_groupes.js"></script>
 
 <div class="container">
-	<?php if($groupes!=null){ ?>
+	<?php if ($groupes!=null) { ?>
 		<div id="div_tab_groupes">
 			<table>
 				<tr>

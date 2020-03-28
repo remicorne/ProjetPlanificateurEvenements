@@ -1,6 +1,6 @@
 <script type="text/javascript" src="/assets/js/script_reunions_en_sondages.js"></script>
 <div class="container">
-    <?php if($events!=null) { ?>
+    <?php if ($events!=null) { ?>
     	<?php if (isset($error)) { ?>
     		<div class="alert alert-warning" role="alert"><?= $error ?></div>
     	<?php } ?>
@@ -53,19 +53,19 @@
         			<td><b>vous</b></td>
         			<form method="post" action="/index.php/evenements/vote_reunion_en_sondages/<?=$event_visu['numEvent']?>/<?=$numPart?>" onsubmit=" return ecrire_ds_cookie_vote()">
     	    			
-    	    			<?php if($event_visu['statut']=='createur') { ?>
+    	    			<?php if ($event_visu['statut']=='createur') { ?>
 
     	    				<?php for ($i=0; $i<count($sondages_event) ; $i++) { ?>
     	    						<th> <input type="radio" name="radio" value="<?=$sondages_event[$i]['numSond']?>" > </th>
     	    				<?php } ?> 
     	    					<th> <button type="submit">choisir la date de l'evenement</button> </th>
     	    			
-    	    			<?php }else{ ?>
+    	    			<?php } else { ?>
 
     	    				<?php for ($i=0; $i<count($sondages_event) ; $i++) { ?>
-    	    					<?php if($repUser[$i]) { ?>
+    	    					<?php if ($repUser[$i]) { ?>
     	    						<th> <input type="checkbox" name="checkbox[]" value="<?=$sondages_event[$i]['numSond']?>" checked> </th>
-    	    					<?php }else{ ?>
+    	    					<?php } else { ?>
     	    						<th> <input type="checkbox" name="checkbox[]" value="<?=$sondages_event[$i]['numSond']?>" > </th>
     	    					<?php } ?>
     	    				<?php } ?> 
@@ -77,7 +77,9 @@
 
         		<?php for ($i=0; $i<$nbPart; $i++) { ?>
         		<tr>	<!-- Si numPart = numPart de l'utilisateur on n'affiche pas. --> 
-        			<?php if($sondages_event[0]['reps'][$i]['numPart'] == $numPart) continue;  ?>
+        			<?php if ($sondages_event[0]['reps'][$i]['numPart'] == $numPart) {
+    continue;
+}  ?>
         				<td><?= $sondages_event[0]['reps'][$i]['prenom'] ?> <?= $sondages_event[0]['reps'][$i]['nom'] ?></td>
         				<?php foreach ($sondages_event as $rep) { ?>
         					<td> <?= $rep['reps'][$i]["reponse"]?></td>
