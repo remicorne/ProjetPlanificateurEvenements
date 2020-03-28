@@ -6,7 +6,7 @@ class User
     public $prenom;
     public $email;
     private $motDePasse;
-  
+
     public function __construct($numUser, $nom, $prenom, $email, $motDePasse)
     {
         $this->numUser = $numUser;
@@ -15,12 +15,12 @@ class User
         $this->email = $email;
         $this->motDePasse = $motDePasse;
     }
-  
+
     public static function from_array($array)
     {
         return new User($array['numUser'], $array['nom'], $array['prenom'], $array['email'], $array['motDePasse']);
     }
-  
+
     public function password_is_valid($motDePasse)
     {
         return password_verify($motDePasse, $this->motDePasse);
@@ -35,7 +35,7 @@ class Users_model extends Model
     const str_error_motDePasse_format = 'Le mot de passe doit contenir entre 5 et 30 caractères non blancs';
     const str_error_photo_does_not_exist = 'La photo n\'existe pas.';
     const str_error_database = 'problem avec la bd.';
-  
+
     public function create_user($nom, $prenom, $email, $motDePasse)
     {
         $this->check_nom($nom);
@@ -45,7 +45,7 @@ class Users_model extends Model
         try {
             $hash = password_hash($motDePasse, PASSWORD_DEFAULT);
             $statement = $this->db->prepare("INSERT INTO Utilisateurs(nom,prenom,email,motDePasse) VALUES(?, ?, ?, ?)");
-            $statement->execute([$nom,$prenom, $email, $hash]);
+            $statement->execute([$nom, $prenom, $email, $hash]);
             $id = $this->db->lastInsertId();
             return new User($id, $nom, $prenom, $email, $hash);
         } catch (PDOException $e) {
@@ -56,12 +56,12 @@ class Users_model extends Model
             }
         }
     }
-  
+
     public function user_from_numUser($numUser)
     {
         return $this->user_from_query('SELECT numUser, nom, prenom, email, motDePasse FROM Utilisateurs WHERE numUser = ?', [$numUser]);
     }
-  
+
     public function user_from_email($email)
     {
         $this->check_email($email);
@@ -76,7 +76,7 @@ class Users_model extends Model
             $statement = $this->db->prepare('SELECT numUser, nom, prenom, email
                                         FROM Utilisateurs 
                                         WHERE nom LIKE :nom AND prenom LIKE :prenom');
-            $statement->execute(["nom"=>$nom."%", "prenom"=>$prenom."%"]);
+            $statement->execute(["nom" => $nom . "%", "prenom" => $prenom . "%"]);
             return $statement->fetchAll();
         } catch (PDOException $e) {
             throw new Exception('Impossible d\'effectuer la demande.');
@@ -90,12 +90,13 @@ class Users_model extends Model
             $statement = $this->db->prepare('SELECT numUser, nom, prenom, email
                                         FROM Utilisateurs 
                                         WHERE nom LIKE :nom');
-            $statement->execute(["nom"=>$nom."%"]);
+            $statement->execute(["nom" => $nom . "%"]);
             return $statement->fetchAll();
         } catch (PDOException $e) {
             throw new Exception('Impossible d\'effectuer la demande.');
         }
     }
+
 
     private function check_nom($nom)
     {
@@ -116,14 +117,14 @@ class Users_model extends Model
     {
         $this->check_format_with_regex($motDePasse, '/^[^\s]{5,10}$/', self::str_error_motDePasse_format);
     }
-  
+
     private function user_from_query($query, $array)
     {
         try {
             $statement = $this->db->prepare($query);
             $statement->execute($array);
             $users = $statement->fetchAll();
-            if (count($users)==0) {
+            if (count($users) == 0) {
                 return null;
             }
             return User::from_array($users[0]);
@@ -131,13 +132,13 @@ class Users_model extends Model
             throw new Exception('Impossible d\'effectuer la demande.');
         }
     }
-  
+
     private function check_format_with_regex($variable, $regex, $error_message)
     {
         $result = filter_var($variable, FILTER_VALIDATE_REGEXP, array(
-        'options' => array(
-            'regexp' => $regex
-        )
+      'options' => array(
+        'regexp' => $regex
+      )
     ));
         if ($result === false || $result === null) {
             throw new Exception($error_message);
@@ -153,9 +154,11 @@ class Users_model extends Model
                                         SET nom = :nom,
                                             prenom = :prenom
                                         WHERE numUser= :numUser");
-            $statement->execute(["nom"=>$nom,
-                           "prenom"=>$prenom,
-                           "numUser"=>$numUser]);
+            $statement->execute([
+        "nom" => $nom,
+        "prenom" => $prenom,
+        "numUser" => $numUser
+      ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
@@ -169,15 +172,17 @@ class Users_model extends Model
             $statement = $this->db->prepare("UPDATE Utilisateurs 
                                         SET email = :email
                                         WHERE numUser= :numUser");
-            $statement->execute(["email"=>$email,
-                           "numUser"=>$numUser]);
+            $statement->execute([
+        "email" => $email,
+        "numUser" => $numUser
+      ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
         }
     }
-  
-  
+
+
     public function reset_password($numUser)
     { //génération MDP sécurisé aléatoire a partir de bytes random
         try {
@@ -201,7 +206,7 @@ class Users_model extends Model
             $statement = $this->db->prepare("UPDATE Utilisateurs 
                                         SET motDePasse = :hash
                                         WHERE numUser= :numUser");
-            $statement->execute(["hash"=>$hash, "numUser"=>$numUser]);
+            $statement->execute(["hash" => $hash, "numUser" => $numUser]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
@@ -215,9 +220,11 @@ class Users_model extends Model
                                         SET photo = :photo,
                                             thumbnail = :thumbnail
                                         WHERE numUser= :numUser");
-            $statement->execute(["photo"=>null,
-                           "thumbnail"=>null,
-                           "numUser"=>$numUser]);
+            $statement->execute([
+        "photo" => null,
+        "thumbnail" => null,
+        "numUser" => $numUser
+      ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
@@ -256,7 +263,7 @@ class Users_model extends Model
 
     private function user_has_photo($numUser)
     {
-        return $this->get_photo($numUser)!==null ;
+        return $this->get_photo($numUser) !== null;
     }
 
     public function set_photo($tmp_file, $numUser)
@@ -266,9 +273,11 @@ class Users_model extends Model
                                         SET photo = :photo,
                                             thumbnail = :thumbnail
                                         WHERE numUser= :numUser");
-            $statement->execute(["photo"=>$this->create_photo($tmp_file),
-                           "thumbnail"=>$this->create_thumbnail($tmp_file),
-                           "numUser"=>$numUser]);
+            $statement->execute([
+        "photo" => $this->create_photo($tmp_file),
+        "thumbnail" => $this->create_thumbnail($tmp_file),
+        "numUser" => $numUser
+      ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
@@ -308,17 +317,17 @@ class Users_model extends Model
     private function resize_to_thumbnail($image)
     {
         $geometry = $image->getImageGeometry();
-        if ($geometry ['width'] > $geometry ['height']) {
+        if ($geometry['width'] > $geometry['height']) {
             $image->thumbnailImage(150, 0);
         } else {
             $image->thumbnailImage(0, 150);
         }
     }
-  
+
     private function resize_photo($image)
     {
         $geometry = $image->getImageGeometry();
-        if ($geometry ['width'] > $geometry ['height']) {
+        if ($geometry['width'] > $geometry['height']) {
             $image->thumbnailImage(200, 0);
         } else {
             $image->thumbnailImage(0, 200);
