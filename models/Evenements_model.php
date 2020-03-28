@@ -469,6 +469,7 @@ public function recuperer_infos_reunions_a_venir()
     }catch(PDOException $e){
       throw new Exception(self::str_error_database.'recuperer_infos_reunions_passees'.$e->getMessage());
     }
+  }
 
     public function recuperer_informations_reunion($numReunion)
     {
@@ -484,6 +485,7 @@ public function recuperer_infos_reunions_a_venir()
     }catch(PDOException $e){
       throw new Exception(self::str_error_database.'recuperer_informations_sondages'.$e->getMessage());
     }
+  }
 
     public function recuperer_informations_participants($numReunion)
     {
@@ -498,7 +500,7 @@ public function recuperer_infos_reunions_a_venir()
     }catch(PDOException $e){
       throw new Exception(self::str_error_database.'recuperer_informations_participants'.$e->getMessage());
     }
-
+  }
     public function recuperer_informations_organisateurs($numReunion)
     {
         try {
