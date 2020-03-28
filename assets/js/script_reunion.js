@@ -1,14 +1,18 @@
 /**
-*Fonction qui ajoute les utilisateurs au tableau 'tab_persons' de la page ajout_des_participants.
+*Fonction qui ajoute les utilisateurs au tableau 'tab_persons' de la page ajout_des_Invites.
 *les utilisateurs sont ajoutés au tableau en fonction de ce qui est tapé dans l'input 'input_personne'.
 */
 
 $(document).ready(function () {
+	$('#div_b_email_view_evenement').hide();
 	remplirTabGroupesCherches("tab_groupes_cherches", numEvent);
-	afficherParticipantsEvent('tab_participants', numEvent);
+	afficherInvitesEvent('tab_invites', numEvent);
 	refreshDocTable(numEvent);
 	$("#file_upload").hide();
+	afficherParticipantsEvent()
+	setInterval(afficherParticipantsEvent, '10000');
 })
+
 
 function remplirTabPersonsCherches(idTab, input, numEvent) {
 	$('#' + idTab).html("");
@@ -28,7 +32,6 @@ function remplirTabPersonsCherches(idTab, input, numEvent) {
 
 function remplirTabGroupesCherches(idTab, numEvent) {
 	$('#' + idTab).html("");
-
 	var requete = $.ajax({
 		url: "/index.php/evenements/obtenir_les_groupes"
 	});
@@ -51,7 +54,8 @@ function ajouterGroupeEventBd(numGroupe, numEvent) {
 		url: "/index.php/evenements/ajouter_groupe_event/" + numGroupe + "/" + numEvent
 	});
 	requete.done(function () {
-		afficherParticipantsEvent('tab_participants', numEvent);
+		$('#div_b_email_view_evenement').show();
+		afficherInvitesEvent('tab_invites', numEvent);
 	});
 }
 
@@ -60,7 +64,7 @@ function retirerGroupeEventBd(numGroupe, numEvent) {
 		url: "/index.php/evenements/retirer_groupe_event/" + numGroupe + "/" + numEvent
 	});
 	requete.done(function () {
-		afficherParticipantsEvent('tab_participants', numEvent);
+		afficherInvitesEvent('tab_invites', numEvent);
 	});
 }
 
@@ -90,29 +94,30 @@ function ajouterParticipantBd(numUser, numEvent, statut) {
 	});
 	requete.done(function () {
 		$('#tab_persons').html("");
-		afficherParticipantsEvent('tab_participants', numEvent);
+		$('#div_b_email_view_evenement').show();
+		afficherInvitesEvent('tab_invites', numEvent);
 	});
 }
 
-function afficherParticipantsEvent(nomTab, numEvent) {
-	$('#tab_participants').html("");
+function afficherInvitesEvent(nomTab, numEvent) {
+	$('#tab_invites').html("");
 	var requete = $.ajax({
 		dataType: "json",
 		url: "/index.php/evenements/afficher_participants_event/" + numEvent //adresse à laquelle la requête doit être envoyée
 	});
 	requete.done(function () {
-		var participants = JSON.parse(requete.responseText);
-		construireTabParticipants(nomTab, participants, numEvent);
+		var invites = JSON.parse(requete.responseText);
+		construireTabInvites(nomTab, invites, numEvent);
 	});
 }
 
-function construireTabParticipants(nomTab, participants, numEvent) {
-	construireTableauDePersonne(nomTab, participants);
-	$('#tab_participants').children().each(function (index) {
-		$(this).append('<td>' + participants[index]['statut'] + '</td>');
-		if (participants[index]['statut'] != 'createur') {
+function construireTabInvites(nomTab, invites, numEvent) {
+	construireTableauDePersonne(nomTab, invites);
+	$('#tab_invites').children().each(function (index) {
+		$(this).append('<td>' + invites[index]['statut'] + '</td>');
+		if (invites[index]['statut'] != 'createur') {
 			$(this).append('<td><button class="retirer">retirer</button></td>');
-			$(this).children(':last').click(function () { retirerParticipantBd(participants[index]['numPart'], numEvent, nomTab) });
+			$(this).children(':last').click(function () { retirerParticipantBd(invites[index]['numPart'], numEvent, nomTab) });
 		}
 	})
 }
@@ -123,7 +128,7 @@ function retirerParticipantBd(numPart, numEvent, nomTab) {
 	});
 	requete.done(function () {
 		$('#tab_persons').html("");
-		afficherParticipantsEvent(nomTab, numEvent);
+		afficherInvitesEvent(nomTab, numEvent);
 	});
 }
 
@@ -133,7 +138,6 @@ function uploadFile() {
 		$("#error_message").html("Fichier trop grand (taille <50Mo)");
 	fileUploadRequest(file);
 }
-
 
 
 function fileUploadRequest(file) {
@@ -206,3 +210,26 @@ function refreshDocTable() {
 function showAddDocument() {
 	$("#file_upload").show();
 }
+
+function afficherParticipantsEvent() {
+	$('#tab_participants').html("");
+	var requete = $.ajax({
+		dataType: "json",
+		url: "/index.php/evenements/afficher_participants_event/" + numEvent //adresse à laquelle la requête doit être envoyée
+	});
+	requete.done(function () {
+		var invites = JSON.parse(requete.responseText);
+		construireTabParticipants(invites);
+	});
+}
+
+function construireTabParticipants(invites) {
+	if (invites == null) return;
+	var participants = [];
+	invites.forEach(function (inv) {
+		if (inv['participation'] == 1)
+			participants.push(inv);
+	});
+	construireTableauDePersonne('tab_participants', participants);
+}
+

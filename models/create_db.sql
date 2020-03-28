@@ -54,7 +54,7 @@ CREATE TABLE Participants(
 	numPart INTEGER PRIMARY KEY AUTOINCREMENT,
 	aVote TEXT CHECK(aVote IN ("oui","non")) DEFAULT "non",
 	statut TEXT CHECK(statut IN ("createur","administrateur","participant")) DEFAULT "participant",
-	participation BOOLEAN DEFAUT 0,
+	participation BOOLEAN DEFAULT 0,
 	emailEnvoye BOOLEAN DEFAULT 0,
 	numEvent INTEGER REFERENCES Evenements(numEvent) ON DELETE CASCADE,
 	numUser INTEGER REFERENCES Utilisateurs(numUser) ON DELETE CASCADE

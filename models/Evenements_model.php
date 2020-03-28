@@ -204,7 +204,7 @@ class Evenements_model extends Model
     try {
       $statement = $this->db->prepare("SELECT numSond, date_sond, heureD, heureF FROM Sondages WHERE numSond=?");
       $statement->execute([$numSond]);
-      return $statement->fetch();
+      return $statement->fetchAll();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database . ' voir_sondage' . $e->getMessage());
     }
@@ -471,7 +471,7 @@ class Evenements_model extends Model
   public function afficher_les_participants_event($numEvent)
   {
     try {
-      $statement = $this->db->prepare("SELECT numPart, U.numUser, nom, prenom, email, statut, emailEnvoye FROM Participants P JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=?");
+      $statement = $this->db->prepare("SELECT numPart, U.numUser, nom, prenom, email, statut, participation ,emailEnvoye FROM Participants P JOIN Utilisateurs U ON P.numUser=U.numUser WHERE numEvent=?");
       $statement->execute([$numEvent]);
       return $statement->fetchAll();
     } catch (PDOException $e) {
@@ -546,17 +546,16 @@ class Evenements_model extends Model
       throw new Exception(self::str_error_database . 'recuperer_informations_participants' . $e->getMessage());
     }
   }
-  public function recuperer_informations_organisateurs($numReunion)
+  public function recuperer_informations_organisateur($numEvent)
   {
     try {
-      $statement = $this->db->prepare(" SELECT nom,prenom,email
-                                    FROM (Evenements E JOIN Participants P ON E.numEvent=P.numEvent) 
-                                    JOIN Utilisateurs U ON U.numUser=P.numUser 
-                                    WHERE E.numEvent = :numReunion");
-      $statement->execute(['numReunion' => $numReunion]);
-      return $statement->fetchAll();
+      $statement = $this->db->prepare(" SELECT nom, prenom, email
+                                    FROM Participants P JOIN Utilisateurs U ON U.numUser=P.numUser 
+                                    WHERE numEvent=? AND statut='createur' ");
+      $statement->execute([$numEvent]);
+      return $statement->fetch();
     } catch (PDOException $e) {
-      throw new Exception(self::str_error_database . 'recuperer_informations_participants' . $e);
+      throw new Exception(self::str_error_database . 'recuperer_informations_organisateur' . $e->getMessage());
     }
   }
 
@@ -604,15 +603,11 @@ class Evenements_model extends Model
   }
 
   public function check_if_createur_ou_administrateur_event($numUser, $numEvent)
-  { //gérer le statur administrateur coté client
-    try {
-      $statement = $this->db->prepare("SELECT * FROM Participants WHERE numUser=? AND numEvent=? AND (statut=? OR statut=?)");
-      $statement->execute([$numUser, $numEvent, "createur"]);
-      if (count($statement->fetchAll()) == 0) throw new Exception("Vous n'êtes pas createur ou administrateur de cet evenements");
-    } catch (PDOException $e) {
-      throw new Exception(self::str_error_database . "(check_if_createur_event) : " . $e->getMessage());
-    }
+  {
+    if (!$this->check_if_administrator($numUser, $numEvent))
+      throw new Exception("Vous n'êtes pas createur ou administrateur de cet evenements");
   }
+
   public function modifier_emailEnvoye_parts($numsParts = [])
   {
     try {
@@ -629,9 +624,30 @@ class Evenements_model extends Model
     try {
       $statement = $this->db->prepare("SELECT * FROM Participants WHERE numUser=? AND numEvent=?");
       $statement->execute([$numUser, $numEvent]);
-      return $statement->fetchAll() != null;
+      if (count($statement->fetchAll()) == 0) throw new Exception('Tu fais pas parti de cette réunion gros, bien tenté mais on y a pensé');
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database . "(check_if_participant) : " . $e->getMessage());
+    }
+  }
+
+  public function voir_si_user_participe_event($numUser, $numEvent)
+  {
+    try {
+      $statement = $this->db->prepare("SELECT participation FROM Participants WHERE numUser=? AND numEvent=?");
+      $statement->execute([$numUser, $numEvent]);
+      return $statement->fetchColumn();
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . "(voir_si_user_participe_event) : " . $e->getMessage());
+    }
+  }
+
+  public function modifier_participation_event($numEvent, $numUser,  $participation)
+  {
+    try {
+      $statement = $this->db->prepare("UPDATE Participants SET participation=? WHERE numEvent=? AND numUser=?");
+      $statement->execute([$participation, $numEvent, $numUser]);
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . "(modifier_participation_event) : " . $e->getMessage());
     }
   }
 }
