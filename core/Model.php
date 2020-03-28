@@ -15,7 +15,7 @@ class Model
 	public function __construct()
 	{
 		$this->db = self::$static_db;
-		$this->$mailer = self::$static_mailer;
+		$this->mailer = self::$static_mailer;
 	}
 
 	public static function init()
