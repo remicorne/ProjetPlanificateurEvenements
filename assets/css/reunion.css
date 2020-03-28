@@ -6,6 +6,14 @@
 	border: solid;
 }
 
+#div_b_email{
+	position: absolute;
+	left: 400px;
+  	width: 200px;
+  	top: 0px;
+	border: solid;
+}
+
 #div_groupes_cherches{
 	position: absolute;
 	left: 410px;

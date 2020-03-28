@@ -3,27 +3,33 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
-class Model {
+class Model
+{
 
 	private static $static_db;
 	private static $static_mailer;
-	
+
 	protected $db;
 	protected $mailer;
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->db = self::$static_db;
-		$this->$mailer = self::$static_mailer;
+		$this->mailer = self::$static_mailer;
 	}
 
-	public static function init() {
+	public static function init()
+	{
 		global $config;
 		self::$static_db = new PDO('sqlite:models/database.sqlite');
 		self::$static_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		self::$static_mailer = self::create_mailer();
 	}
 
-	public function inject_data($data) { return $data; }
+	public function inject_data($data)
+	{
+		return $data;
+	}
 
 	/**
 	 * This example shows settings to use when sending via Google's Gmail servers.
@@ -31,7 +37,8 @@ class Model {
 	 * example to see how to use XOAUTH2.
 	 * The IMAP section shows how to save this message to the 'Sent Mail' folder using IMAP commands.
 	 */
-	private static function create_mailer(){
+	private static function create_mailer()
+	{
 		require 'assets/PHPMailer/autoload.php';
 		$mailer = new PHPMailer;
 		$mailer->isSMTP(); // Paramétrer le Mailer pour utiliser SMTP

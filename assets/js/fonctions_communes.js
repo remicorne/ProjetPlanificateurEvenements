@@ -1,16 +1,16 @@
 /////////////////// Fonctions communes à toutes les pages. ////////////////////////////////////////////
 
-function init(){}
+function init() { }
 /**
 *Fonction pour lire un cookie de nom donné en paramètre .
 */
 function readCookie(name) {
 	var nameEQ = name + "=";
 	var ca = document.cookie.split(';');
-	for(var i=0;i < ca.length;i++) {
+	for (var i = 0; i < ca.length; i++) {
 		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+		while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
 	}
 	return null;
 }
@@ -18,38 +18,38 @@ function readCookie(name) {
 /**
 *Fonction pour ajouter une colonne à un tableau.
 */
-function addColumn(tdOrTh, contenu){
+function addColumn(tdOrTh, contenu) {
 	var col = document.createElement(tdOrTh);
-	col.innerHTML=contenu;
-	return col ;
+	col.innerHTML = contenu;
+	return col;
 }
 
 /**
 *Fonction pour créer une connexion asynchrone.
 *voir utilisation dans fonction findPerson.
 */
-function xhrGET(url, typeRep){
+function xhrGET(url, typeRep) {
 	var xhr = new XMLHttpRequest();
 	//ouvrir la connexion et choisir type d'envoie 
 	xhr.open('GET', url);
 	//preciser le type de retour attendu
 	xhr.responseType = typeRep;
 	//envoie de la requete   
-	xhr.send();	
+	xhr.send();
 	// return l'objet XMLHttpRequest
 	return xhr;
 }
 
 /////////////////// Fonctions communes au pages voir_les_groupes, creer_un_groupe, ajouter_des_paticipants  ////////////////////////////////////////////:
 
-function construireTableauDePersonne(idTab, personnes){
-	if(personnes==null) return;
+function construireTableauDePersonne(idTab, personnes) {
+	if (personnes == null) return;
 	var tab = document.getElementById(idTab);
-	personnes.forEach(function(personne){
+	personnes.forEach(function (personne) {
 		var newRow = document.createElement("tr");
 		var numUser = personne['numUser'];
-		var src = "/index.php/evenements/photos_get/"+numUser+"?thumbnail";
-		newRow.appendChild(addColumn("td", '<img src="'+src+'" alt="photo de profil" height="50" width="50" />'));
+		var src = "/index.php/evenements/photos_get/" + numUser + "?thumbnail";
+		newRow.appendChild(addColumn("td", '<img src="' + src + '" alt="photo de profil" height="50" width="50" />'));
 		newRow.appendChild(addColumn("td", personne['nom']));
 		newRow.appendChild(addColumn("td", personne['prenom']));
 		newRow.appendChild(addColumn("td", personne['email']));
@@ -64,17 +64,17 @@ function construireTableauDePersonne(idTab, personnes){
 *Fonction qui recherche les utilisateurs dont les premières lettre du nom correspondent à la chaine.
 *return la reponse de la requete.
 */
-function chercherDesPersonnes(input){
+function chercherDesPersonnes(input) {
 	var str = input.value.split(' ');
 	var nom = str[0];
-	var prenom = str.length>1 && str[1]!="" ? str[1] : null;
+	var prenom = str.length > 1 && str[1] != "" ? str[1] : null;
 	//encodeage pour eviter les caractères interdits dans une url
 	var en_nom = encodeURIComponent(nom);
 	var en_prenom = encodeURIComponent(prenom);
-	if(prenom!=null) 
-		var m_url="/index.php/evenements/users_from_nom_prenom_js/"+en_nom+"/"+en_prenom;
+	if (prenom != null)
+		var m_url = "/index.php/evenements/users_from_nom_prenom_js/" + en_nom + "/" + en_prenom;
 	else
-		var m_url="/index.php/evenements/users_from_nom_js/"+en_nom;
+		var m_url = "/index.php/evenements/users_from_nom_js/" + en_nom;
 
 	var requete = $.ajax({
 		url: m_url//adresse à laquelle la requête doit être envoyée
