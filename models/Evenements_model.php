@@ -634,4 +634,36 @@ class Evenements_model extends Model
       throw new Exception(self::str_error_database . "(check_if_participant) : " . $e->getMessage());
     }
   }
+
+  public function get_user_events($numUser, $schedulerParams = null)
+  {
+    $requete = "SELECT E.numEvent id, S.date_sond || ' ' || S.heureD || ':00' 'start_date', S.date_sond || ' ' || S.heureF || ':00' end_date, E.titre 'text' 
+                    FROM  (Evenements E JOIN Sondages S ON E.numSond=S.numSond) 
+                    JOIN Participants P ON E.numEvent=P.numEvent 
+                    WHERE numUser=?";
+
+
+    $parametres = [];
+    array_push($parametres, $numUser);
+    // handle dynamic loading
+    if (isset($schedulerParams["from"]) && isset($schedulerParams["to"])) {
+      $requete .= " WHERE `S.date_sond`>=? AND `S.date_sond` < ?;";
+      array_push($parametres, $schedulerParams["from"], $schedulerParams["to"]);
+    }
+    $statement = $this->db->prepare($requete);
+    $statement->execute($parametres);
+    $events = $statement->fetchAll();
+
+    foreach ($events as $event) {
+      $numEvent = $event["id"];
+      $data[] = array(
+        'id'   => $numEvent,
+        'start_date'   => $event["start_date"],
+        'end_date'   => $event["end_date"],
+        'text'   => htmlentities($event["text"])
+      );
+    }
+
+    return $data;
+  }
 }

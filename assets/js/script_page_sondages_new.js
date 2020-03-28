@@ -5,7 +5,6 @@ function creationLigneTabUserData(numLigne, date, horaireD, horaireF) {
   output += '</tr>';
   return output;
 }
-
 function creationColonnesTabUserData(numLigne, date, horaireD, horaireF) {
   var output;
   output += '<td>' + date + ' <input type="hidden" name="dates[]" id="date' + numLigne + '" class="date" value="' + date + '" /></td>';
