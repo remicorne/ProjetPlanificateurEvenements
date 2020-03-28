@@ -34,7 +34,7 @@
                               <td><?= $infos_sondage['numEvent'] ?></td>
                               <td><?= $infos_sondage['date_sond'] ?></td>
                               <td><?= $infos_sondage['heureD'] ?></td>
-                              <td><?= $infos_sondage['heureF'] - $infos_sondage['heureD'] ?></td>
+                              <td><?= intval($infos_sondage['heureF']) - intval($infos_sondage['heureD']) ?></td>
                               <td><?= $infos_sondage['titre'] ?></td>
                               <td><?= $infos_sondage['nombreParticipant'] ?></td>
                          </tr>
