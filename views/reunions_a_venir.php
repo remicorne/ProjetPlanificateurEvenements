@@ -19,13 +19,14 @@
           </div>
           <br /><br />
           <div class="table-responsive">
-               <table class=table table-striped table-bordered" id="reunions_table">
+               <table class="table table-striped table-bordered" id="reunions_table">
                     <tr>
                          <th width="5%">Numéro</th>
                          <th width="25%">Date</th>
                          <th width="35%">Heure</th>
                          <th width="10%">Durée</th>
                          <th width="20%">Sujet</th>
+                         <th width="5%">Nombre de d'invités</th>
                          <th width="5%">Nombre de participants</th>
                     </tr>
 
@@ -41,7 +42,8 @@
                               <td><?= $infos_sondage['date_sond'] ?></td>
                               <td><?= $infos_sondage['heureD'] ?></td>
                               <td><?= $date_format ?></td>
-                              <td><?= $infos_sondage['titre'] ?></td>
+                              <td><a><?= $infos_sondage['titre'] ?></a></td>
+                              <td> <?= $nombre_inv_array[$infos_sondage['numEvent']] ?></td>
                               <td> <?= $nombre_part_array[$infos_sondage['numEvent']] ?></td>
                          </tr>
                     <?php } ?>

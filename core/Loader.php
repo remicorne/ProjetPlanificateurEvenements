@@ -16,7 +16,7 @@ class Loader
     $this->define_helper();
     $data = $this->inject_model_data($data);
     $this->view('header', $data);
-    if ($data['user_is_logged'] && $view != "error") {
+    if ($view != "error" && $data['user_is_logged']) {
       $this->view('menu', $data);
     }
     if ($view !== null) {

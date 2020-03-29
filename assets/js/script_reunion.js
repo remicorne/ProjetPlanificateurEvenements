@@ -4,7 +4,7 @@
 */
 
 $(document).ready(function () {
-	$('#div_b_email_view_evenement').hide();
+	$('#div_b_email').hide();
 	remplirTabGroupesCherches("tab_groupes_cherches", numEvent);
 	afficherInvitesEvent('tab_invites', numEvent);
 	refreshDocTable(numEvent);
@@ -33,10 +33,11 @@ function remplirTabPersonsCherches(idTab, input, numEvent) {
 function remplirTabGroupesCherches(idTab, numEvent) {
 	$('#' + idTab).html("<tr> <th>nom groupe</th> <th>membres</th>");
 	var requete = $.ajax({
-		url: "/index.php/evenements/obtenir_les_groupes"
+		url: "/index.php/evenements/obtenir_les_groupes/" + numEvent
 	});
 	requete.done(function () {
 		var groupes = JSON.parse(requete.responseText);
+		console.log(groupes);
 		groupes.forEach(function (groupe, index) {
 			$('#' + idTab).append('<tr>' +
 				'<td>' + groupe['nomGroupe'] + '</td> <td>' + groupe['nbMembre'] + '</td>' +
@@ -45,8 +46,9 @@ function remplirTabGroupesCherches(idTab, numEvent) {
 				'</tr>');
 			$('.bAjoutGroup' + index).click(function () { ajouterGroupeEventBd(groupe['numGroupe'], numEvent) })
 			$('.bRetirerGroup' + index).click(function () { retirerGroupeEventBd(groupe['numGroupe'], numEvent) })
-		})
-	})
+			prop_bouton_groupe(groupe['ajoute'], index);
+		});
+	});
 }
 
 function ajouterGroupeEventBd(numGroupe, numEvent) {
@@ -54,8 +56,9 @@ function ajouterGroupeEventBd(numGroupe, numEvent) {
 		url: "/index.php/evenements/ajouter_groupe_event/" + numGroupe + "/" + numEvent
 	});
 	requete.done(function () {
-		$('#div_b_email_view_evenement').show();
+		$('#div_b_email').show();
 		afficherInvitesEvent('tab_invites', numEvent);
+		remplirTabGroupesCherches('tab_groupes_cherches', numEvent);
 	});
 }
 
@@ -65,6 +68,7 @@ function retirerGroupeEventBd(numGroupe, numEvent) {
 	});
 	requete.done(function () {
 		afficherInvitesEvent('tab_invites', numEvent);
+		remplirTabGroupesCherches('tab_groupes_cherches', numEvent);
 	});
 }
 
@@ -94,7 +98,7 @@ function ajouterParticipantBd(numUser, numEvent, statut) {
 	});
 	requete.done(function () {
 		$('#tab_persons').html("");
-		$('#div_b_email_view_evenement').show();
+		$('#div_b_email').show();
 		afficherInvitesEvent('tab_invites', numEvent);
 	});
 }
@@ -112,7 +116,7 @@ function afficherInvitesEvent(nomTab, numEvent) {
 }
 
 function construireTabInvites(nomTab, invites, numEvent) {
-	$('#div_invites_view_evenement p').html(" <b> Invités : (" + invites.length + ")</b>");
+	$('#div_invites p').html(" <b> Invités : (" + invites.length + ")</b>");
 	construireTableauDePersonne(nomTab, invites);
 	$('#tab_invites').children().each(function (index) {
 		$(this).append('<td>' + invites[index]['statut'] + '</td>');
@@ -232,8 +236,22 @@ function construireTabParticipants(invites) {
 		if (inv['participation'] == 1)
 			participants.push(inv);
 	});
-	$('#div_participants_view_evenement p').html("<b>Participants : (" + participants.length + ")</b>");
+	$('#div_participants p').html("<b>Participants : (" + participants.length + ")</b>");
 	construireTableauDePersonne('tab_participants', participants);
 	$("#tab_participants .email").remove();
+}
+
+function prop_bouton_groupe(ajoute, index) {
+	if (ajoute == true) {
+		$('.bAjoutGroup' + index).prop('disabled', true);
+		$('.bAjoutGroup' + index).addClass("btn-default").removeClass("btn-success");
+		$('.bRetirerGroup' + index).prop('disabled', false);
+		$('.bRetirerGroup' + index).addClass("btn-danger").removeClass("btn-default");
+	} else {
+		$('.bAjoutGroup' + index).prop('disabled', false);
+		$('.bAjoutGroup' + index).addClass("btn-success").removeClass("btn-default");
+		$('.bRetirerGroup' + index).prop('disabled', true);
+		$('.bRetirerGroup' + index).addClass("btn-default").removeClass("btn-danger");
+	}
 }
 

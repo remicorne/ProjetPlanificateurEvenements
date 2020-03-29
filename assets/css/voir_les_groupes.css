@@ -1,15 +1,27 @@
-#div_tab_groupes{
+.div_tab_groupes_view_voir_groupes{
 	position: absolute;
-	left: 0px;
-  	width: 400px;
-  	top: 150px;
-	border: solid;
+	left: 10px;
+	top: 80px;
+	width: 600px;
+	max-height: 600px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
-#div_groupe{
+.tab_groupes_view_voir_groupes, .tab_groupe_view_voir_groupes{
+	width: 580px;
+}
+
+.div_groupe_view_voir_groupes{
 	position: absolute;
-	left: 450px;
-  	width: 250px;
-  	top: 150px;
-	border: solid;
+	left: 630px;
+	top: 80px;
+	width: 600px;
+	max-height: 600px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }

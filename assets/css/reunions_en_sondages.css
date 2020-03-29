@@ -1,4 +1,4 @@
-#div_evenements{
+.div_evenements_view_reu_en_sond{
 	position: absolute;
 	left: 0px;
 	top: 80px;
@@ -10,7 +10,7 @@
  	border-color:black;
 }
 
-#div_sondages{
+.div_sondages_view_reu_en_sond{
 	position: absolute;
 	left: 450px;
 	top: 80px;

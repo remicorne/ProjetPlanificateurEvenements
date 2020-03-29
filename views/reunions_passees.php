@@ -4,7 +4,7 @@
 
 <body>
      <br /><br />
-     <div class="container" style="width:900px;">
+     <div class="container">
 
           <br /><br />
           <div class="form-group">
@@ -33,18 +33,26 @@
                          <th width="35%">Heure</th>
                          <th width="10%">Durée</th>
                          <th width="20%">Sujet</th>
+                         <th width="5%">Nombre de d'invités</th>
                          <th width="5%">Nombre de participants</th>
                     </tr>
 
 
-                    <?php foreach ($infos_reunions as $infos_sondage) { ?>
-                         <tr>
-                              <td><a href="/evenements/reunion/<?= $infos_sondage['numEvent'] ?>/<?= $infos_sondage['nombreParticipant'] ?>"><?= $infos_sondage['numEvent'] ?></td>
+                    <?php foreach ($infos_reunions as $infos_sondage) {
+                         $datedebut = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureD'] . ":00");
+                         $datefin = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureF'] . ":00");
+                         $datediff = $datedebut->diff($datefin);
+                         $date_format = $datediff->format("%H:%I");
+
+                    ?>
+                         <tr onclick="goToReunion(<?= $infos_sondage['numEvent'] ?>)">
+                              <td><?= $infos_sondage['numEvent'] ?></td>
                               <td><?= $infos_sondage['date_sond'] ?></td>
                               <td><?= $infos_sondage['heureD'] ?></td>
-                              <td><?= $infos_sondage['heureF'] ?></td>
-                              <td><?= $infos_sondage['titre'] ?></td>
-                              <td><a href="/evenements/participants/<?= $infos_sondage['numEvent'] ?>"><?= $infos_sondage['nombreParticipant'] ?></td>
+                              <td><?= $date_format ?></td>
+                              <td><a><?= $infos_sondage['titre'] ?></a></td>
+                              <td> <?= $nombre_inv_array[$infos_sondage['numEvent']] ?></td>
+                              <td> <?= $nombre_part_array[$infos_sondage['numEvent']] ?></td>
                          </tr>
                     <?php } ?>
                </table>

@@ -7,12 +7,12 @@
 		<?php } ?>
 
 		<div>
-			<p>Si vous êtes le createur de l'événement vous devez choisir la date final.<br>
+			<p>Si vous êtes le createur de l'événement vous devez choisir la date finale.<br>
 				Sinon vous devez indiquer vos disponibilités au créateur.</p>
 		</div>
 
 
-		<div id="div_evenements">
+		<div id="div_evenements" class="div_evenements_view_reu_en_sond">
 			<p>sondages en cours : </p>
 			<table id="tab_evenements" class="table table-bordered">
 				<tr>
@@ -35,7 +35,7 @@
 			</table>
 		</div>
 
-		<div id="div_sondages">
+		<div id="div_sondages" class="div_sondages_view_reu_en_sond">
 			<h3><a href="/index.php/evenements/reunion/<?= $event_visu['numEvent'] ?>"> Evenement : <?= $event_visu['titre'] ?></a></h3>
 			<p>
 				votre statut :<b> <?= $event_visu['statut'] ?></b><br>

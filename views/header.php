@@ -4,15 +4,15 @@
 <head>
   <meta charset="utf-8">
   <title><?= $title ?></title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
   <link rel="stylesheet" type="text/css" href="/assets/css/sondages_new.css" />
   <link rel="stylesheet" type="text/css" href="/assets/css/mon_compte.css" />
   <link rel="stylesheet" type="text/css" href="/assets/css/creer_un_groupe.css" />
   <link rel="stylesheet" type="text/css" href="/assets/css/voir_les_groupes.css" />
   <link rel="stylesheet" type="text/css" href="/assets/css/table_reunions.css" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/reunions_en_sondages.css" />
   <link rel="stylesheet" type="text/css" href="/assets/css/modifier_groupe.css" />
   <link rel="stylesheet" type="text/css" href="/assets/css/reunion.css" />

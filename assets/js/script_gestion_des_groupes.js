@@ -23,7 +23,7 @@ function afficherLesMembresGroupe(numGroupe, nomGroupe) {
 			var membres = requete.response;
 			//on met à jour le paragraphe 'p_membres' avec le nom du groupe.
 			p_membres = document.getElementById('p_membres');
-			p_membres.innerHTML = "membres du groupe : " + nomGroupe;
+			p_membres.innerHTML = "<b>membres du groupe : " + nomGroupe + "</b>";
 			//on remplis le tableau des personnes cherchés.
 			construireTableauDePersonne("tab_groupe", membres);
 		}

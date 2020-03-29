@@ -75,7 +75,7 @@ class Evenements extends Controller
             unset($sondage);
             // reponse de l'utilisateur au sondage visualisé.
             $repUser = $this->evenements->voir_reponses_user_sond($numEvent, $event_visu['numPart']);
-            $nbPart = $this->evenements->voir_nb_part_event($numEvent);
+            $nbPart = $this->evenements->voir_nb_invites_event($numEvent);
             $this->loader->load('reunions_en_sondages', [
                 'title' => 'reunions en sondages', 'events' => $events,
                 'event_visu' => $event_visu,
@@ -106,9 +106,11 @@ class Evenements extends Controller
             if ($infos_event['numSond'] != null) {
                 $dates = $this->evenements->voir_sondage($infos_event['numSond']);
                 $sondage = 0;
+                $reunion_passe = ($dates[0]['date_sond'] < date("Y-m-d") || ($dates[0]['date_sond'] == date("Y-m-d") && $dates[0]['heureD'] < date("H:i"))) ? 1 : 0;
             } else {
                 $dates = $this->evenements->voir_sondages_evenement($numEvent);
                 $sondage = 1;
+                $reunion_passe = 0;
             }
             $organisateur = $this->evenements->recuperer_informations_organisateur($numEvent);
             $participation = $this->evenements->voir_si_user_participe_event($user->numUser, $numEvent);
@@ -124,7 +126,8 @@ class Evenements extends Controller
                 'organisateur' => $organisateur,
                 'dates' => $dates,
                 'sondage' => $sondage,
-                'participation' => $participation
+                'participation' => $participation,
+                'reunion_passe' => $reunion_passe
             ]);
         } catch (Exception $e) {
             $this->loader->load('error', [
@@ -248,7 +251,7 @@ class Evenements extends Controller
             }
             header("Location: /index.php/evenements/reunions_en_sondages");
         } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+            $data = ['error' => $e->getMessage(), 'title' => 'reunions_en_sondages'];
             $this->loader->load('reunions_en_sondages', $data);
         }
     }
@@ -448,9 +451,8 @@ class Evenements extends Controller
                     $this->ajouter_participant_event($membre['numUser'], $numEvent, 'participant');
                 }
             }
+            $this->evenements->ajouter_groupe_event($numGroupe, $numEvent);
         } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'Ajouter les participants'];
-            $this->loader->load('reunion', $data);
         }
     }
 
@@ -466,9 +468,10 @@ class Evenements extends Controller
             foreach ($numParts as $numPart) {
                 $this->retirer_participant_event($numPart['numPart']);
             }
+            $this->evenements->retirer_groupe_event($numGroupe, $numEvent);
         } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'Ajouter les participants'];
-            $this->loader->load('reunion', $data);
+            $data = ['error' => $e->getMessage(), 'title' => 'modifier groupe'];
+            $this->loader->load('error', $data);
         }
     }
 
@@ -535,16 +538,19 @@ class Evenements extends Controller
     }
 
     // fonction appelé en js par la page 'ajouter_participants'
-    public function obtenir_les_groupes()
+    public function obtenir_les_groupes($numEvent)
     {
         if ($this->redirect_unlogged_user()) {
             return;
         }
         try {
-            echo json_encode($this->construire_tableau_des_groupes());
+            $groupes = $this->construire_tableau_des_groupes();
+            foreach ($groupes as &$g)
+                $g['ajoute'] = $this->evenements->groupe_ajoutes_event($numEvent, $g['numGroupe']);
+            unset($g);
+            echo json_encode($groupes);
         } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'Ajouter les participants'];
-            $this->loader->load('reunion', $data);
+            echo json_encode($groupes);
         }
     }
 
@@ -619,10 +625,15 @@ class Evenements extends Controller
             $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir($this->sessions->logged_user()->numUser);
             $nombre_part_array = array();
             foreach ($infos_reunions as $infos_reunion) {
-
-                $nombre_part_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_part_event($infos_reunion['numEvent']);
+                $nombre_inv_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_invites_event($infos_reunion['numEvent']);
+                $nombre_part_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_participants_event($infos_reunion['numEvent']);
             }
-            $this->loader->load('reunions_a_venir', ['infos_reunions' => $infos_reunions, 'nombre_part_array' => $nombre_part_array, 'title' => 'Réunions à venir']);
+            $this->loader->load('reunions_a_venir', [
+                'title' => 'Réunions à venir',
+                'infos_reunions' => $infos_reunions,
+                'nombre_part_array' => isset($nombre_part_array) ? $nombre_part_array : 0,
+                'nombre_inv_array' => isset($nombre_inv_array) ? $nombre_inv_array : 0
+            ]);
         } catch (Exception $e) {
             $this->loader->load('reunions_a_venir', ['title' => 'Réunions à venir', 'error_message' => $e->getMessage()]);
         }
@@ -635,7 +646,16 @@ class Evenements extends Controller
         }
         try {
             $infos_reunions = $this->evenements->recuperer_infos_reunions_passees($this->sessions->logged_user()->numUser);
-            $this->loader->load('reunions_passees', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions passées']);
+            foreach ($infos_reunions as $infos_reunion) {
+                $nombre_inv_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_invites_event($infos_reunion['numEvent']);
+                $nombre_part_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_participants_event($infos_reunion['numEvent']);
+            }
+            $this->loader->load('reunions_passees', [
+                'title' => 'Réunions passées',
+                'infos_reunions' => $infos_reunions,
+                'nombre_part_array' => isset($nombre_part_array) ? $nombre_part_array : 0,
+                'nombre_inv_array' => isset($nombre_inv_array) ? $nombre_inv_array : 0
+            ]);
         } catch (Exception $e) {
             $this->loader->load('reunions_passees', ['title' => 'Réunions passées', 'error_message' => $e->getMessage()]);
         }
@@ -702,7 +722,7 @@ class Evenements extends Controller
 
     public function get_nombre_participants($numEvent)
     {
-        $nbPart = $this->evenements->voir_nb_part_event($numEvent);
+        $nbPart = $this->evenements->voir_nb_invites_event($numEvent);
         return $nbPart;
     }
 }

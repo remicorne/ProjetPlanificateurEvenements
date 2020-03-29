@@ -46,6 +46,8 @@ class Users extends Controller
       $password = filter_input(INPUT_POST, 'password');
       $user = $this->users->create_user($nom, $prenom, $email, $password);
       $this->sessions->login($user);
+      //ajout de la photo par defaut.
+      $this->users->set_photo('assets/imageLogin/imageDefault.png', $this->sessions->logged_user()->numUser);
       header("Location: /index.php");
     } catch (Exception $e) {
       $data = ['error' => $e->getMessage(), 'title' => 'S\'inscrire'];

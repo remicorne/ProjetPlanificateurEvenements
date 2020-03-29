@@ -5,7 +5,7 @@ $config = [
   'default_controller' => 'Evenements',
   'default_method' => 'index',
   'core_classes' => ['Controller', 'Loader', 'Model'],
-  'models' => ['Evenements', 'Users', 'Sessions', 'Mailer', 'Documents']
+  'models' => ['Users', 'Sessions', 'Evenements', 'Mailer', 'Documents']
 ];
 
 

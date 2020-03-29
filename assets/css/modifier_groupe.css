@@ -1,28 +1,39 @@
-#div_persons_cherches{
+.div_persons_cherches_view_mdf{
 	position: absolute;
-	left: 0px;
-  	width: 400px;
-  	top: 150px;
-	border: solid;
+	left: 10px;
+	top: 80px;
+	width: 600px;
+	max-height: 600px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
-#div_tab_groupe{
+.div_tab_groupe_view_mdf{
 	position: absolute;
-	left: 500px;
-  	width: 600px;
-  	top: 150px;
-	border: solid;
+	left: 630px;
+	top: 80px;
+	width: 600px;
+	max-height: 600px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
-#div_suppression{
+.tab_persons_view_mdf, #tab_groupe_view_mdf{
+	width: 580px;
+}
+
+.div_suppression_view_mdf{
 	position: absolute;
 	left: 800px;
   	width: 200px;
   	top: 50px;
-	border: solid;
 }
 
-.photo_user{
+.photo_user_view_mdf{
 	height: 70px;
 	width: 50px;
 }

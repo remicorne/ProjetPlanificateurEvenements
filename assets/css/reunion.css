@@ -1,12 +1,12 @@
-#div_tableau_view_evenement{
+.div_tableau_view_evenement{
 	max-width: 800px;
 }
 
-#tableau_view_evenement{
+.tableau_view_evenement{
 	min-width: 800px;
 }
 
-.divDroite{
+.divDroite_view_evenement{
 	position: absolute;
 	left: 830px;
 	overflow-y: scroll;
@@ -15,44 +15,44 @@
  	border-color:black;
 }
 
-#div_boutons_participation_view_evenement{
+.div_boutons_participation_view_evenement{
 	position: absolute;
 	top: 10px;
 	left: 850px;
 }
 
-#div_documents_ajoutes_view_evenement{
+.div_documents_ajoutes_view_evenement{
 	top: 0px;
 	left: 980px;
 	width: 350px;
 	height: 235px;
 }
 
-#div_persons_cherches_view_evenement{
-	top: 238px;
+.div_persons_cherches_view_evenement{
+	top: 260px;
 	width: 700px;
 	height: 305px;
 	left: 630px;
 }
-#input_recherche_personnes{
+.input_recherche_personnes_view_evenement{
 	width: 500px;
 }
 
-#div_groupes_cherches_view_evenement{
+.div_groupes_cherches_view_evenement{
 	top: 580px;
 	left: 980px;
 	width: 350px;
 	max-height: 300px;
 }
 
-#div_descri_view_evenement{
+.div_descri_view_evenement{
 	position: absolute;
 	top: 230px;
-	left: 100px;
+	left: 10px;
 }
 
 
-#div_invites_view_evenement{
+.div_invites_view_evenement{
 	position: absolute;
 	left: 0px;
 	width: 550px;
@@ -64,7 +64,7 @@
  	border-color:black;
 }
 
-#div_participants_view_evenement{
+.div_participants_view_evenement{
 	position: absolute;
 	left: 550px;
 	width: 430px;
@@ -76,21 +76,21 @@
  	border-color:black;
 }
 
-#div_b_email_view_evenement{
+.div_b_email_view_evenement{
 	position: absolute;
 	right: 0px;
   	top: 0px;
 }
 
 
-#tab_documents_view_evenement{
+.tab_documents_view_evenement{
 	position: absolute;
 	left : 3px;
 	height: 123px;
 	width: 345px;
 }
 
-#div_file_upload_view_evenement{
+.div_file_upload_view_evenement{
 	position: absolute;
 	left: 0px;
 	top: 870px;	

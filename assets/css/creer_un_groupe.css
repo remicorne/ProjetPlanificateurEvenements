@@ -1,14 +1,28 @@
-#display_persons{
-	float:left;
+.div_personnes_cherche_view_creer_un_groupe{
 	position: absolute;
-	left: 0;
-	border: solid;
+	left: 10px;
+	top: 80px;
+	width: 600px;
+	max-height: 600px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
-#div_creer_groupe{
+.tab_persons_view_creer_un_groupe, .tab_persons_ajoutes_view_creer_un_groupe{
+	width: 580px;
+}
+
+.div_creer_groupe_view_creer_un_groupe{
 	position: absolute;
-	top: 0;
-	right: 0;
-	border: solid;
+	left: 630px;
+	top: 80px;
+	width: 600px;
+	max-height: 600px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 

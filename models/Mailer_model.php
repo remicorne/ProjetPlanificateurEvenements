@@ -62,10 +62,10 @@ class Mailer_model extends Model
 
     public function send_email()
     { //pas de try/catch car si echec pas d'exception, renvoie false
-        if (!$this->mailer->send()) throw new Exception("Echec de l'envoi : $mailer->ErrorInfo");
+        if (!$this->mailer->send()) throw new Exception("Echec de l'envoi : $this->mailer->ErrorInfo");
     }
-    
-        public function envoyer_mails_participants($emailsParts = [], $emailUser, $content, $subject)
+
+    public function envoyer_mails_participants($emailsParts = [], $emailUser, $content, $subject)
     {
         try {
             foreach ($emailsParts as $email)

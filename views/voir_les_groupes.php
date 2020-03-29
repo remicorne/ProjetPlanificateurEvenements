@@ -2,8 +2,8 @@
 
 <div class="container">
 	<?php if ($groupes != null) { ?>
-		<div id="div_tab_groupes">
-			<table>
+		<div id="div_tab_groupes" class="div_tab_groupes_view_voir_groupes">
+			<table id="tab_groupes" class="table table-bordered tab_groupes_view_voir_groupes">
 				<tr>
 					<th>Nom du groupe</th>
 					<th>Nb membres</th>
@@ -19,10 +19,10 @@
 			</table>
 		</div>
 		<!-- remplis avec fonction js -->
-		<div id="div_groupe">
+		<div id="div_groupe" class="div_groupe_view_voir_groupes">
 			<p id="p_membres"></p>
 			<div id="div_mdf_g"></div>
-			<table id="tab_groupe"></table>
+			<table id="tab_groupe" class="table table-bordered tab_groupe_view_voir_groupes"></table>
 		</div>
 	<?php } else { ?>
 		<div>

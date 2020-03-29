@@ -136,10 +136,10 @@ class Users_model extends Model
     private function check_format_with_regex($variable, $regex, $error_message)
     {
         $result = filter_var($variable, FILTER_VALIDATE_REGEXP, array(
-      'options' => array(
-        'regexp' => $regex
-      )
-    ));
+            'options' => array(
+                'regexp' => $regex
+            )
+        ));
         if ($result === false || $result === null) {
             throw new Exception($error_message);
         }
@@ -155,10 +155,10 @@ class Users_model extends Model
                                             prenom = :prenom
                                         WHERE numUser= :numUser");
             $statement->execute([
-        "nom" => $nom,
-        "prenom" => $prenom,
-        "numUser" => $numUser
-      ]);
+                "nom" => $nom,
+                "prenom" => $prenom,
+                "numUser" => $numUser
+            ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
@@ -173,9 +173,9 @@ class Users_model extends Model
                                         SET email = :email
                                         WHERE numUser= :numUser");
             $statement->execute([
-        "email" => $email,
-        "numUser" => $numUser
-      ]);
+                "email" => $email,
+                "numUser" => $numUser
+            ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
@@ -221,10 +221,10 @@ class Users_model extends Model
                                             thumbnail = :thumbnail
                                         WHERE numUser= :numUser");
             $statement->execute([
-        "photo" => null,
-        "thumbnail" => null,
-        "numUser" => $numUser
-      ]);
+                "photo" => null,
+                "thumbnail" => null,
+                "numUser" => $numUser
+            ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception(self::str_error_database);
@@ -274,15 +274,15 @@ class Users_model extends Model
                                             thumbnail = :thumbnail
                                         WHERE numUser= :numUser");
             $statement->execute([
-        "photo" => $this->create_photo($tmp_file),
-        "thumbnail" => $this->create_thumbnail($tmp_file),
-        "numUser" => $numUser
-      ]);
+                "photo" => $this->create_photo($tmp_file),
+                "thumbnail" => $this->create_thumbnail($tmp_file),
+                "numUser" => $numUser
+            ]);
             //return $this->db->lastInsertId();
         } catch (PDOException $e) {
-            throw new Exception(self::str_error_database);
+            throw new Exception($e->getMessage());
         } catch (ImagickException $e) {
-            throw new Exception(self::str_error_photo_format);
+            throw new Exception($e->getMessage());
         }
     }
 

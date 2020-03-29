@@ -7,15 +7,6 @@ body{
 	padding: 0;
 }
 
-table {
- border-width:3px; 
- }
- 
-td,th { 
- padding: 10px;
- margin: 10px;
- }
-
 .container{
 	position:absolute;
 	width: auto;

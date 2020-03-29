@@ -76,3 +76,10 @@ CREATE TABLE DocsEvent(
 	nomDoc INTEGER REFERENCES Documents(numDoc) ON DELETE CASCADE,
 	PRIMARY KEY(numEvent,nomDoc)
 );
+
+DROP TABLE IF EXISTS Ajouter ;
+CREATE TABLE Ajouter(
+	numEvent INTEGER REFERENCES Evenements(numEvent) ON DELETE CASCADE,
+	numGroupe INTEGER REFERENCES Groupes(numGroupe) ON DELETE CASCADE,
+	PRIMARY KEY(numEvent,numGroupe)
+);
