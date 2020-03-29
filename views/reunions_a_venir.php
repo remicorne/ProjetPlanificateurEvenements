@@ -19,9 +19,9 @@
           </div>
           <br /><br />
           <div class="table-responsive">
-               <table class="table table-striped table-bordered" id="reunions_table">
+               <table class="table table-bordered">
                     <tr>
-                         <th width="5%">Numéro</th>
+                         <th width=" 5%">Numéro</th>
                          <th width="25%">Date</th>
                          <th width="35%">Heure</th>
                          <th width="10%">Durée</th>
@@ -29,6 +29,12 @@
                          <th width="5%">Nombre de d'invités</th>
                          <th width="5%">Nombre de participants</th>
                     </tr>
+                    <tbody id="search_table">
+                         <?php foreach ($infos_reunions as $infos_sondage) {
+                              $datedebut = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureD'] . ":00");
+                              $datefin = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureF'] . ":00");
+                              $datediff = $datedebut->diff($datefin);
+                              $date_format = $datediff->format("%H:%I");
 
                     <?php foreach ($infos_reunions as $infos_sondage) {
                          $datedebut = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureD'] . ":00");
