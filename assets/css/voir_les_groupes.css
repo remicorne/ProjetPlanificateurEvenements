@@ -14,6 +14,12 @@
 	width: 580px;
 }
 
+#div_mdf_g{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
 .div_groupe_view_voir_groupes{
 	position: absolute;
 	left: 630px;

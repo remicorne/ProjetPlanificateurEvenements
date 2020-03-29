@@ -26,14 +26,13 @@
 	width: 580px;
 }
 
-.div_suppression_view_mdf{
-	position: absolute;
-	left: 800px;
-  	width: 200px;
-  	top: 50px;
-}
-
 .photo_user_view_mdf{
 	height: 70px;
 	width: 50px;
+}
+
+.div_suppression_view_mdf{
+	position: absolute;
+	top: 0px;
+	right: 0px;
 }
