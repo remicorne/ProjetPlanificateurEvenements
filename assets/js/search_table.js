@@ -3,7 +3,7 @@ $(document).ready(function () {
 		search_table($(this).val());
 	});
 	function search_table(value) {
-		$('#reunions_table tr').each(function () {
+		$('#search_table tr').each(function () {
 			var found = 'false';
 			$(this).each(function () {
 				if ($(this).text().toLowerCase().indexOf(value.toLowerCase()) >= 0) {

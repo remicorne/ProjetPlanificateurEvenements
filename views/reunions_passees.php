@@ -21,9 +21,8 @@
 
 
 
-
           <div class="table-responsive">
-               <table class="table table-striped table-bordered" id="reunions_table">
+               <table class="table table-striped table-bordered">
 
 
 
@@ -37,14 +36,20 @@
                     </tr>
 
 
-                    <?php foreach ($infos_reunions as $infos_sondage) { ?>
+                    <?php foreach ($infos_reunions as $infos_sondage) {
+                         $datedebut = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureD'] . ":00");
+                         $datefin = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureF'] . ":00");
+                         $datediff = $datedebut->diff($datefin);
+                         $date_format = $datediff->format("%H:%I");
+
+                    ?>
                          <tr>
-                              <td><a href="/evenements/reunion/<?= $infos_sondage['numEvent'] ?>/<?= $infos_sondage['nombreParticipant'] ?>"><?= $infos_sondage['numEvent'] ?></td>
+                              <td><a href="/evenements/reunion/<?= $infos_sondage['numEvent'] ?>"><?= $infos_sondage['numEvent'] ?></td>
                               <td><?= $infos_sondage['date_sond'] ?></td>
                               <td><?= $infos_sondage['heureD'] ?></td>
                               <td><?= $infos_sondage['heureF'] ?></td>
                               <td><?= $infos_sondage['titre'] ?></td>
-                              <td><a href="/evenements/participants/<?= $infos_sondage['numEvent'] ?>"><?= $infos_sondage['nombreParticipant'] ?></td>
+                              <td><a href="/evenements/participants/<?= $infos_sondage['numEvent'] ?>"><?= $nombre_part_array[$infos_sondage['numEvent']] ?></td>
                          </tr>
                     <?php } ?>
                </table>
