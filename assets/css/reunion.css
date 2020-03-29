@@ -1,53 +1,97 @@
-#div_persons_cherches{
-	position: absolute;
-	right: 410px;
-  	width: 230px;
-  	top: 0px;
-	border: solid;
+#div_tableau_view_evenement{
+	max-width: 800px;
 }
 
-#div_b_email{
-	position: absolute;
-	left: 400px;
-  	width: 200px;
-  	top: 0px;
-	border: solid;
+#tableau_view_evenement{
+	min-width: 800px;
 }
 
-#div_groupes_cherches{
+.divDroite{
 	position: absolute;
-	left: 410px;
-  	width: 230px;
-  	top: 625px;
-	border: solid;
+	left: 830px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
-#div_participants{
+#div_boutons_participation_view_evenement{
+	position: absolute;
+	top: 10px;
+	left: 850px;
+}
+
+#div_documents_ajoutes_view_evenement{
+	top: 0px;
+	left: 980px;
+	width: 350px;
+	height: 235px;
+}
+
+#div_persons_cherches_view_evenement{
+	top: 238px;
+	width: 700px;
+	height: 305px;
+	left: 630px;
+}
+#input_recherche_personnes{
+	width: 500px;
+}
+
+#div_groupes_cherches_view_evenement{
+	top: 580px;
+	left: 980px;
+	width: 350px;
+	max-height: 300px;
+}
+
+#div_descri_view_evenement{
+	position: absolute;
+	top: 230px;
+	left: 100px;
+}
+
+
+#div_invites_view_evenement{
 	position: absolute;
 	left: 0px;
-	width: 400px;
-	top: 550px;
-  	border: solid;
+	width: 550px;
+	top: 580px;
+	max-height: 600px;
+	overflow-y: scroll;
+  	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
-#div_documents_ajoutes{
+#div_participants_view_evenement{
 	position: absolute;
-	left: 0px;
-	height: 160px;
-	width: 355px;
-	top: 300px;
-	border: solid;
+	left: 550px;
+	width: 430px;
+	top: 580px;
+	max-height: 600px;
+	overflow-y: scroll;
+  	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
-#tab_documents{
+#div_b_email_view_evenement{
+	position: absolute;
+	right: 0px;
+  	top: 0px;
+}
+
+
+#tab_documents_view_evenement{
 	position: absolute;
 	left : 3px;
 	height: 123px;
 	width: 345px;
 }
 
-#div_file_upload{
+#div_file_upload_view_evenement{
 	position: absolute;
 	left: 0px;
-	top: 170px;	
+	top: 870px;	
 }

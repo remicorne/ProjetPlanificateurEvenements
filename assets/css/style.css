@@ -8,23 +8,18 @@ body{
 }
 
 table {
- border-width:1px; 
- border-style:solid; 
- border-color:black;
+ border-width:3px; 
  }
  
 td,th { 
- border-width:1px;
- border-style:solid; 
- border-color:black;
+ padding: 10px;
+ margin: 10px;
  }
 
 .container{
 	position:absolute;
+	width: auto;
 	left: 25vh;
-	border: solid;
-	min-width: 100vh;
-	min-height: 100vh;
 }
 
 #titre{

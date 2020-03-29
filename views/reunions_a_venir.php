@@ -29,14 +29,20 @@
                          <th width="5%">Nombre de participants</th>
                     </tr>
 
-                    <?php foreach ($infos_reunions as $infos_sondage) {   ?>
+                    <?php foreach ($infos_reunions as $infos_sondage) {
+                         $datedebut = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureD'] . ":00");
+                         $datefin = new DateTime($infos_sondage['date_sond'] . " " . $infos_sondage['heureF'] . ":00");
+                         $datediff = $datedebut->diff($datefin);
+                         $date_format = $datediff->format("%H:%I");
+
+                    ?>
                          <tr onclick="goToReunion(<?= $infos_sondage['numEvent'] ?>)">
                               <td><?= $infos_sondage['numEvent'] ?></td>
                               <td><?= $infos_sondage['date_sond'] ?></td>
                               <td><?= $infos_sondage['heureD'] ?></td>
-                              <td><?= intval($infos_sondage['heureF']) - intval($infos_sondage['heureD']) ?></td>
+                              <td><?= $date_format ?></td>
                               <td><?= $infos_sondage['titre'] ?></td>
-                              <td><?= $infos_sondage['nombreParticipant'] ?></td>
+                              <td> <?= $nombre_part_array[$infos_sondage['numEvent']] ?></td>
                          </tr>
                     <?php } ?>
                </table>

@@ -64,7 +64,7 @@ class Evenements extends Controller
                 $numEvent = reset($events)['numEvent'];
             // tab d'info de l'event visualisé sur la page.
             $event_visu = $events[$numEvent];
-
+            $createur_event = $this->evenements->recuperer_informations_organisateur($numEvent);
             // les sondages visualisé sur la page.
             $sondages_event = $this->evenements->voir_sondages_evenement($numEvent);
             // ajout des reps des participants et % de bonne rep a chaques sondage dans le tableau.
@@ -82,7 +82,8 @@ class Evenements extends Controller
                 'sondages_event' => $sondages_event,
                 'nbPart' => $nbPart,
                 'numPart' => $event_visu['numPart'],
-                'repUser' => $repUser
+                'repUser' => $repUser,
+                'createur_event' => $createur_event
             ]);
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
@@ -95,20 +96,35 @@ class Evenements extends Controller
         if ($this->redirect_unlogged_user()) {
             return;
         }
+        $numEvent = filter_var($numEvent);
         try {
             $user = $this->sessions->logged_user();
-            if (!$this->evenements->check_if_participant($user->numUser, $numEvent)) {
-                throw new Exception('Tu fais pas parti de cette réunion gros, bien tenté mais on y a pensé');
-            }
+            $this->evenements->check_if_participant($user->numUser, $numEvent);
             $is_administrator = $this->evenements->check_if_administrator($user->numUser, $numEvent);
-            $infos_reunion = $this->evenements->recuperer_informations_reunion($numEvent);
-            $organisateurs = $this->evenements->recuperer_informations_organisateurs($numEvent);
+            $infos_event = $this->evenements->voir_evenement_from_numEvent($numEvent);
+            // si date fixé variable date sinon sondages.
+            if ($infos_event['numSond'] != null) {
+                $dates = $this->evenements->voir_sondage($infos_event['numSond']);
+                $sondage = 0;
+            } else {
+                $dates = $this->evenements->voir_sondages_evenement($numEvent);
+                $sondage = 1;
+            }
+            $organisateur = $this->evenements->recuperer_informations_organisateur($numEvent);
+            $participation = $this->evenements->voir_si_user_participe_event($user->numUser, $numEvent);
+            if ($sondage)
+                $titre = 'Evenement (en sondage)';
+            else
+                $titre = 'Evenement';
             $this->loader->load('reunion', [
-                'title' => $infos_reunion['titre'],
+                'title' => $titre,
                 'numEvent' => $numEvent,
                 'is_administrator' => $is_administrator,
-                'infos_reunion' => $infos_reunion,
-                'organisateurs' => $organisateurs
+                'infos_event' => $infos_event,
+                'organisateur' => $organisateur,
+                'dates' => $dates,
+                'sondage' => $sondage,
+                'participation' => $participation
             ]);
         } catch (Exception $e) {
             $this->loader->load('error', [
@@ -124,13 +140,8 @@ class Evenements extends Controller
         if ($this->redirect_unlogged_user()) {
             return;
         }
-        try {
-            $groupes = $this->construire_tableau_des_groupes();
-            $this->loader->load('voir_les_groupes', ['title' => 'voir les groupes', 'groupes' => $groupes]);
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
-            $this->loader->load('voir_les_groupes', $data);
-        }
+        $groupes = $this->construire_tableau_des_groupes();
+        $this->loader->load('voir_les_groupes', ['title' => 'voir les groupes', 'groupes' => $groupes]);
     }
 
     public function modifier_groupe($numGroupe)
@@ -159,8 +170,8 @@ class Evenements extends Controller
     {
         $infosEvent = $this->evenements->voir_evenement_from_numEvent($numEvent);
         $date = $this->evenements->voir_sondage($infosEvent['numSond']);
-        $content = 'L\'evenement ' . $infosEvent['titre'] . ' prendra lieu le ' . $date['date_sond'] . '
-                 de ' . $date['heureD'] . ' à ' . $date['heureF'] . ".<br>
+        $content = 'L\'evenement ' . $infosEvent['titre'] . ' prendra lieu le ' . $date[0]['date_sond'] . '
+                 de ' . $date[0]['heureD'] . ' à ' . $date[0]['heureF'] . ".<br>
                  Rendez-vous sur la page réunions à venir pour confirmer votre participation.";
         $subject = 'Evenement : ' . $infosEvent['titre'];
         $participants = $this->evenements->afficher_les_participants_event($numEvent);
@@ -183,8 +194,8 @@ class Evenements extends Controller
             $date = $this->evenements->voir_sondage($infosEvent['numSond']);
             $subject = 'Invitation à l\'evenement : ' . $infosEvent['titre'];
             $content = "Vous avez été invité à l'evenement : " . $infosEvent['titre'] . ".<br>
-                  L'evenement " . $infosEvent['titre'] . " aura lieu le " . $date['date_sond'] . "
-                  de " . $date['heureD'] . " à " . $date['heureF'] . ".";
+                  L'evenement " . $infosEvent['titre'] . " aura lieu le " . $date[0]['date_sond'] . "
+                  de " . $date[0]['heureD'] . " à " . $date[0]['heureF'] . ".";
         }
         $participants = $this->evenements->afficher_les_participants_event($numEvent);
         // on recupere les participants et on regarde si un email leur a déjà été envoyé.
@@ -605,8 +616,13 @@ class Evenements extends Controller
             return;
         }
         try {
-            $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir();
-            $this->loader->load('reunions_a_venir', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions à venir']);
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir($this->sessions->logged_user()->numUser);
+            $nombre_part_array = array();
+            foreach ($infos_reunions as $infos_reunion) {
+
+                $nombre_part_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_part_event($infos_reunion['numEvent']);
+            }
+            $this->loader->load('reunions_a_venir', ['infos_reunions' => $infos_reunions, 'nombre_part_array' => $nombre_part_array, 'title' => 'Réunions à venir']);
         } catch (Exception $e) {
             $this->loader->load('reunions_a_venir', ['title' => 'Réunions à venir', 'error_message' => $e->getMessage()]);
         }
@@ -618,13 +634,12 @@ class Evenements extends Controller
             return;
         }
         try {
-            $infos_reunions = $this->evenements->recuperer_infos_reunions_passees();
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_passees($this->sessions->logged_user()->numUser);
             $this->loader->load('reunions_passees', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions passées']);
         } catch (Exception $e) {
             $this->loader->load('reunions_passees', ['title' => 'Réunions passées', 'error_message' => $e->getMessage()]);
         }
     }
-
 
 
     public function participants($numReunion)
@@ -638,6 +653,33 @@ class Evenements extends Controller
         } catch (Exception $e) {
             $this->loader->load('participants', ['title' => "participants de la reunion numéro $numReunion", 'error_message' => $e->getMessage()]);
         }
+    }
+
+    public function ajout_groupe_bd()
+    {
+        if ($this->redirect_unlogged_user()) return;
+        try {
+            $utilisateurs = filter_input(INPUT_POST, 'utilisateurs');
+            $utilisateurs = json_decode($utilisateurs);
+            $prop = filter_input(INPUT_POST, 'proprietaire');
+            $nomGroupe = filter_input(INPUT_POST, 'nom_groupe');
+            $numGroupe = $this->evenements->ajout_groupe_bd($nomGroupe);
+            $this->evenements->ajout_personnes_groupe($numGroupe, $utilisateurs, 0);
+            $this->evenements->ajout_personnes_groupe($numGroupe, [$prop], 1);
+            header('Location: /index.php');
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage(), 'title' => 'creer_un_groupe'];
+            $this->loader->load('creer_un_groupe', $data);
+        }
+    }
+
+    public function modifier_participation_event($numEvent, $participation)
+    {
+        if ($this->redirect_unlogged_user()) return;
+        $numEvent = filter_var($numEvent);
+        $participation = filter_var($participation);
+        $this->evenements->modifier_participation_event($numEvent, $this->sessions->logged_user()->numUser, $participation);
+        header("Location: /index.php/evenements/reunion/$numEvent");
     }
 
     public function tableau_de_bord_data($numUser)
@@ -656,5 +698,11 @@ class Evenements extends Controller
         }
         header("Content-Type: application/json");
         echo json_encode($events);
+    }
+
+    public function get_nombre_participants($numEvent)
+    {
+        $nbPart = $this->evenements->voir_nb_part_event($numEvent);
+        return $nbPart;
     }
 }
