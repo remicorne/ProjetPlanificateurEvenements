@@ -1,3 +1,6 @@
+
+
+
 <div id="sondage_new">
 
   <form role="form" action="/index.php/evenements/creer_sondages_event" method="post" enctype="multipart/form-data">
@@ -33,7 +36,7 @@
 
   <div id="user_dialog" title="Ajouter une date">
 
-    <div class="form-group">
+    <div class="form-group"> <!-- IMPROVE calendar dat selector (jquery je crois) -->
       <label>Date </label>&nbsp;&nbsp;
       <input type="date" class="diag_sond_new" id="date" name="date" min=<?= date('Y-m-d') ?> max="2050-12-31" required>
       <span id="error_date" class="text-danger"></span>

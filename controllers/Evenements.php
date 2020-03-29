@@ -9,8 +9,14 @@ class Evenements extends Controller
     /////////////////////////////////////////// methodes de redirection/////////////////////////////////////////////////////// TODO : redirect unauthorized user (il ne s'agit pas juste d'etre logged)
     public function tableau_de_bord()
     {
-        if ($this->redirect_unlogged_user()) return;
-        $this->loader->load('tableau_de_bord', ['title' => 'Tableau de bord']);
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        $numUser = $this->sessions->logged_user()->numUser;
+        $this->loader->load('tableau_de_bord', [
+            'title' => 'Tableau de bord',
+            'numUser' => $numUser
+        ]);
     }
 
     public function mon_compte()
@@ -610,8 +616,13 @@ class Evenements extends Controller
             return;
         }
         try {
-            $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir();
-            $this->loader->load('reunions_a_venir', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions à venir']);
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_a_venir($this->sessions->logged_user()->numUser);
+            $nombre_part_array = array();
+            foreach ($infos_reunions as $infos_reunion) {
+
+                $nombre_part_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_part_event($infos_reunion['numEvent']);
+            }
+            $this->loader->load('reunions_a_venir', ['infos_reunions' => $infos_reunions, 'nombre_part_array' => $nombre_part_array, 'title' => 'Réunions à venir']);
         } catch (Exception $e) {
             $this->loader->load('reunions_a_venir', ['title' => 'Réunions à venir', 'error_message' => $e->getMessage()]);
         }
@@ -623,7 +634,7 @@ class Evenements extends Controller
             return;
         }
         try {
-            $infos_reunions = $this->evenements->recuperer_infos_reunions_passees();
+            $infos_reunions = $this->evenements->recuperer_infos_reunions_passees($this->sessions->logged_user()->numUser);
             $this->loader->load('reunions_passees', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions passées']);
         } catch (Exception $e) {
             $this->loader->load('reunions_passees', ['title' => 'Réunions passées', 'error_message' => $e->getMessage()]);
@@ -669,5 +680,29 @@ class Evenements extends Controller
         $participation = filter_var($participation);
         $this->evenements->modifier_participation_event($numEvent, $this->sessions->logged_user()->numUser, $participation);
         header("Location: /index.php/evenements/reunion/$numEvent");
+    }
+
+    public function tableau_de_bord_data($numUser)
+    {
+        if ($this->redirect_unlogged_user()) {
+            return;
+        }
+        switch ($_SERVER["REQUEST_METHOD"]) {
+            case "GET":
+                $events = $this->evenements->get_user_events($numUser, $_GET);
+                break;
+            case "POST": // Pas de methode post, on ne permet pas la création d'un evenement à partir du tableau de bord
+            default:
+                throw new Exception("Unexpected Method");
+                break;
+        }
+        header("Content-Type: application/json");
+        echo json_encode($events);
+    }
+
+    public function get_nombre_participants($numEvent)
+    {
+        $nbPart = $this->evenements->voir_nb_part_event($numEvent);
+        return $nbPart;
     }
 }

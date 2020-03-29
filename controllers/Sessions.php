@@ -15,9 +15,12 @@ class Sessions extends Controller
       $email = filter_input(INPUT_POST, 'email');
       $password = filter_input(INPUT_POST, 'password');
       $user = $this->users->user_from_email($email);
-      if ($user === null) throw new Exception("Ce compte n'existe pas.");
-      if (!$user->password_is_valid($password))
+      if ($user === null) {
+        throw new Exception("Ce compte n'existe pas.");
+      }
+      if (!$user->password_is_valid($password)) {
         throw new Exception("Mot de passe incorrect.");
+      }
       $this->sessions->login($user);
       header("Location: /index.php");
     } catch (Exception $e) {

@@ -16,7 +16,9 @@ class Loader
     $this->define_helper();
     $data = $this->inject_model_data($data);
     $this->view('header', $data);
-    if ($data['user_is_logged'] && $view != "error") $this->view('menu', $data);
+    if ($data['user_is_logged'] && $view != "error") {
+      $this->view('menu', $data);
+    }
     if ($view !== null) {
       $this->view($view, $data);
     }
@@ -38,8 +40,9 @@ class Loader
 
   private function inject_model_data($data)
   {
-    foreach ($this->models as $model)
+    foreach ($this->models as $model) {
       $data = $model->inject_data($data);
+    }
     return $data;
   }
 }

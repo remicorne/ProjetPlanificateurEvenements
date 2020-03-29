@@ -56,8 +56,9 @@ class Users extends Controller
   public function photos_set()
   {
     try {
-      if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK)
+      if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
         throw new Exception('Vous devez choisir une photo.');
+      }
 
       $tmp_file = $_FILES['photo']['tmp_name'];
       $this->users->set_photo($tmp_file, $this->sessions->logged_user()->numUser);
@@ -90,7 +91,9 @@ class Users extends Controller
     try {
       $email1 = filter_input(INPUT_POST, 'email1');
       $email2 = filter_input(INPUT_POST, 'email2');
-      if ($email1 !== $email2) throw new Exception('Les emails sont différents.');
+      if ($email1 !== $email2) {
+        throw new Exception('Les emails sont différents.');
+      }
       $this->users->set_email($email1, $this->sessions->logged_user()->numUser);
       header('Location: /index.php/sessions/sessions_modify');
     } catch (Exception $e) {
@@ -106,7 +109,9 @@ class Users extends Controller
     try {
       $motDePasse1 = filter_input(INPUT_POST, 'motDePasse1');
       $motDePasse2 = filter_input(INPUT_POST, 'motDePasse2');
-      if ($motDePasse1 !== $motDePasse2) throw new Exception('Les mots de passe sont différents.');
+      if ($motDePasse1 !== $motDePasse2) {
+        throw new Exception('Les mots de passe sont différents.');
+      }
       $this->users->motDePasse_set($motDePasse1, $this->sessions->logged_user()->numUser);
       header('Location: /index.php/sessions/sessions_modify');
     } catch (Exception $e) {

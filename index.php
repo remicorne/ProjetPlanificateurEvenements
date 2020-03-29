@@ -8,8 +8,6 @@ $config = [
   'models' => ['Evenements', 'Users', 'Sessions', 'Mailer', 'Documents']
 ];
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 
 foreach ($config['core_classes'] as $classname) require "core/$classname.php";
 
@@ -52,7 +50,7 @@ function get_controller_name($path_elements)
 
 function get_parameters($path_elements)
 {
-  if (count($path_elements) <= 2) {
+  if (!is_array($path_elements) || count($path_elements) <= 2) {
     return [];
   }
   return array_slice($path_elements, 2);
@@ -90,7 +88,6 @@ function call_controller_method($controller, $method_name, $parameters)
   }
   $reflectionMethod->invokeArgs($controller, $parameters);
 }
-
 
 try {
   $path_elements = get_path_elements();

@@ -479,18 +479,17 @@ class Evenements_model extends Model
     }
   }
 
-  public function recuperer_infos_reunions_a_venir()
+  public function recuperer_infos_reunions_a_venir($user)
   {
     try {
       $statement = $this->db->prepare(" SELECT E.numEvent,titre,lieu,descri,E.numSond,statut,
-                                    U.numUser,nom,prenom,email,date_sond,heureD,heureF,COUNT(E.numEvent) as nombreParticipant
+                                    U.numUser,nom,prenom,email,date_sond,heureD,heureF
                                     FROM (Evenements E JOIN Participants P ON E.numEvent=P.numEvent) 
                                     JOIN Utilisateurs U ON U.numUser=P.numUser 
-                                    JOIN Sondages S ON S.numSond=E.numEvent 
-                                    WHERE date_sond >= :date_sond
-                                    GROUP BY E.numEvent
+                                    JOIN Sondages S ON S.numSond=E.numSond
+                                    WHERE date_sond >= :date_sond AND E.numSond IS NOT NULL AND u.numUser=:user
                                     ORDER BY date_sond ASC");
-      $statement->execute(['date_sond' => date('Y-m-d')]);
+      $statement->execute(['date_sond' => date('Y-m-d'), 'user' => $user]);
       return $statement->fetchAll();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database . 'recuperer_informations_sondages' . $e->getMessage());
@@ -498,18 +497,17 @@ class Evenements_model extends Model
   }
 
 
-  public function recuperer_infos_reunions_passees()
+  public function recuperer_infos_reunions_passees($user)
   {
     try {
       $statement = $this->db->prepare(" SELECT E.numEvent,titre,lieu,descri,E.numSond,statut,
-                                  U.numUser,nom,prenom,email,date_sond,heureD,heureF,COUNT(E.numEvent) as nombreParticipant
+                                  U.numUser,nom,prenom,email,date_sond,heureD,heureF
                                   FROM (Evenements E JOIN Participants P ON E.numEvent=P.numEvent) 
                                   JOIN Utilisateurs U ON U.numUser=P.numUser 
-                                  JOIN Sondages S ON S.numSond=E.numEvent 
-                                  WHERE date_sond < :date_sond
-                                  GROUP BY E.numEvent
+                                  JOIN Sondages S ON S.numSond=E.numSond
+                                  WHERE date_sond < :date_sond AND E.numSond IS NOT NULL AND u.numUser=:user
                                   ORDER BY date_sond ASC");
-      $statement->execute(['date_sond' => date('Y-m-d')]);
+      $statement->execute(['date_sond' => date('Y-m-d'), 'user' => $user]);
       return $statement->fetchAll();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database . 'recuperer_infos_reunions_passees' . $e->getMessage());
@@ -520,10 +518,10 @@ class Evenements_model extends Model
   {
     try {
       $statement = $this->db->prepare(" SELECT  E.numEvent,titre,lieu,descri,
-                                  date_sond,heureD,heureF,nom,prenom,email,U.numUser,statut,COUNT(E.numEvent) as nombreParticipant
+                                  date_sond,heureD,heureF,nom,prenom,email,U.numUser,statut
                                   FROM (Evenements E JOIN Participants P ON E.numEvent=P.numEvent) 
                                   JOIN Utilisateurs U ON U.numUser=P.numUser 
-                                  JOIN Sondages S ON S.numSond=E.numEvent 
+                                  JOIN Sondages S ON S.numSond=E.numSond
                                   WHERE S.numSond = :numReunion AND statut = :stat");
       $statement->execute(['numReunion' => $numReunion, 'stat' => 'createur']);
       return $statement->fetch();
@@ -649,5 +647,37 @@ class Evenements_model extends Model
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database . "(modifier_participation_event) : " . $e->getMessage());
     }
+  }
+
+  public function get_user_events($numUser, $schedulerParams = null)
+  {
+    $requete = "SELECT E.numEvent id, S.date_sond || ' ' || S.heureD || ':00' 'start_date', S.date_sond || ' ' || S.heureF || ':00' end_date, E.titre 'text' 
+                    FROM  (Evenements E JOIN Sondages S ON E.numSond=S.numSond) 
+                    JOIN Participants P ON E.numEvent=P.numEvent 
+                    WHERE numUser=?";
+
+
+    $parametres = [];
+    array_push($parametres, $numUser);
+    // handle dynamic loading
+    if (isset($schedulerParams["from"]) && isset($schedulerParams["to"])) {
+      $requete .= " WHERE `S.date_sond`>=? AND `S.date_sond` < ?;";
+      array_push($parametres, $schedulerParams["from"], $schedulerParams["to"]);
+    }
+    $statement = $this->db->prepare($requete);
+    $statement->execute($parametres);
+    $events = $statement->fetchAll();
+
+    foreach ($events as $event) {
+      $numEvent = $event["id"];
+      $data[] = array(
+        'id'   => $numEvent,
+        'start_date'   => $event["start_date"],
+        'end_date'   => $event["end_date"],
+        'text'   => htmlentities($event["text"])
+      );
+    }
+
+    return $data;
   }
 }
