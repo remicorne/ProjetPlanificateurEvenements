@@ -635,7 +635,12 @@ class Evenements extends Controller
         }
         try {
             $infos_reunions = $this->evenements->recuperer_infos_reunions_passees($this->sessions->logged_user()->numUser);
-            $this->loader->load('reunions_passees', ['infos_reunions' => $infos_reunions, 'title' => 'Réunions passées']);
+            $nombre_part_array = array();
+            foreach ($infos_reunions as $infos_reunion) {
+
+                $nombre_part_array[$infos_reunion['numEvent']] = $this->evenements->voir_nb_part_event($infos_reunion['numEvent']);
+            }
+            $this->loader->load('reunions_passees', ['infos_reunions' => $infos_reunions, 'nombre_part_array' => $nombre_part_array, 'title' => 'Réunions passées']);
         } catch (Exception $e) {
             $this->loader->load('reunions_passees', ['title' => 'Réunions passées', 'error_message' => $e->getMessage()]);
         }
