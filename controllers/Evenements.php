@@ -610,34 +610,6 @@ class Evenements extends Controller
         }
     }
 
-    public function get_event_calendar()
-    {
-
-        if ($this->redirect_unlogged_user()) {
-            return;
-        }
-        try {
-            $dates_event = $this->evenements->recuperer_dates_reunions_a_venir($this->sessions->logged_user()->numUser);
-
-            foreach ($dates_event as $row) {
-
-                $start = $row["date_sond"] . " " . $row["heureD"] . ":00";
-                $end = $row["date_sond"] . " " . $row["heureF"] . ":00";
-                $data[] = array(
-                    'id'   => $row["numEvent"],
-                    'title'   => $row["titre"],
-                    'start'   => $start,
-                    'end'   => $end
-                );
-            }
-
-            echo json_encode($data);
-        } catch (Exception $e) {
-            $this->loader->load('tableau_de_bord', ['title' => 'tableau de bord', 'error_message' => $e->getMessage()]);
-        }
-    }
-
-
     public function reunions_a_venir()
     {
         if ($this->redirect_unlogged_user()) {
