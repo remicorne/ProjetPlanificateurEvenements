@@ -1,15 +1,23 @@
 #div_evenements{
 	position: absolute;
 	left: 0px;
-  	width: 400px;
-  	top: 150px;
-	border: solid;
+	top: 80px;
+	width: 400px;
+	max-height: 600px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }
 
 #div_sondages{
 	position: absolute;
 	left: 450px;
-  	width: 600px;
-  	top: 150px;
-	border: solid;
+	top: 80px;
+	width: 850px;
+	max-height: 1000px;
+	overflow-y: scroll;
+	border-width:1px;
+ 	border-style:dotted;
+ 	border-color:black;
 }

@@ -31,7 +31,7 @@ function remplirTabPersonsCherches(idTab, input, numEvent) {
 }
 
 function remplirTabGroupesCherches(idTab, numEvent) {
-	$('#' + idTab).html("");
+	$('#' + idTab).html("<tr> <th>nom groupe</th> <th>membres</th>");
 	var requete = $.ajax({
 		url: "/index.php/evenements/obtenir_les_groupes"
 	});
@@ -112,14 +112,16 @@ function afficherInvitesEvent(nomTab, numEvent) {
 }
 
 function construireTabInvites(nomTab, invites, numEvent) {
+	$('#div_invites_view_evenement p').html(" <b> Invités : (" + invites.length + ")</b>");
 	construireTableauDePersonne(nomTab, invites);
 	$('#tab_invites').children().each(function (index) {
 		$(this).append('<td>' + invites[index]['statut'] + '</td>');
-		if (invites[index]['statut'] != 'createur') {
+		if (invites[index]['statut'] != 'createur' && isAdministrateur) {
 			$(this).append('<td><button class="retirer">retirer</button></td>');
 			$(this).children(':last').click(function () { retirerParticipantBd(invites[index]['numPart'], numEvent, nomTab) });
 		}
 	})
+	$('#tab_invites .email').remove();
 }
 
 function retirerParticipantBd(numPart, numEvent, nomTab) {
@@ -230,6 +232,8 @@ function construireTabParticipants(invites) {
 		if (inv['participation'] == 1)
 			participants.push(inv);
 	});
+	$('#div_participants_view_evenement p').html("<b>Participants : (" + participants.length + ")</b>");
 	construireTableauDePersonne('tab_participants', participants);
+	$("#tab_participants .email").remove();
 }
 

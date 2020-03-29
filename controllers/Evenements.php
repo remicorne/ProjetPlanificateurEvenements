@@ -58,7 +58,7 @@ class Evenements extends Controller
                 $numEvent = reset($events)['numEvent'];
             // tab d'info de l'event visualisé sur la page.
             $event_visu = $events[$numEvent];
-
+            $createur_event = $this->evenements->recuperer_informations_organisateur($numEvent);
             // les sondages visualisé sur la page.
             $sondages_event = $this->evenements->voir_sondages_evenement($numEvent);
             // ajout des reps des participants et % de bonne rep a chaques sondage dans le tableau.
@@ -76,7 +76,8 @@ class Evenements extends Controller
                 'sondages_event' => $sondages_event,
                 'nbPart' => $nbPart,
                 'numPart' => $event_visu['numPart'],
-                'repUser' => $repUser
+                'repUser' => $repUser,
+                'createur_event' => $createur_event
             ]);
         } catch (Exception $e) {
             $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
@@ -105,8 +106,12 @@ class Evenements extends Controller
             }
             $organisateur = $this->evenements->recuperer_informations_organisateur($numEvent);
             $participation = $this->evenements->voir_si_user_participe_event($user->numUser, $numEvent);
+            if ($sondage)
+                $titre = 'Evenement (en sondage)';
+            else
+                $titre = 'Evenement';
             $this->loader->load('reunion', [
-                'title' => 'Evenement',
+                'title' => $titre,
                 'numEvent' => $numEvent,
                 'is_administrator' => $is_administrator,
                 'infos_event' => $infos_event,
@@ -129,13 +134,8 @@ class Evenements extends Controller
         if ($this->redirect_unlogged_user()) {
             return;
         }
-        try {
-            $groupes = $this->construire_tableau_des_groupes();
-            $this->loader->load('voir_les_groupes', ['title' => 'voir les groupes', 'groupes' => $groupes]);
-        } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
-            $this->loader->load('voir_les_groupes', $data);
-        }
+        $groupes = $this->construire_tableau_des_groupes();
+        $this->loader->load('voir_les_groupes', ['title' => 'voir les groupes', 'groupes' => $groupes]);
     }
 
     public function modifier_groupe($numGroupe)

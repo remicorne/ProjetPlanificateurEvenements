@@ -18,9 +18,11 @@ function readCookie(name) {
 /**
 *Fonction pour ajouter une colonne à un tableau.
 */
-function addColumn(tdOrTh, contenu) {
+function addColumn(tdOrTh, contenu, classe) {
 	var col = document.createElement(tdOrTh);
 	col.innerHTML = contenu;
+	if (classe != null)
+		col.classList.add(classe);
 	return col;
 }
 
@@ -49,10 +51,10 @@ function construireTableauDePersonne(idTab, personnes) {
 		var newRow = document.createElement("tr");
 		var numUser = personne['numUser'];
 		var src = "/index.php/evenements/photos_get/" + numUser + "?thumbnail";
-		newRow.appendChild(addColumn("td", '<img src="' + src + '" alt="photo de profil" height="50" width="50" />'));
+		newRow.appendChild(addColumn("td", '<img src="' + src + '" alt="photo de profil" height="100" width="70" />'));
 		newRow.appendChild(addColumn("td", personne['nom']));
 		newRow.appendChild(addColumn("td", personne['prenom']));
-		newRow.appendChild(addColumn("td", personne['email']));
+		newRow.appendChild(addColumn("td", personne['email'], 'email'));
 		newRow.appendChild(addColumn("td", personne['numUser']));
 		newRow.lastChild.style.display = 'none';
 		tab.appendChild(newRow);

@@ -1,12 +1,20 @@
 <script type="text/javascript" src="/assets/js/script_reunions_en_sondages.js"></script>
 <div class="container">
 	<?php if ($events != null) { ?>
+
 		<?php if (isset($error)) { ?>
 			<div class="alert alert-warning" role="alert"><?= $error ?></div>
 		<?php } ?>
+
+		<div>
+			<p>Si vous êtes le createur de l'événement vous devez choisir la date final.<br>
+				Sinon vous devez indiquer vos disponibilités au créateur.</p>
+		</div>
+
+
 		<div id="div_evenements">
 			<p>sondages en cours : </p>
-			<table id="tab_evenements">
+			<table id="tab_evenements" class="table table-bordered">
 				<tr>
 					<th>nom événement</th>
 					<th>votre statut</th>
@@ -28,11 +36,15 @@
 		</div>
 
 		<div id="div_sondages">
-			<h3>Evenement : <?= $event_visu['titre'] ?> </h3>
+			<h3><a href="/index.php/evenements/reunion/<?= $event_visu['numEvent'] ?>"> Evenement : <?= $event_visu['titre'] ?></a></h3>
+			<p>
+				votre statut :<b> <?= $event_visu['statut'] ?></b><br>
+				createur : <b> <?= $createur_event['nom'] ?> <?= $createur_event['prenom'] ?> <?= $createur_event['email'] ?>
+			</p>
 			<p>description : </p>
 			<textarea id="textarea_description" rows="8" cols="50" disabled><?= $event_visu['descri'] ?></textarea>
 			<br><br>
-			<table id="tab_sondages">
+			<table id="tab_sondages" class="table table-bordered">
 				<tr>
 					<th>Pourcentage de vote</th>
 					<?php foreach ($sondages_event as $s) { ?>
@@ -78,7 +90,7 @@
 				<?php for ($i = 0; $i < $nbPart; $i++) { ?>
 					<tr>
 						<!-- Si numPart = numPart de l'utilisateur on n'affiche pas. -->
-						<?php if ($sondages_event[0]['reps'][$i]['numPart'] == $numPart) continue;  ?>
+						<?php if ($sondages_event[0]['reps'][$i]['numPart'] == $numPart || $sondages_event[0]['reps'][$i]['statut'] == 'createur') continue;  ?>
 						<td><?= $sondages_event[0]['reps'][$i]['prenom'] ?> <?= $sondages_event[0]['reps'][$i]['nom'] ?></td>
 						<?php foreach ($sondages_event as $rep) { ?>
 							<td> <?= $rep['reps'][$i]["reponse"] ?></td>
