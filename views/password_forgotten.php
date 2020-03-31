@@ -1,4 +1,3 @@
-<div class="container" style="margin-top: 40px">
   <div class="row">
     <div class="col-sm-6 col-md-6 col-md-offset-3">
       <div class="panel panel-default">
@@ -14,4 +13,3 @@
       </div>
     </div>
   </div>
-</div>
