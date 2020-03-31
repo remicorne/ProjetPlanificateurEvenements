@@ -39,7 +39,7 @@
 			<h3><a href="/index.php/evenements/reunion/<?= $event_visu['numEvent'] ?>"> Evenement : <?= $event_visu['titre'] ?></a></h3>
 			<p>
 				votre statut :<b> <?= $event_visu['statut'] ?></b><br>
-				createur : <b> <?= $createur_event['nom'] ?> <?= $createur_event['prenom'] ?> <?= $createur_event['email'] ?>
+				createur : <b> <?= $createur_event['nom'] ?> <?= $createur_event['prenom'] ?> </b>(<?= $createur_event['email'] ?>)
 			</p>
 			<p>description : </p>
 			<textarea id="textarea_description" rows="8" cols="50" disabled><?= $event_visu['descri'] ?></textarea>
@@ -94,6 +94,11 @@
 						<td><?= $sondages_event[0]['reps'][$i]['prenom'] ?> <?= $sondages_event[0]['reps'][$i]['nom'] ?></td>
 						<?php foreach ($sondages_event as $rep) { ?>
 							<td> <?= $rep['reps'][$i]["reponse"] ?></td>
+						<?php } ?>
+						<?php if ($sondages_event[0]['reps'][$i]['aVote'] == 'oui') { ?>
+							<td> a voté </td>
+						<?php } else { ?>
+							<td> n'a pas voté</td>
 						<?php } ?>
 					</tr>
 				<?php } ?>

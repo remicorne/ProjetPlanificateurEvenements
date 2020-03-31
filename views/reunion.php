@@ -62,9 +62,7 @@
 
     <div id="div_descri" class="div_descri_view_evenement">
       <p> <b>Description : </b></p>
-      <textarea id="textarea_description" rows="15" cols="80" disabled>
-        <?= $infos_event['descri'] ?>
-      </textarea>
+      <textarea id="textarea_description" rows="15" cols="80" disabled><?= $infos_event['descri'] ?></textarea>
     </div>
 
     <!-- remplis avec fonction js -->
