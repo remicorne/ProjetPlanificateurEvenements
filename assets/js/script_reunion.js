@@ -120,7 +120,7 @@ function construireTabInvites(nomTab, invites, numEvent) {
 	construireTableauDePersonne(nomTab, invites);
 	$('#tab_invites').children().each(function (index) {
 		$(this).append('<td>' + invites[index]['statut'] + '</td>');
-		if (invites[index]['statut'] != 'createur' && isAdministrateur) {
+		if (invites[index]['statut'] != 'createur' && isAdministrateur && !reunion_passe) {
 			$(this).append('<td><button class="retirer">retirer</button></td>');
 			$(this).children(':last').click(function () { retirerParticipantBd(invites[index]['numPart'], numEvent, nomTab) });
 		}

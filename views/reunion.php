@@ -123,6 +123,7 @@
 
   <script>
     var numEvent = <?= $numEvent ?>;
+    var reunion_passe = <?= $reunion_passe ?>;
   </script>
 
   <?php if ($is_administrator) { ?>
