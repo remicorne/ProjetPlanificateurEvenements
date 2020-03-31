@@ -5,33 +5,35 @@
 			</div>
 		<?php } ?>
 		<div id="info_compte">
-			<p>prenom : <?= $logged_user->prenom ?> <p>
-					<p>nom : <?= $logged_user->nom ?> <p>
+			<p> <span class="user_menu">Prénom : </span><span class="info_user_menu"> <?= $logged_user->prenom ?></span>
+				<p>
+					<p><span class="user_menu">Nom :</span><span class="info_user_menu"> <?= $logged_user->nom ?></span>
+						<p>
 							<ul>
-								<li><a href="/index.php/evenements/mon_compte">mon compte</a></li>
-								<li><a href="/index.php/sessions/sessions_destroy">se déconnecter</a></li>
+								<li class="lien_menu"><a href="/index.php/evenements/mon_compte">Mon compte</a></li>
+								<li class="lien_menu"><a href="/index.php/sessions/sessions_destroy">Se déconnecter</a></li>
 							</ul>
 		</div>
 
 		<div id="Lien_tableau_de_bord">
-			<a href="/index.php">Tableau de bord</a></li>
+			<a href="/index.php" class="cat_menu">Tableau de bord</a></li>
 		</div>
 
 		<div id="menu_reunion">
-			<p> Réunion <p>
+			<p class="cat_menu"> Réunion <p>
 					<ul id="navigation">
-						<li><a href="/index.php/evenements/sondages_new">créer une réunion</a></li>
-						<li><a href="/index.php/evenements/reunions_a_venir">réunions à venir</a></li>
-						<li><a href="/index.php/evenements/reunions_en_sondages">réunions en sondages</a></li>
-						<li><a href="/index.php/evenements/reunions_passees">réunion passées</a></li>
+						<li class="lien_menu"><a href="/index.php/evenements/sondages_new">Créer une réunion</a></li>
+						<li class="lien_menu"><a href="/index.php/evenements/reunions_a_venir">Réunions à venir</a></li>
+						<li class="lien_menu"><a href="/index.php/evenements/reunions_en_sondages">Réunions en sondages</a></li>
+						<li class="lien_menu"><a href="/index.php/evenements/reunions_passees">Réunion passées</a></li>
 					</ul>
 		</div>
 
 		<div id="menu_groupe">
-			<p> Groupes <p>
+			<p class="cat_menu"> Groupes <p>
 					<ul id="navigation">
-						<li><a href="/index.php/evenements/creer_un_groupe">Créer un groupe</a></li>
-						<li><a href="/index.php/evenements/voir_les_groupes">Voir les groupes</a></li>
+						<li class="lien_menu"><a href="/index.php/evenements/creer_un_groupe">Créer un groupe</a></li>
+						<li class="lien_menu"><a href="/index.php/evenements/voir_les_groupes">Voir les groupes</a></li>
 					</ul>
 		</div>
 	</div>

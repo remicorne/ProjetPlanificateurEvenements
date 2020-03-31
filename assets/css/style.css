@@ -15,6 +15,12 @@ body{
 
 #titre{
 	text-align: center;
+	border-style: solid;
+	  border-width: 2px;
+	  margin-top: 0px;
+	  padding-top: 10px;
+	  padding-bottom: 10px;
+	 
 }
 
 #menu{
@@ -25,5 +31,37 @@ body{
 	width: 25vh;
 	border-width:2px;
  	border-style:dotted;
- 	border-color:black;
+	 border-color:black;
+	 background: #F6FBD0;
 }
+
+#photo_profil{
+	text-align: center;
+	
+}
+.user_menu{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+
+}
+.info_user_menu{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	
+}
+
+.cat_menu{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+
+}
+.lien_menu{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 17px;
+	font-weight: bold;
+
+}
+
+
