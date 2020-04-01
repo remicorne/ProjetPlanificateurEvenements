@@ -200,9 +200,11 @@ function refreshDocTable() {
 				var ligneDoc = $("<tr></tr>").attr({ "class": "ligne_document" });
 				var lienDoc = $("<a></a>").html(document["nomDoc"].substring(0, 30)).attr({ "href": "/uploads/" + numEvent + "/" + document["nomDoc"], "class": "uploaded_documents" });
 				var nomDoc = $("<td></td>").append(lienDoc).attr({ "class": "uploaded_document_cell" });
-				var supprimerDoc = $("<td></td>").append($("<button></button>").html("X"));
-				supprimerDoc.attr({ "class": "supprimer_document" });
-				supprimerDoc.click(function () { deleteDocument(ligneDoc, numEvent, document["nomDoc"]) })
+				if (isAdministrateur) {
+					var supprimerDoc = $("<td></td>").append($("<button></button>").html("X"));
+					supprimerDoc.attr({ "class": "supprimer_document" });
+					supprimerDoc.click(function () { deleteDocument(ligneDoc, numEvent, document["nomDoc"]) })
+				}
 				$("#tab_documents").append(ligneDoc.append(nomDoc, supprimerDoc));
 			})
 		},
