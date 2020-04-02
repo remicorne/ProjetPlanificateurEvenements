@@ -23,7 +23,7 @@ class Evenements extends Controller
     {
         if ($this->redirect_unlogged_user()) return;
         $photo = $this->users->get_photo($this->sessions->logged_user()->numUser);
-        $this->loader->load('mon_compte', ['title' => 'mon compte', 'photo' => $photo]);
+        $this->loader->load('Mon_compte', ['title' => 'mon compte', 'photo' => $photo]);
     }
 
     public function creer_un_groupe()
@@ -77,7 +77,7 @@ class Evenements extends Controller
             $repUser = $this->evenements->voir_reponses_user_sond($numEvent, $event_visu['numPart']);
             $nbPart = $this->evenements->voir_nb_invites_event($numEvent);
             $this->loader->load('reunions_en_sondages', [
-                'title' => 'reunions en sondages', 'events' => $events,
+                'title' => 'Reunions en sondages', 'events' => $events,
                 'event_visu' => $event_visu,
                 'sondages_event' => $sondages_event,
                 'nbPart' => $nbPart,
@@ -86,7 +86,7 @@ class Evenements extends Controller
                 'createur_event' => $createur_event
             ]);
         } catch (Exception $e) {
-            $data = ['error' => $e->getMessage(), 'title' => 'voir les groupes'];
+            $data = ['error' => $e->getMessage(), 'title' => 'Voir les groupes'];
             $this->loader->load('reunions_en_sondages', $data);
         }
     }
@@ -144,7 +144,7 @@ class Evenements extends Controller
             return;
         }
         $groupes = $this->construire_tableau_des_groupes();
-        $this->loader->load('voir_les_groupes', ['title' => 'voir les groupes', 'groupes' => $groupes]);
+        $this->loader->load('voir_les_groupes', ['title' => 'Voir les groupes', 'groupes' => $groupes]);
     }
 
     public function modifier_groupe($numGroupe)
