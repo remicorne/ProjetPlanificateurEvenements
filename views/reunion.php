@@ -38,13 +38,21 @@
       </table>
     </div>
 
+    <?php if (!$reunion_passe && $organisateur['numUser'] == $logged_user->numUser) { ?>
+      <div class="div_bouton_annuler_view_evenement">
+        <form method="post" action="/index.php/evenements/annuler_event/<?= $numEvent ?>" onsubmit="return confimerAnnulation()">
+          <button class="btn btn-danger">Annuler l'evenement</button>
+        </form>
+      </div>
+    <?php } ?>
+
     <?php if (!$sondage  && !$reunion_passe) { ?>
       <div class="div_boutons_participation_view_evenement">
         <form method="post" action="/index.php/evenements/modifier_participation_event/<?= $numEvent ?>/<?= !$participation ?>">
           <?php if (!$participation) { ?>
             <button class="btn btn-success">participer</button>
           <?php } else { ?>
-            <button class="btn btn-danger">ne pas paticiper</button>
+            <button class="btn btn-warning">ne pas paticiper</button>
           <?php } ?>
         </form>
       </div>

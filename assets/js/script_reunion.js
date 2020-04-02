@@ -257,3 +257,7 @@ function prop_bouton_groupe(ajoute, index) {
 	}
 }
 
+function confimerAnnulation() {
+	return confirm('Etes-vous sûr de vouloir annuler cet événement ?');
+}
+

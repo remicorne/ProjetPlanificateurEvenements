@@ -536,7 +536,7 @@ class Evenements_model extends Model
   public function recuperer_informations_organisateur($numEvent)
   {
     try {
-      $statement = $this->db->prepare(" SELECT nom, prenom, email
+      $statement = $this->db->prepare(" SELECT P.numUser, nom, prenom, email
                                     FROM Participants P JOIN Utilisateurs U ON U.numUser=P.numUser 
                                     WHERE numEvent=? AND statut='createur' ");
       $statement->execute([$numEvent]);
@@ -709,6 +709,26 @@ class Evenements_model extends Model
       return $statement->fetchColumn();
     } catch (PDOException $e) {
       throw new Exception(self::str_error_database . ' voir_nb_participants_event' . $e->getMessage());
+    }
+  }
+
+  public function annuler_event($numEvent)
+  {
+    try {
+      //on efface les sondages dépassés qui ne sont pas liés à un événement.
+      $statement = $this->db->prepare("DELETE FROM Sondages 
+                                       WHERE numEvent=?");
+      $statement->execute([$numEvent]);
+      //On efface les evenements qui n'ont pas été vote à temps.
+      $statement = $this->db->prepare("DELETE FROM Evenements 
+                                       WHERE numEvent=?");
+      $statement->execute([$numEvent]);
+      //On efface les participants des evenements qui n'existent plus.
+      $statement = $this->db->prepare("DELETE FROM Participants 
+                                       WHERE numEvent=?");
+      $statement->execute([$numEvent]);
+    } catch (PDOException $e) {
+      throw new Exception(self::str_error_database . ' annuler_event ' . $e->getMessage());
     }
   }
 }

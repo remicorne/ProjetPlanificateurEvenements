@@ -725,4 +725,30 @@ class Evenements extends Controller
         $nbPart = $this->evenements->voir_nb_invites_event($numEvent);
         return $nbPart;
     }
+
+    public function annuler_event($numEvent)
+    {
+        if ($this->redirect_unlogged_user()) return;
+        $numEvent = filter_var($numEvent);
+        if ($this->evenements->recuperer_informations_organisateur($numEvent)['numUser'] == $this->sessions->logged_user()->numUser) {
+            $this->envoyer_mails_annulation_evenement($numEvent);
+            $this->evenements->annuler_event($numEvent);
+            $this->tableau_de_bord();
+        } else {
+            $this->reunion($numEvent);
+        }
+    }
+
+    private function envoyer_mails_annulation_evenement($numEvent)
+    {
+        $infosEvent = $this->evenements->voir_evenement_from_numEvent($numEvent);
+        $date = $this->evenements->voir_sondage($infosEvent['numSond']);
+        $content = 'L\'evenement ' . $infosEvent['titre'] . 'qui devait prendra lieu le ' . $date[0]['date_sond'] . '
+                 de ' . $date[0]['heureD'] . ' à ' . $date[0]['heureF'] . " est annulé";
+        $subject = 'Annulation evenement : ' . $infosEvent['titre'];
+        $participants = $this->evenements->afficher_les_participants_event($numEvent);
+        foreach ($participants as $part)
+            $emailsParts[] = $part['email'];
+        $this->envoyer_mails_participants($numEvent, $emailsParts, $subject, $content);
+    }
 }
